@@ -248,13 +248,10 @@ Rules:
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENAI_API_KEY}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.85
+        messages: [{ role: "user", content: prompt }]
       })
     });
 
