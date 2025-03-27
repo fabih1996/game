@@ -245,7 +245,7 @@ Rules:
   }
 
   try {
-    const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    const response = await fetch("https://supernatural-api.vercel.app", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
