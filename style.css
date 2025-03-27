@@ -1,0 +1,138 @@
+body {
+    background: #111;
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    padding: 20px;
+    margin-left: 250px;
+  }
+  
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 230px;
+    height: 100%;
+    background-color: #222;
+    padding: 15px;
+    overflow-y: auto;
+    border-right: 2px solid #444;
+  }
+  
+  #charList li {
+    display: inline-block;
+    margin: 6px;
+    cursor: pointer;
+  }
+  
+  .char-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: 0.2s;
+  }
+  
+  .char-icon.selected {
+    border: 2px solid currentColor;
+    box-shadow: 0 0 10px currentColor;
+  }
+  
+  .narration {
+    font-style: italic;
+    color: #bbb;
+    margin: 10px 0;
+  }
+  
+  #input-area {
+    margin-top: 20px;
+  }
+  
+  #userInput {
+    width: 70%;
+    padding: 8px;
+    font-size: 16px;
+  }
+  
+  #continueBtn {
+    padding: 8px 14px;
+    font-size: 16px;
+    margin-left: 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #continueBtn:hover {
+    background-color: #666;
+  }
+  
+  .choice-btn {
+    margin: 6px;
+    padding: 6px 12px;
+    background: #444;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+  }
+  .choice-btn:hover {
+    background: #666;
+  }
+  
+  #quick-actions {
+    margin-top: 25px;
+    padding: 10px;
+    background: #222;
+    border-radius: 8px;
+  }
+  
+  #actions-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .action-btn {
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .action-btn:hover {
+    background: #555;
+  }
+  
+  #rollDice {
+    background: #444;
+    border: none;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    margin-top: 10px;
+  }
+  #rollDice:hover {
+    background: #666;
+  }
+  
+  /* COLORE TESTO PER OGNI PERSONAGGIO */
+  .character-color-Dean { color: #FFD700; }
+  .character-color-Sam { color: #00BFFF; }
+  .character-color-Castiel { color: #7FFFD4; }
+  .character-color-Crowley { color: #FF4500; }
+  .character-color-Bobby { color: #90EE90; }
+  .character-color-Ruby { color: #FF69B4; }
+  .character-color-Jo { color: #FF8C00; }
+  .character-color-Ellen { color: #8A2BE2; }
+  .character-color-Narrator { color: #dddddd; }
+  .character-color-User { color: #3399ff; }
