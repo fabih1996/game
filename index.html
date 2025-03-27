@@ -44,7 +44,32 @@
       </div>
       <button onclick="startGame()">Start Game</button>
     </div>
+    <div id="user-character-select">
+  <h2>Select Your Character</h2>
 
+  <label for="playerSelect">Choose a character:</label>
+  <select id="playerSelect">
+    <option value="Dean">Dean Winchester</option>
+    <option value="Sam">Sam Winchester</option>
+    <option value="Castiel">Castiel</option>
+    <option value="Crowley">Crowley</option>
+    <option value="Bobby">Bobby Singer</option>
+    <option value="Ruby">Ruby</option>
+    <option value="Jo">Jo</option>
+    <option value="Ellen">Ellen</option>
+    <option value="custom">Custom character</option>
+  </select>
+
+  <div id="customPlayerFields" style="display: none;">
+    <label for="playerName">Your name:</label>
+    <input type="text" id="playerName" placeholder="e.g. Fabio">
+
+    <label for="playerTraits">Character traits / background:</label>
+    <input type="text" id="playerTraits" placeholder="e.g. Scientist, hunter...">
+  </div>
+
+  <button onclick="startGame()">Start Game</button>
+</div>
     <div id="game-interface" style="display: none;">
       <div id="story"></div>
       <div id="input-area">
