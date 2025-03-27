@@ -57,6 +57,7 @@ function loadIntro() {
   p.textContent = intro;
   storyDiv.appendChild(p);
 }
+
 function refreshSidebar() {
   const list = document.getElementById("charList");
   list.innerHTML = "";
@@ -67,10 +68,12 @@ function refreshSidebar() {
     img.src = `images/${name.toLowerCase()}.png`;
     img.alt = name;
     img.className = "char-icon";
-    img.style.color = characterColors[name] || "#eee";
 
     if (selectedCharacters.includes(name)) {
       img.classList.add("selected");
+      img.style.outline = `3px solid ${characterColors[name] || "#00ffff"}`;
+    } else {
+      img.style.outline = "none";
     }
 
     img.onclick = () => {
@@ -78,9 +81,11 @@ function refreshSidebar() {
       if (selectedCharacters.includes(name)) {
         selectedCharacters = selectedCharacters.filter(n => n !== name);
         img.classList.remove("selected");
+        img.style.outline = "none";
       } else {
         selectedCharacters.push(name);
         img.classList.add("selected");
+        img.style.outline = `3px solid ${characterColors[name] || "#00ffff"}`;
       }
     };
 
@@ -91,27 +96,28 @@ function refreshSidebar() {
 
 function loadDropdown() {
   const dropdown = document.getElementById("charDropdown");
-  dropdown.innerHTML = `<option value="">-- Select character --</option>`;
-  allAvailableCharacters.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    dropdown.appendChild(opt);
-  });
+  if (dropdown) {
+    dropdown.innerHTML = `<option value="">-- Select character --</option>`;
+    allAvailableCharacters.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      dropdown.appendChild(opt);
+    });
+
+    dropdown.onchange = () => {
+      const val = dropdown.value;
+      document.getElementById("customCharFields").style.display = val === "Other..." ? "block" : "none";
+    };
+  }
 
   const playerSelect = document.getElementById("playerSelect");
   if (playerSelect) {
     playerSelect.onchange = () => {
       const val = playerSelect.value;
-      const fields = document.getElementById("customPlayerFields");
-      fields.style.display = val === "custom" ? "block" : "none";
+      document.getElementById("customPlayerFields").style.display = val === "custom" ? "block" : "none";
     };
   }
-
-  dropdown.onchange = () => {
-    const val = dropdown.value;
-    document.getElementById("customCharFields").style.display = val === "Other..." ? "block" : "none";
-  };
 }
 
 function addSelectedCharacter() {
@@ -150,9 +156,10 @@ function setupActions() {
 
 function startGame() {
   const selection = document.getElementById("playerSelect").value;
+  const nameInput = document.getElementById("playerName");
 
-  if (selection === "custom") {
-    const name = document.getElementById("playerName").value.trim();
+  if (selection === "custom" && nameInput) {
+    const name = nameInput.value.trim();
     if (name) player.name = name;
     player.isCustom = true;
   } else if (selection !== "") {
@@ -160,13 +167,15 @@ function startGame() {
     player.isCustom = false;
   }
 
-  characterColors["User"] = "#3399ff";
+  characterColors["User"] = player.color;
 
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
+
   refreshSidebar();
   loadIntro();
 }
+
 window.addEventListener("DOMContentLoaded", () => {
   loadDropdown();
   setupActions();
@@ -215,7 +224,6 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
 
-  // Stampa input utente
   const playerMsg = document.createElement("p");
   playerMsg.className = `character-color-User`;
   playerMsg.textContent = `${player.name}: ${input}`;
