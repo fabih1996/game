@@ -209,3 +209,45 @@ h1 {
     font-size: 16px;
   }
 }
+#user-character-select {
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 500px;
+  display: block;
+}
+
+#user-character-select label,
+#user-character-select select,
+#user-character-select input,
+#user-character-select button {
+  display: block;
+  margin: 10px auto;
+  width: 100%;
+  max-width: 300px;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+#user-character-select button {
+  background-color: #3399ff;
+  color: white;
+  cursor: pointer;
+}
+
+#user-character-select button:hover {
+  background-color: #1a73e8;
+}
+
+@media (max-width: 768px) {
+  #user-character-select {
+    padding: 15px;
+  }
+
+  #user-character-select input,
+  #user-character-select select,
+  #user-character-select button {
+    font-size: 16px;
+  }
+}
