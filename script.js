@@ -56,7 +56,9 @@ function loadIntro() {
   p.classList.add("narration");
   p.textContent = intro;
   storyDiv.appendChild(p);
+  triggerSounds(intro);
 }
+
 function refreshSidebar() {
   const list = document.getElementById("charList");
   list.innerHTML = "";
@@ -167,6 +169,7 @@ function startGame() {
   refreshSidebar();
   loadIntro();
 }
+
 window.addEventListener("DOMContentLoaded", () => {
   loadDropdown();
   setupActions();
@@ -184,11 +187,11 @@ window.addEventListener("DOMContentLoaded", () => {
 function triggerSounds(text) {
   const lowerText = text.toLowerCase();
   const triggers = [
-    { id: 'sound-door', patterns: [/knock/, /door\s+creak/, /door\s+slam/] },
-    { id: 'sound-gunshot', patterns: [/gunshot/, /shoots?/, /fired/, /pulls\s+the\s+trigger/, /bang/] },
-    { id: 'sound-scream', patterns: [/scream/, /shout/, /yell/, /cry\s+out/, /wail/] },
-    { id: 'sound-demon', patterns: [/demon/, /growl/, /possess/, /evil/, /dark\s+presence/] },
-    { id: 'sound-whisper', patterns: [/whisper/, /ghost/, /murmur/, /breath/, /chill/] },
+    { id: 'sound-door', patterns: [/knock/, /door\s+creak/, /door\s+slam/, /opens\s+the\s+door/] },
+    { id: 'sound-gunshot', patterns: [/gunshot/, /shoots?/, /fired/, /pulls\s+the\s+trigger/, /bang/, /blast/, /bullet/, /pistol/, /shooting/] },
+    { id: 'sound-scream', patterns: [/scream/, /shout/, /yell/, /cry\s+out/, /wail/, /screeches?/] },
+    { id: 'sound-demon', patterns: [/demon/, /growl/, /possess/, /evil/, /dark\s+presence/, /hellhound/] },
+    { id: 'sound-whisper', patterns: [/whisper/, /ghost/, /murmur/, /breath/, /chill/, /spirit/] },
     { id: 'sound-impala', patterns: [/impala/, /car/, /engine/, /rev/, /roar/] },
   ];
 
@@ -198,6 +201,7 @@ function triggerSounds(text) {
       if (audio) {
         audio.pause();
         audio.currentTime = 0;
+        audio.volume = 0.8;
         audio.play();
       }
       break;
@@ -215,7 +219,6 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
 
-  // Stampa input utente
   const playerMsg = document.createElement("p");
   playerMsg.className = `character-color-User`;
   playerMsg.textContent = `${player.name}: ${input}`;
@@ -228,20 +231,7 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
   } else if (selectedCharacters.includes("Narrator") && selectedCharacters.length === 1) {
     prompt = `You are the narrator of a dark supernatural thriller. The player says: "${input}". Continue the story with rich, immersive narration.`;
   } else {
-    prompt = `
-The following characters are speaking: ${speakerNames}.
-The player (${player.name}) says: "${input}"
-
-Rules:
-- ONLY the selected characters may speak
-- DO NOT write lines for the player (${player.name})
-- DO NOT think, act, or describe anything for the player
-- Keep lines short and believable
-- Optionally offer 2-3 choices at the end in this format:
-[Go upstairs]
-[Call Sam]
-[Leave quietly]
-`;
+    prompt = `\nThe following characters are speaking: ${speakerNames}.\nThe player (${player.name}) says: "${input}"\n\nRules:\n- ONLY the selected characters may speak\n- DO NOT write lines for the player (${player.name})\n- DO NOT think, act, or describe anything for the player\n- Keep lines short and believable\n- Optionally offer 2-3 choices at the end in this format:\n[Go upstairs]\n[Call Sam]\n[Leave quietly]`;
   }
 
   try {
@@ -279,6 +269,7 @@ Rules:
         p.classList.add("narration");
         p.textContent = line;
       }
+      triggerSounds(line);
       storyDiv.appendChild(p);
     }
 
@@ -307,6 +298,7 @@ Rules:
 function triggerRandomEvent() {
   sendToGPT("random", true);
 }
+
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('open');
