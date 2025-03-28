@@ -3,9 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Supernatural RPG</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <!-- Hamburger menu icon -->
+  <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+  <!-- Sidebar -->
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charList"></ul>
@@ -24,6 +30,7 @@
     <button id="rollDice" onclick="triggerRandomEvent()">🎲 Roll the Dice</button>
   </div>
 
+  <!-- Main container -->
   <div class="container">
     <h1>Supernatural: Role-Playing Adventure</h1>
 
@@ -66,8 +73,16 @@
     <audio id="sound-whisper" src="sounds/whisper.mp3" preload="auto"></audio>
     <audio id="sound-impala" src="sounds/impala_engine.mp3" preload="auto"></audio>
     <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
+  </div>
 
-    <script src="config.js"></script>
-    <script src="script.js"></script>
+  <!-- Scripts -->
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+  </script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
