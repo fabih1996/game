@@ -307,3 +307,7 @@ Rules:
 function triggerRandomEvent() {
   sendToGPT("random", true);
 }
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('open');
+}
