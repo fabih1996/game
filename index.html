@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- Hamburger menu icon -->
+  <!-- Bottone hamburger -->
   <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
 
   <!-- Sidebar -->
@@ -28,6 +28,9 @@
 
     <h4>🎲 Random Event</h4>
     <button id="rollDice" onclick="triggerRandomEvent()">🎲 Roll the Dice</button>
+
+    <!-- 🔊 Toggle Music -->
+    <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
   </div>
 
   <!-- Main container -->
@@ -75,11 +78,23 @@
     <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
   </div>
 
-  <!-- Scripts -->
+  <!-- Script -->
   <script>
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('open');
+    }
+
+    function toggleMusic() {
+      const bgm = document.getElementById("background-music");
+      if (bgm) {
+        if (bgm.paused) {
+          bgm.volume = 0.3;
+          bgm.play();
+        } else {
+          bgm.pause();
+        }
+      }
     }
   </script>
   <script src="config.js"></script>
