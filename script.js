@@ -303,3 +303,15 @@ function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('open');
 }
+
+function toggleMusic() {
+  const bgm = document.getElementById("background-music");
+  if (bgm) {
+    if (bgm.paused) {
+      bgm.volume = 0.3;
+      bgm.play();
+    } else {
+      bgm.pause();
+    }
+  }
+}
