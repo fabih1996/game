@@ -136,3 +136,38 @@ body {
   .character-color-Ellen { color: #8A2BE2; }
   .character-color-Narrator { color: #dddddd; }
   .character-color-User { color: #3399ff; }
+
+
+@media screen and (max-width: 768px) {
+  #sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 2px solid #444;
+  }
+
+  .container {
+    margin-left: 0;
+    padding: 10px;
+  }
+
+  #userInput {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  #continueBtn {
+    width: 100%;
+    margin: 0;
+  }
+
+  #actions-container {
+    flex-direction: column;
+  }
+
+  .char-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
