@@ -1,75 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Supernatural RPG</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="sidebar">
+    <h3>Characters</h3>
+    <ul id="charList"></ul>
 
-  <!-- Selezione personaggio iniziale -->
-  <div id="user-character-select">
-    <h2>Select Your Character</h2>
+    <h4>Add Character</h4>
+    <select id="charDropdown"><option value="">-- Select character --</option></select>
+    <button onclick="addSelectedCharacter()">Add</button>
 
-    <label for="playerSelect">Choose a character:</label>
-    <select id="playerSelect">
-      <option value="">-- Select --</option>
-      <option value="Dean">Dean Winchester</option>
-      <option value="Sam">Sam Winchester</option>
-      <option value="Castiel">Castiel</option>
-      <option value="Crowley">Crowley</option>
-      <option value="Bobby">Bobby Singer</option>
-      <option value="Ruby">Ruby</option>
-      <option value="Jo">Jo</option>
-      <option value="Ellen">Ellen</option>
-      <option value="custom">Custom character</option>
-    </select>
-
-    <div id="customPlayerFields" style="display: none;">
-      <label for="playerName">Your name:</label>
-      <input type="text" id="playerName" placeholder="e.g. Fabio" />
+    <div id="customCharFields" style="display: none;">
+      <input type="text" id="customCharName" placeholder="New name" />
+      <input type="text" id="customCharDesc" placeholder="Description" />
+      <button onclick="addCustomCharacter()">Create</button>
     </div>
 
-    <button onclick="startGame()">Start Game</button>
+    <h4>🎲 Random Event</h4>
+    <button id="rollDice" onclick="triggerRandomEvent()">🎲 Roll the Dice</button>
   </div>
 
-  <!-- Interfaccia di gioco -->
-  <div id="game-interface" style="display: none;">
+  <div class="container">
+    <h1>Supernatural: Role-Playing Adventure</h1>
 
-    <!-- Sidebar con immagini -->
-    <div id="sidebar">
-      <h3>Characters</h3>
-      <ul id="charList"></ul>
+    <div id="user-character-select">
+      <h3>Who are you?</h3>
+      <select id="playerSelect">
+        <option value="">-- Choose your character --</option>
+        <option value="custom">Create custom character</option>
+        <option value="Dean">Dean</option>
+        <option value="Sam">Sam</option>
+        <option value="Castiel">Castiel</option>
+        <option value="Jo">Jo</option>
+        <option value="Ellen">Ellen</option>
+      </select>
+      <div id="customPlayerFields" style="display: none;">
+        <input type="text" id="playerName" placeholder="Your name" />
+        <input type="text" id="playerDesc" placeholder="Short description" />
+      </div>
+      <button onclick="startGame()">Start Game</button>
     </div>
 
-    <div class="container">
-      <h1>Supernatural: Role-Playing Adventure</h1>
-
-      <div id="story">
-        <!-- Storia generata -->
-      </div>
-
+    <div id="game-interface" style="display: none;">
+      <div id="story"></div>
       <div id="input-area">
         <input type="text" id="userInput" placeholder="What do you say?" />
-        <button id="continueBtn">Continue</button>
+        <button id="continueBtn" onclick="sendToGPT()">Continue</button>
       </div>
-
-      <div id="actions-container"></div>
+      <div id="quick-actions">
+        <h3>Quick Actions</h3>
+        <div id="actions-container"></div>
+      </div>
       <div id="choices"></div>
     </div>
-  </div>
 
-  <!-- Audio -->
-  <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
-  <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
-  <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
-  <audio id="sound-demon" src="sounds/demon_growl.mp3" preload="auto"></audio>
-  <audio id="sound-whisper" src="sounds/whisper.mp3" preload="auto"></audio>
-  <audio id="sound-impala" src="sounds/impala_engine.mp3" preload="auto"></audio>
-  <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
+    <!-- Audio -->
+    <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
+    <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
+    <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
+    <audio id="sound-demon" src="sounds/demon_growl.mp3" preload="auto"></audio>
+    <audio id="sound-whisper" src="sounds/whisper.mp3" preload="auto"></audio>
+    <audio id="sound-impala" src="sounds/impala_engine.mp3" preload="auto"></audio>
+    <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
 
-  <!-- Script -->
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
