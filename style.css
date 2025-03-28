@@ -12,10 +12,42 @@ body {
   padding: 10px;
 }
 
+/* Sidebar Menu Icon */
+#menu-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #222;
+  color: white;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Sidebar */
 #sidebar {
   background-color: #222;
   padding: 15px;
   border-bottom: 2px solid #444;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 250px;
+  height: 100%;
+  z-index: 1000;
+  overflow-y: auto;
+  transition: left 0.3s ease;
+}
+
+#sidebar.open {
+  left: 0;
 }
 
 #charList li {
@@ -138,6 +170,10 @@ body {
 
 /* DESKTOP STYLE */
 @media screen and (min-width: 768px) {
+  #menu-toggle {
+    display: none;
+  }
+
   .container {
     margin-left: 250px;
     padding: 20px;
@@ -145,12 +181,16 @@ body {
 
   #sidebar {
     position: fixed;
-    top: 0;
     left: 0;
-    width: 230px;
+    top: 0;
     height: 100%;
+    width: 230px;
     border-right: 2px solid #444;
     border-bottom: none;
+  }
+
+  #sidebar.open {
+    left: 0;
   }
 
   #input-area {
