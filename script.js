@@ -310,7 +310,21 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else {
     prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. End with 2–3 smart and relevant player actions like:\n[Call Bobby]\n[Inspect the sigil]\n[Grab the shotgun]`;
   }
+  prompt += `
+Characters must act consistently with their personalities and experiences from the show.
+Their lines should:
+- React meaningfully to what the player said
+- Build on the previous dialogue and story events
+- Reveal insights, fears, or memories relevant to the scene
+- Avoid repeating themselves or each other
+- Avoid generic filler like “Stay sharp” unless it’s contextually appropriate
+- Stay emotionally grounded and true to character arcs
 
+Rules:
+- Do not include actions already performed in the last turn
+- End with 2–3 FRESH and realistic player choices formatted like [Inspect the mirror]
+- Narrator should add brief and cinematic transitions, not long descriptions
+`;
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
