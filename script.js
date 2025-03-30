@@ -1,4 +1,4 @@
-
+// Supernatural RPG - Final JavaScript File with Character Lore Support
 
 let characters = ["Narrator"];
 let selectedCharacters = ["Narrator"];
@@ -51,7 +51,7 @@ const randomIntros = [
   "You open your eyes in a church with broken stained glass."
 ];
 
-let characterKnowledge = ""; // This will hold the text from the lore file
+let characterKnowledge = "";
 
 async function loadCharacterLore() {
   try {
@@ -63,6 +63,7 @@ async function loadCharacterLore() {
     characterKnowledge = "";
   }
 }
+
 function loadIntro() {
   const intro = randomIntros[Math.floor(Math.random() * randomIntros.length)];
   const storyDiv = document.getElementById("story");
@@ -76,7 +77,6 @@ function loadIntro() {
 function refreshSidebar() {
   const list = document.getElementById("charList");
   list.innerHTML = "";
-
   characters.forEach(name => {
     const li = document.createElement("li");
     const img = document.createElement("img");
@@ -127,6 +127,58 @@ function startGame() {
     player.name = selection;
     player.isCustom = false;
   }
+  characterColors["User"] = "#3399ff";
+  document.getElementById("user-character-select").style.display = "none";
+  document.getElementById("game-interface").style.display = "block";
+  refreshSidebar();
+  loadIntro();
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  if (typeof loadDropdown === "function") loadDropdown();
+  setupActions();
+  await loadCharacterLore();
+
+  const bgm = document.getElementById("background-music");
+  if (bgm) {
+    bgm.volume = 0.3;
+    bgm.play();
+  }
+
+  const narrationInput = document.getElementById("narrationInput");
+  const dialogueInput = document.getElementById("dialogueInput");
+  [narrationInput, dialogueInput].forEach(input => {
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const type = input === narrationInput ? "narration" : "dialogue";
+        sendToGPT(input.value, type);
+        input.value = "";
+      }
+    });
+  });
+});
+function setupActions() {
+  const container = document.getElementById("actions-container");
+  container.innerHTML = "";
+  quickActions.forEach(action => {
+    const btn = document.createElement("button");
+    btn.textContent = action;
+    btn.className = "action-btn";
+    btn.onclick = () => sendToGPT(action, "narration");
+    container.appendChild(btn);
+  });
+}
+
+function startGame() {
+  const selection = document.getElementById("playerSelect").value;
+  if (selection === "custom") {
+    const name = document.getElementById("playerName").value.trim();
+    if (name) player.name = name;
+    player.isCustom = true;
+  } else if (selection !== "") {
+    player.name = selection;
+    player.isCustom = false;
+  }
 
   characterColors["User"] = "#3399ff";
   document.getElementById("user-character-select").style.display = "none";
@@ -136,10 +188,9 @@ function startGame() {
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
-  loadDropdown();
-  setupActions();
   await loadCharacterLore();
-
+  setupActions();
+  loadDropdown(); // This must be defined in another part of your script
   const bgm = document.getElementById("background-music");
   if (bgm) {
     bgm.volume = 0.3;
@@ -183,7 +234,6 @@ function triggerSounds(text) {
     }
   }
 }
-
 async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const input = message.trim();
   if (!input) return;
