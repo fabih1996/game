@@ -75,8 +75,12 @@ function loadIntro() {
 }
 
 function refreshSidebar() {
-  const list = document.getElementById("charList");
-  list.innerHTML = "";
+  const presentList = document.getElementById("charListPresent");
+  const remoteList = document.getElementById("charListRemote");
+
+  presentList.innerHTML = "";
+  remoteList.innerHTML = "";
+
   characters.forEach(name => {
     const li = document.createElement("li");
     const img = document.createElement("img");
@@ -85,23 +89,21 @@ function refreshSidebar() {
     img.className = "char-icon";
     img.style.color = characterColors[name] || "#eee";
 
-    if (selectedCharacters.includes(name)) {
+    const isSelected = selectedCharacters.includes(name);
+    const isRemote = !isSelected && name !== "Narrator" && name !== player.name;
+
+    if (isSelected) {
       img.classList.add("selected");
-    }
-
-    img.onclick = () => {
-      if (name === "Narrator") return;
-      if (selectedCharacters.includes(name)) {
+      img.onclick = () => {
         selectedCharacters = selectedCharacters.filter(n => n !== name);
-        img.classList.remove("selected");
-      } else {
-        selectedCharacters.push(name);
-        img.classList.add("selected");
-      }
-    };
-
-    li.appendChild(img);
-    list.appendChild(li);
+        refreshSidebar();
+      };
+      li.appendChild(img);
+      presentList.appendChild(li);
+    } else if (isRemote) {
+      li.appendChild(img);
+      remoteList.appendChild(li);
+    }
   });
 }
 
