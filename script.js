@@ -288,10 +288,8 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   const storyDiv = document.getElementById("story");
   const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
-
-  // Extract only the last few narration lines to avoid confusing context
-  const storyLines = Array.from(storyDiv.querySelectorAll("p.narration"))
-    .slice(-5)
+  const storyLines = Array.from(storyDiv.querySelectorAll("p"))
+    .slice(-6)
     .map(p => p.textContent)
     .join("\n");
 
@@ -303,14 +301,14 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   playerMsg.textContent = `${player.name}: ${input}`;
   storyDiv.appendChild(playerMsg);
 
-  let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n`;
+  let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
 
   if (isRandom) {
-    prompt += `The player triggered a random supernatural event.\nContext:\n${storyLines}\n\nGenerate a short creepy surprise and 2–3 realistic actions.`;
+    prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
   } else if (type === "narration") {
-    prompt += `Narration from the player:\n"${input}"\n\nRecent story context:\n${storyLines}\n\nDescribe what happens next in 2–3 vivid but concise sentences. Then suggest 2–3 logical next actions for the player to choose from in this format:\n[Run outside]\n[Call for help]\n[Stay put]`;
+    prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the consequences of the action. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
   } else {
-    prompt += `The player says: "${input}"\n\nDo not assume the player chose a previous option unless it matches exactly. Interpret this as a direct input.\n\nRecent story context:\n${storyLines}\n\nOnly the selected characters (${speakerNames}) may respond. Stay in-character. Keep replies short and relevant. End with 2–3 smart, situation-aware player choices like:\n[Draw your gun]\n[Check the mirror]\n[Call Bobby]`;
+    prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. End with 2–3 smart and relevant player actions like:\n[Call Bobby]\n[Inspect the sigil]\n[Grab the shotgun]`;
   }
 
   try {
