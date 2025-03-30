@@ -239,3 +239,46 @@ body {
     height: 50px;
   }
 }
+/* Exorcism Overlay Styles */
+#exorcism-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+#pentagram {
+    font-size: 120px;
+    animation: rotate infinite 10s linear;
+    margin-bottom: 20px;
+}
+
+#ghost {
+    font-size: 80px;
+    opacity: 1;
+    transition: opacity 3s ease-out, transform 3s ease-out;
+}
+
+#chant {
+    margin-top: 20px;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 2s ease-in;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
