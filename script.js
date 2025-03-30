@@ -1,4 +1,4 @@
-let characters = ["Narrator"];
+xlet characters = ["Narrator"];
 let selectedCharacters = ["Narrator"];
 let player = {
   name: "User",
@@ -278,13 +278,22 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
 
     const choiceLines = lines.filter(line => line.startsWith("["));
     if (choiceLines.length > 0) {
-      choiceLines.forEach(choice => {
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = choice.replace(/[\[\]]/g, "");
-        btn.onclick = () => sendToGPT(choice.replace(/[\[\]]/g, ""));
-        choicesDiv.appendChild(btn);
-      });
+        choiceLines.forEach(choice => {
+          const choiceText = choice.replace(/[\[\]]/g, "");
+          const btn = document.createElement("button");
+          btn.className = "choice-btn";
+          btn.textContent = choiceText;
+        
+          btn.onclick = () => {
+            sendToGPT(choiceText);
+            // Explicitly trigger exorcism if this choice is selected:
+            if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+              triggerExorcismEvent();
+            }
+          };
+        
+          choicesDiv.appendChild(btn);
+        });
     }
 
     document.getElementById("userInput").value = "";
