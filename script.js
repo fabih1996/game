@@ -289,6 +289,11 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
 
     document.getElementById("userInput").value = "";
 
+    // Trigger exorcism event based on story keywords
+    if (/exorcism|exorcise|expel|immundus spiritus/i.test(reply)) {
+        triggerExorcismEvent();
+    }
+
   } catch (err) {
     console.error("Fetch failed:", err);
     alert("Something went wrong.");
