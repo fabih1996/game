@@ -298,3 +298,6 @@ body {
 .game-button:hover {
   background-color: #555;
 }
+.hidden {
+  display: none !important;
+}
