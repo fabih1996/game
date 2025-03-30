@@ -315,3 +315,28 @@ function toggleMusic() {
     }
   }
 }
+// Trigger graphical exorcism event
+function triggerExorcismEvent() {
+    const overlay = document.getElementById('exorcism-overlay');
+    const ghost = document.getElementById('ghost');
+    const chant = document.getElementById('chant');
+
+    overlay.classList.remove('hidden');
+    ghost.style.opacity = '1';
+    ghost.style.transform = 'translateY(0)';
+    chant.textContent = '"Exorcizamus te, omnis immundus spiritus..."';
+    chant.style.opacity = '1';
+
+    setTimeout(() => {
+        ghost.style.opacity = '0';
+        ghost.style.transform = 'translateY(-150px)';
+    }, 500);
+
+    setTimeout(() => {
+        chant.textContent = '"Spiritus expulsus est!"';
+    }, 3500);
+
+    setTimeout(() => {
+        overlay.classList.add('hidden');
+    }, 5500);
+}
