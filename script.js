@@ -286,9 +286,12 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
         
           btn.onclick = () => {
             sendToGPT(choiceText);
-            // Explicitly trigger exorcism if this choice is selected:
+          
             if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
               triggerExorcismEvent();
+          
+              // Also let ChatGPT know the exorcism was performed
+              sendToGPT("I perform an exorcism to expel the spirit.");
             }
           };
         
