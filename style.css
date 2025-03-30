@@ -282,3 +282,19 @@ body {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+/* Styles for Exorcism Test Button */
+.game-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 5px;
+  margin: 10px;
+}
+
+.game-button:hover {
+  background-color: #555;
+}
