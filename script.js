@@ -1,4 +1,4 @@
-// script.js – FINAL VERSION
+// Supernatural RPG - Final JavaScript File
 
 let characters = ["Narrator"];
 let selectedCharacters = ["Narrator"];
@@ -187,10 +187,13 @@ window.addEventListener("DOMContentLoaded", () => {
       if (e.key === "Enter") {
         const type = input === narrationInput ? "narration" : "dialogue";
         sendToGPT(input.value, type);
+        input.value = "";
       }
     });
   });
 });
+
+// PART 2: sendToGPT and sound logic
 
 function triggerSounds(text) {
   const lowerText = text.toLowerCase();
@@ -223,7 +226,10 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   const storyDiv = document.getElementById("story");
   const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
-  const storyLines = Array.from(storyDiv.querySelectorAll("p")).slice(-5).map(p => p.textContent).join("\n");
+  const storyLines = Array.from(storyDiv.querySelectorAll("p"))
+    .slice(-6)
+    .map(p => p.textContent)
+    .join("\n");
 
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
@@ -240,7 +246,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else if (type === "narration") {
     prompt = `You are the narrator of a supernatural thriller. Here's what the player narrated:\n"${input}"\n\nContext:\n${storyLines}\n\nRespond with 2–3 short, vivid sentences that describe the consequences. Avoid long descriptions. End with 2–3 realistic options in this format:\n[Look under the seat]\n[Call for help]\n[Stay still]`;
   } else {
-    prompt = `Context:\n${storyLines}\n\nThe player (${player.name}) says to ${speakerNames}: "${input}"\n\nRespond as only the selected characters. Keep dialogue short and believable. At the end, offer 2–3 relevant and realistic actions the player might take next. Format choices like this:\n[Open the trunk]\n[Draw your gun]\n[Ask a question]`;
+    prompt = `Context:\n${storyLines}\n\nThe player (${player.name}) says to ${speakerNames}: "${input}"\n\nRespond only as the selected characters. Keep the dialogue short and consistent with the situation. End with 2–3 fitting player options like:\n[Open the trunk]\n[Draw your gun]\n[Ask a question]`;
   }
 
   try {
@@ -257,7 +263,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     const lines = reply.split("\n").filter(line => line.trim() !== "");
 
     for (const line of lines) {
-      const colonIndex = line.indexOf(":");
+      const colonIndex = line.indexOf(":" );
       const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
 
       if (name.toLowerCase() === player.name.toLowerCase()) continue;
@@ -279,7 +285,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     choicesDiv.innerHTML = "";
 
     choiceLines.forEach(choice => {
-      const choiceText = choice.replace(/[\[\]]/g, "");
+      const choiceText = choice.replace(/[[\]]/g, "");
       const btn = document.createElement("button");
       btn.className = "choice-btn";
       btn.textContent = choiceText;
@@ -291,15 +297,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       };
       choicesDiv.appendChild(btn);
     });
-
-    if (type === "dialogue") document.getElementById("dialogueInput").value = "";
-    if (type === "narration") document.getElementById("narrationInput").value = "";
-
+  
   } catch (err) {
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
   }
 }
+// PART 3: Remaining helpers and exorcism animation
 
 function triggerRandomEvent() {
   sendToGPT("random", "narration", true);
@@ -348,3 +352,5 @@ function triggerExorcismEvent() {
 }
 
 window.startGame = startGame;
+
+
