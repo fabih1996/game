@@ -134,6 +134,32 @@ function startGame() {
   loadIntro();
 }
 
+function loadDropdown() {
+  const dropdown = document.getElementById("charDropdown");
+  dropdown.innerHTML = `<option value="">-- Select character --</option>`;
+  allAvailableCharacters.forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    dropdown.appendChild(opt);
+  });
+
+  const playerSelect = document.getElementById("playerSelect");
+  if (playerSelect) {
+    playerSelect.onchange = () => {
+      const val = playerSelect.value;
+      const fields = document.getElementById("customPlayerFields");
+      fields.style.display = val === "custom" ? "block" : "none";
+    };
+  }
+
+  dropdown.onchange = () => {
+    const val = dropdown.value;
+    document.getElementById("customCharFields").style.display = val === "Other..." ? "block" : "none";
+  };
+}
+
+
 window.addEventListener("DOMContentLoaded", async () => {
   if (typeof loadDropdown === "function") loadDropdown();
   setupActions();
