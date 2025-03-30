@@ -159,6 +159,28 @@ function loadDropdown() {
   };
 }
 
+function addSelectedCharacter() {
+  const dropdown = document.getElementById("charDropdown");
+  const name = dropdown.value;
+  if (name && name !== "Other..." && !characters.includes(name)) {
+    characters.push(name);
+    refreshSidebar();
+    dropdown.value = "";
+  }
+}
+
+function addCustomCharacter() {
+  const name = document.getElementById("customCharName").value.trim();
+  if (!name || characters.includes(name)) return;
+
+  characters.push(name);
+  allAvailableCharacters.push(name);
+  refreshSidebar();
+  loadDropdown();
+  document.getElementById("customCharName").value = "";
+  document.getElementById("customCharDesc").value = "";
+  document.getElementById("customCharFields").style.display = "none";
+}
 
 window.addEventListener("DOMContentLoaded", async () => {
   if (typeof loadDropdown === "function") loadDropdown();
