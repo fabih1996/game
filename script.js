@@ -1,4 +1,4 @@
-xlet characters = ["Narrator"];
+let characters = ["Narrator"];
 let selectedCharacters = ["Narrator"];
 let player = {
   name: "User",
