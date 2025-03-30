@@ -310,6 +310,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else {
     prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. End with 2–3 smart and relevant player actions like:\n[Call Bobby]\n[Inspect the sigil]\n[Grab the shotgun]`;
   }
+
   prompt += `
 Characters must act consistently with their personalities and experiences from the show.
 Their lines should:
@@ -324,14 +325,13 @@ Rules:
 - Do not include actions already performed in the last turn
 - End with 2–3 FRESH and realistic player choices formatted like [Inspect the mirror]
 - Narrator should add brief and cinematic transitions, not long descriptions
-`;
 
-  prompt += `
 Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}.
 - DO NOT include dialogue or actions for any character not in this list.
 - If a character is mentioned narratively, they must not speak unless they are in the list.
-- If a new character appears in the story, they must be added to the character selection UI so the player can choose them.
+- If a new character appears in the story, include them only as narration. The player must explicitly add them to interact.
 `;
+
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
@@ -344,20 +344,28 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
-    // Check for any new character names and add them
-    const knownNames = [...characters, player.name];
-    
-    lines.forEach(line => {
+    const newCharacters = new Set();
+
+    for (const line of lines) {
       const colonIndex = line.indexOf(":");
       if (colonIndex !== -1) {
         const name = line.slice(0, colonIndex).trim();
-        if (!knownNames.includes(name)) {
+        if (
+          name.toLowerCase() !== player.name.toLowerCase() &&
+          !characters.includes(name) &&
+          name !== "Narrator"
+        ) {
           characters.push(name);
-          selectedCharacters.push(name); // Optional: auto-select
-          refreshSidebar();
+          selectedCharacters.push(name);
+          newCharacters.add(name);
         }
       }
-    });
+    }
+
+    if (newCharacters.size > 0) {
+      refreshSidebar(); // only call if there were new ones
+    }
+
     for (const line of lines) {
       const colonIndex = line.indexOf(":");
       const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
