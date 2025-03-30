@@ -302,3 +302,28 @@ body {
 .game-button:hover {
   background-color: #555;
 }
+
+#charListPresent,
+#charListRemote {
+  padding-left: 0;
+  margin-top: 10px;
+  list-style: none;
+}
+
+#charListRemote li,
+#charListPresent li {
+  display: inline-block;
+  margin: 6px;
+}
+
+#charListRemote li::before {
+  content: "📞 ";
+  font-size: 12px;
+  color: #aaa;
+}
+
+#sidebar h3, #sidebar h4 {
+  margin-bottom: 4px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 4px;
+}
