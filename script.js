@@ -325,6 +325,13 @@ Rules:
 - End with 2–3 FRESH and realistic player choices formatted like [Inspect the mirror]
 - Narrator should add brief and cinematic transitions, not long descriptions
 `;
+
+  prompt += `
+Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}.
+- DO NOT include dialogue or actions for any character not in this list.
+- If a character is mentioned narratively, they must not speak unless they are in the list.
+- If a new character appears in the story, they must be added to the character selection UI so the player can choose them.
+`;
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
@@ -337,7 +344,20 @@ Rules:
 
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
-
+    // Check for any new character names and add them
+    const knownNames = [...characters, player.name];
+    
+    lines.forEach(line => {
+      const colonIndex = line.indexOf(":");
+      if (colonIndex !== -1) {
+        const name = line.slice(0, colonIndex).trim();
+        if (!knownNames.includes(name)) {
+          characters.push(name);
+          selectedCharacters.push(name); // Optional: auto-select
+          refreshSidebar();
+        }
+      }
+    });
     for (const line of lines) {
       const colonIndex = line.indexOf(":");
       const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
