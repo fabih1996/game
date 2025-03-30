@@ -1,3 +1,5 @@
+// script.js – FINAL VERSION
+
 let characters = ["Narrator"];
 let selectedCharacters = ["Narrator"];
 let player = {
@@ -145,14 +147,13 @@ function setupActions() {
     const btn = document.createElement("button");
     btn.textContent = action;
     btn.className = "action-btn";
-    btn.onclick = () => sendToGPT(action);
+    btn.onclick = () => sendToGPT(action, "narration");
     container.appendChild(btn);
   });
 }
 
 function startGame() {
   const selection = document.getElementById("playerSelect").value;
-
   if (selection === "custom") {
     const name = document.getElementById("playerName").value.trim();
     if (name) player.name = name;
@@ -163,7 +164,6 @@ function startGame() {
   }
 
   characterColors["User"] = "#3399ff";
-
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
   refreshSidebar();
@@ -175,12 +175,20 @@ window.addEventListener("DOMContentLoaded", () => {
   setupActions();
 
   const bgm = document.getElementById("background-music");
-  const btn = document.getElementById("continueBtn");
-  btn.addEventListener("click", () => {
-    if (bgm && bgm.paused) {
-      bgm.volume = 0.3;
-      bgm.play();
-    }
+  if (bgm) {
+    bgm.volume = 0.3;
+    bgm.play();
+  }
+
+  const narrationInput = document.getElementById("narrationInput");
+  const dialogueInput = document.getElementById("dialogueInput");
+  [narrationInput, dialogueInput].forEach(input => {
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const type = input === narrationInput ? "narration" : "dialogue";
+        sendToGPT(input.value, type);
+      }
+    });
   });
 });
 
@@ -209,13 +217,12 @@ function triggerSounds(text) {
   }
 }
 
-async function sendToGPT(messageOverride = null, isRandom = false) {
-  const input = messageOverride || document.getElementById("userInput").value.trim();
-  const storyDiv = document.getElementById("story");
-  const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
-
+async function sendToGPT(message, type = "dialogue", isRandom = false) {
+  const input = message.trim();
   if (!input) return;
 
+  const storyDiv = document.getElementById("story");
+  const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
 
@@ -225,32 +232,23 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
   storyDiv.appendChild(playerMsg);
 
   let prompt = "";
-
   if (isRandom) {
     prompt = `Trigger a completely unexpected event in a dark Supernatural setting. Use atmospheric narration and short character dialogue from ${characters.join(", ")}.`;
-  } else if (selectedCharacters.includes("Narrator") && selectedCharacters.length === 1) {
-    prompt = `You are the narrator of a dark supernatural thriller. The player says: "${input}". Continue the story with rich, immersive narration.`;
+  } else if (type === "narration") {
+    prompt = `You are the narrator of a dark supernatural thriller. Continue the story based on this narration: "${input}". Use immersive and vivid storytelling.`;
   } else {
-    prompt = `\nThe following characters are speaking: ${speakerNames}.\nThe player (${player.name}) says: "${input}"\n\nRules:\n- ONLY the selected characters may speak\n- DO NOT write lines for the player (${player.name})\n- DO NOT think, act, or describe anything for the player\n- Keep lines short and believable\n- Optionally offer 2-3 choices at the end in this format:\n[Go upstairs]\n[Call Sam]\n[Leave quietly]`;
+    prompt = `The player (${player.name}) says to ${speakerNames}: "${input}"\n\nRespond as the selected characters only. Keep it in character. End with 2-3 choices in this format:\n[Investigate the basement]\n[Ask more questions]\n[Leave the room]`;
   }
 
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        messages: [{ role: "user", content: prompt }]
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
     });
 
     const data = await response.json();
-    if (data.error) {
-      alert("OpenAI Error: " + data.error.message);
-      console.error(data.error);
-      return;
-    }
+    if (data.error) throw new Error(data.error.message);
 
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
@@ -274,40 +272,33 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
     }
 
     const choicesDiv = document.getElementById("choices");
-    choicesDiv.innerHTML = "";
-
     const choiceLines = lines.filter(line => line.startsWith("["));
-    if (choiceLines.length > 0) {
-        choiceLines.forEach(choice => {
-          const choiceText = choice.replace(/[\[\]]/g, "");
-          const btn = document.createElement("button");
-          btn.className = "choice-btn";
-          btn.textContent = choiceText;
-        
-        btn.onclick = () => {
-          let message = choiceText;
-        
-          if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-            triggerExorcismEvent();
-            message += "\n\nI perform an exorcism to expel the spirit.";
-          }
-        
-          sendToGPT(message);
-        };
-          choicesDiv.appendChild(btn);
-        });
-    }
+    choicesDiv.innerHTML = "";
+    choiceLines.forEach(choice => {
+      const choiceText = choice.replace(/[\[\]]/g, "");
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = choiceText;
+      btn.onclick = () => {
+        if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+          triggerExorcismEvent();
+        }
+        sendToGPT(choiceText, "dialogue");
+      };
+      choicesDiv.appendChild(btn);
+    });
 
-    document.getElementById("userInput").value = "";
+    if (type === "dialogue") document.getElementById("dialogueInput").value = "";
+    if (type === "narration") document.getElementById("narrationInput").value = "";
 
   } catch (err) {
     console.error("Fetch failed:", err);
-    alert("Something went wrong.");
+    alert("Something went wrong: " + err.message);
   }
 }
 
 function triggerRandomEvent() {
-  sendToGPT("random", true);
+  sendToGPT("random", "narration", true);
 }
 
 function toggleSidebar() {
@@ -326,29 +317,30 @@ function toggleMusic() {
     }
   }
 }
-// Trigger graphical exorcism event
+
 function triggerExorcismEvent() {
-    const overlay = document.getElementById('exorcism-overlay');
-    const ghost = document.getElementById('ghost');
-    const chant = document.getElementById('chant');
+  const overlay = document.getElementById('exorcism-overlay');
+  const ghost = document.getElementById('ghost');
+  const chant = document.getElementById('chant');
 
-    overlay.classList.remove('hidden');
-    ghost.style.opacity = '1';
-    ghost.style.transform = 'translateY(0)';
-    chant.textContent = '"Exorcizamus te, omnis immundus spiritus..."';
-    chant.style.opacity = '1';
+  overlay.classList.remove('hidden');
+  ghost.style.opacity = '1';
+  ghost.style.transform = 'translateY(0)';
+  chant.textContent = '"Exorcizamus te, omnis immundus spiritus..."';
+  chant.style.opacity = '1';
 
-    setTimeout(() => {
-        ghost.style.opacity = '0';
-        ghost.style.transform = 'translateY(-150px)';
-    }, 500);
+  setTimeout(() => {
+    ghost.style.opacity = '0';
+    ghost.style.transform = 'translateY(-150px)';
+  }, 500);
 
-    setTimeout(() => {
-        chant.textContent = '"Spiritus expulsus est!"';
-    }, 3500);
+  setTimeout(() => {
+    chant.textContent = '"Spiritus expulsus est!"';
+  }, 3500);
 
-    setTimeout(() => {
-        overlay.classList.add('hidden');
-    }, 5500);
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+  }, 5500);
 }
+
 window.startGame = startGame;
