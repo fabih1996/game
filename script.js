@@ -346,6 +346,7 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     const lines = reply.split("\n").filter(line => line.trim() !== "");
     const newCharacters = new Set();
 
+    // Detect speakers
     for (const line of lines) {
       const colonIndex = line.indexOf(":");
       if (colonIndex !== -1) {
@@ -362,8 +363,28 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
       }
     }
 
+    // Detect characters mentioned in narration
+    const allCharacterNames = allAvailableCharacters.concat(
+      characters.filter(name => !allAvailableCharacters.includes(name))
+    );
+
+    lines.forEach(line => {
+      allCharacterNames.forEach(name => {
+        if (
+          line.includes(name) &&
+          !characters.includes(name) &&
+          name !== player.name &&
+          name !== "Narrator"
+        ) {
+          characters.push(name);
+          selectedCharacters.push(name);
+          newCharacters.add(name);
+        }
+      });
+    });
+
     if (newCharacters.size > 0) {
-      refreshSidebar(); // only call if there were new ones
+      refreshSidebar();
     }
 
     for (const line of lines) {
