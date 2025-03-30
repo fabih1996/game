@@ -223,6 +223,8 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   const storyDiv = document.getElementById("story");
   const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
+  const storyLines = Array.from(storyDiv.querySelectorAll("p")).slice(-5).map(p => p.textContent).join("\n");
+
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
 
@@ -232,12 +234,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   storyDiv.appendChild(playerMsg);
 
   let prompt = "";
+
   if (isRandom) {
-    prompt = `Trigger a completely unexpected event in a dark Supernatural setting. Use atmospheric narration and short character dialogue from ${characters.join(", ")}.`;
+    prompt = `You are narrating a dark supernatural thriller. The player triggers a random event. Context:\n${storyLines}\n\nGenerate a short, creepy surprise and 2-3 realistic player choices.`;
   } else if (type === "narration") {
-    prompt = `You are the narrator of a dark supernatural thriller. Continue the story based on this narration: "${input}". Use immersive and vivid storytelling.`;
+    prompt = `You are the narrator of a supernatural thriller. Here's what the player narrated:\n"${input}"\n\nContext:\n${storyLines}\n\nRespond with 2–3 short, vivid sentences that describe the consequences. Avoid long descriptions. End with 2–3 realistic options in this format:\n[Look under the seat]\n[Call for help]\n[Stay still]`;
   } else {
-    prompt = `The player (${player.name}) says to ${speakerNames}: "${input}"\n\nRespond as the selected characters only. Keep it in character. End with 2-3 choices in this format:\n[Investigate the basement]\n[Ask more questions]\n[Leave the room]`;
+    prompt = `Context:\n${storyLines}\n\nThe player (${player.name}) says to ${speakerNames}: "${input}"\n\nRespond as only the selected characters. Keep dialogue short and believable. At the end, offer 2–3 relevant and realistic actions the player might take next. Format choices like this:\n[Open the trunk]\n[Draw your gun]\n[Ask a question]`;
   }
 
   try {
@@ -274,6 +277,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     const choicesDiv = document.getElementById("choices");
     const choiceLines = lines.filter(line => line.startsWith("["));
     choicesDiv.innerHTML = "";
+
     choiceLines.forEach(choice => {
       const choiceText = choice.replace(/[\[\]]/g, "");
       const btn = document.createElement("button");
