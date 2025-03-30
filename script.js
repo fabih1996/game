@@ -350,9 +350,9 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 
     // Detect speakers
     for (const line of lines) {
-      const colonIndex = line.indexOf(":");
-      if (colonIndex !== -1) {
-        const name = line.slice(0, colonIndex).trim();
+      const isDialogueLine = /^[A-Z][a-z]+:/.test(line);
+      if (isDialogueLine) {
+        const name = line.split(":")[0].trim();
         if (
           name.toLowerCase() !== player.name.toLowerCase() &&
           !characters.includes(name) &&
