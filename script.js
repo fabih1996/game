@@ -349,7 +349,6 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
-    const newCharacters = new Set();
 
     // Detect speakers
     for (const line of lines) {
