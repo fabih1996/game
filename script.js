@@ -345,4 +345,3 @@ function triggerExorcismEvent() {
         overlay.classList.add('hidden');
     }, 5500);
 }
-});
