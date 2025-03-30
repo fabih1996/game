@@ -340,6 +340,8 @@ function triggerExorcismEvent() {
         overlay.classList.add('hidden');
     }, 5500);
 }
-document.getElementById('exorcism-test-button').addEventListener('click', () => {
-    triggerExorcismEvent();
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('exorcism-test-button').addEventListener('click', () => {
+        triggerExorcismEvent();
+    });
 });
