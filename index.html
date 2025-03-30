@@ -7,24 +7,31 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Hamburger Menu -->
   <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
 
+  <!-- Sidebar -->
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charList"></ul>
+
     <h4>Add Character</h4>
     <select id="charDropdown"><option value="">-- Select character --</option></select>
     <button onclick="addSelectedCharacter()">Add</button>
+
     <div id="customCharFields" style="display: none;">
       <input type="text" id="customCharName" placeholder="New name" />
       <input type="text" id="customCharDesc" placeholder="Description" />
       <button onclick="addCustomCharacter()">Create</button>
     </div>
+
     <h4>🎲 Random Event</h4>
     <button id="rollDice" onclick="triggerRandomEvent()">🎲 Roll the Dice</button>
+
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
   </div>
 
+  <!-- Main container -->
   <div class="container">
     <h1>Supernatural: Role-Playing Adventure</h1>
 
@@ -48,21 +55,24 @@
 
     <div id="game-interface" style="display: none;">
       <div id="story"></div>
+
+      <!-- Input Area: Narration and Dialogue -->
       <div id="input-area">
         <input type="text" id="narrationInput" placeholder="Narrate your action..." />
         <input type="text" id="dialogueInput" placeholder="Say something to a character..." />
-        <div class="input-buttons">
-          <button onclick="sendToGPT(document.getElementById('narrationInput').value, 'narration')">Narrate</button>
-          <button onclick="sendToGPT(document.getElementById('dialogueInput').value, 'dialogue')">Speak</button>
-        </div>
       </div>
+
+      <!-- Quick Actions -->
       <div id="quick-actions">
         <h3>Quick Actions</h3>
         <div id="actions-container"></div>
       </div>
+
+      <!-- AI Response Choices -->
       <div id="choices"></div>
     </div>
 
+    <!-- Audio Elements -->
     <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
     <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
     <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
@@ -72,7 +82,10 @@
     <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
   </div>
 
+  <!-- JavaScript -->
   <script src="script.js"></script>
+
+  <!-- Exorcism Overlay -->
   <div id="exorcism-overlay" class="hidden">
     <div id="pentagram">⛧</div>
     <div id="ghost">👻</div>
