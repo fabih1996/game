@@ -266,8 +266,10 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   const storyDiv = document.getElementById("story");
   const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
-  const storyLines = Array.from(storyDiv.querySelectorAll("p"))
-    .slice(-6)
+
+  // Extract only the last few narration lines to avoid confusing context
+  const storyLines = Array.from(storyDiv.querySelectorAll("p.narration"))
+    .slice(-5)
     .map(p => p.textContent)
     .join("\n");
 
@@ -284,9 +286,9 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   if (isRandom) {
     prompt += `The player triggered a random supernatural event.\nContext:\n${storyLines}\n\nGenerate a short creepy surprise and 2–3 realistic actions.`;
   } else if (type === "narration") {
-    prompt += `The player narrates an action:\n"${input}"\nContext:\n${storyLines}\n\nDescribe the consequences in 2–3 short vivid sentences. End with 2–3 realistic player options like:\n[Hide under the table]\n[Call Sam]\n[Stay quiet]`;
+    prompt += `Narration from the player:\n"${input}"\n\nRecent story context:\n${storyLines}\n\nDescribe what happens next in 2–3 vivid but concise sentences. Then suggest 2–3 logical next actions for the player to choose from in this format:\n[Run outside]\n[Call for help]\n[Stay put]`;
   } else {
-    prompt += `The player (${player.name}) says to ${speakerNames}:\n"${input}"\n\nContext:\n${storyLines}\n\nOnly the selected characters may respond. Keep dialogue short, in character, and fitting the tone. End with 2–3 smart choices like:\n[Draw your gun]\n[Inspect the mirror]\n[Call Bobby]`;
+    prompt += `The player says: "${input}"\n\nDo not assume the player chose a previous option unless it matches exactly. Interpret this as a direct input.\n\nRecent story context:\n${storyLines}\n\nOnly the selected characters (${speakerNames}) may respond. Stay in-character. Keep replies short and relevant. End with 2–3 smart, situation-aware player choices like:\n[Draw your gun]\n[Check the mirror]\n[Call Bobby]`;
   }
 
   try {
