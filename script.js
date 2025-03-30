@@ -284,15 +284,16 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
           btn.className = "choice-btn";
           btn.textContent = choiceText;
         
-          btn.onclick = () => {
-            sendToGPT(choiceText);
-          
-            if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-              triggerExorcismEvent();
-          
-              // Also let ChatGPT know the exorcism was performed
-              sendToGPT("I perform an exorcism to expel the spirit.");
-            }
+        btn.onclick = () => {
+          let message = choiceText;
+        
+          if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+            triggerExorcismEvent();
+            message += "\n\nI perform an exorcism to expel the spirit.";
+          }
+        
+          sendToGPT(message);
+        };
           };
         
           choicesDiv.appendChild(btn);
