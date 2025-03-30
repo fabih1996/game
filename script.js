@@ -353,3 +353,4 @@ function triggerExorcismEvent() {
         overlay.classList.add('hidden');
     }, 5500);
 }
+window.startGame = startGame;
