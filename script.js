@@ -310,7 +310,10 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else if (type === "narration") {
     prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the consequences of the action. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
   } else {
-    prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. End with 2–3 smart and relevant player actions like:\n[Call Bobby]\n[Inspect the sigil]\n[Grab the shotgun]`;
+    prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. 
+    Characters must NEVER propose player options themselves.
+Only the narrator can suggest actions like [Inspect the sigil] or [Call Bobby].
+All player options must be presented by the narrator only.`;
   }
 
   prompt += `
@@ -388,7 +391,28 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     if (newCharacters.size > 0) {
       refreshSidebar();
     }
+    const isDialogueLine = (line) => /^[A-Z][a-z]+: /.test(line);
 
+const newCharacters = new Set();
+
+for (const line of lines) {
+  if (isDialogueLine(line)) {
+    const name = line.split(":")[0].trim();
+
+    if (
+      name.toLowerCase() !== player.name.toLowerCase() &&
+      !characters.includes(name) &&
+      name !== "Narrator"
+    ) {
+      characters.push(name);
+      selectedCharacters.push(name);
+      newCharacters.add(name);
+    }
+  }
+}
+if (newCharacters.size > 0) {
+  refreshSidebar();
+}
     for (const line of lines) {
       const colonIndex = line.indexOf(":");
       const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
