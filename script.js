@@ -294,8 +294,6 @@ async function sendToGPT(messageOverride = null, isRandom = false) {
         
           sendToGPT(message);
         };
-          };
-        
           choicesDiv.appendChild(btn);
         });
     }
