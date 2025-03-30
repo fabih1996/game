@@ -1,4 +1,4 @@
-// Supernatural RPG - Final JavaScript File
+
 
 let characters = ["Narrator"];
 let selectedCharacters = ["Narrator"];
@@ -51,6 +51,18 @@ const randomIntros = [
   "You open your eyes in a church with broken stained glass."
 ];
 
+let characterKnowledge = ""; // This will hold the text from the lore file
+
+async function loadCharacterLore() {
+  try {
+    const response = await fetch("supernatural_character_profiles.txt");
+    characterKnowledge = await response.text();
+    console.log("Character lore loaded.");
+  } catch (err) {
+    console.error("Failed to load character lore:", err);
+    characterKnowledge = "";
+  }
+}
 function loadIntro() {
   const intro = randomIntros[Math.floor(Math.random() * randomIntros.length)];
   const storyDiv = document.getElementById("story");
@@ -93,53 +105,6 @@ function refreshSidebar() {
   });
 }
 
-function loadDropdown() {
-  const dropdown = document.getElementById("charDropdown");
-  dropdown.innerHTML = `<option value="">-- Select character --</option>`;
-  allAvailableCharacters.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    dropdown.appendChild(opt);
-  });
-
-  const playerSelect = document.getElementById("playerSelect");
-  if (playerSelect) {
-    playerSelect.onchange = () => {
-      const val = playerSelect.value;
-      const fields = document.getElementById("customPlayerFields");
-      fields.style.display = val === "custom" ? "block" : "none";
-    };
-  }
-
-  dropdown.onchange = () => {
-    const val = dropdown.value;
-    document.getElementById("customCharFields").style.display = val === "Other..." ? "block" : "none";
-  };
-}
-
-function addSelectedCharacter() {
-  const dropdown = document.getElementById("charDropdown");
-  const name = dropdown.value;
-  if (name && name !== "Other..." && !characters.includes(name)) {
-    characters.push(name);
-    refreshSidebar();
-    dropdown.value = "";
-  }
-}
-
-function addCustomCharacter() {
-  const name = document.getElementById("customCharName").value.trim();
-  if (!name || characters.includes(name)) return;
-  characters.push(name);
-  allAvailableCharacters.push(name);
-  refreshSidebar();
-  loadDropdown();
-  document.getElementById("customCharName").value = "";
-  document.getElementById("customCharDesc").value = "";
-  document.getElementById("customCharFields").style.display = "none";
-}
-
 function setupActions() {
   const container = document.getElementById("actions-container");
   container.innerHTML = "";
@@ -170,9 +135,10 @@ function startGame() {
   loadIntro();
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   loadDropdown();
   setupActions();
+  await loadCharacterLore();
 
   const bgm = document.getElementById("background-music");
   if (bgm) {
@@ -192,8 +158,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
-// PART 2: sendToGPT and sound logic
 
 function triggerSounds(text) {
   const lowerText = text.toLowerCase();
@@ -239,14 +203,14 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   playerMsg.textContent = `${player.name}: ${input}`;
   storyDiv.appendChild(playerMsg);
 
-  let prompt = "";
+  let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n`;
 
   if (isRandom) {
-    prompt = `You are narrating a dark supernatural thriller. The player triggers a random event. Context:\n${storyLines}\n\nGenerate a short, creepy surprise and 2-3 realistic player choices.`;
+    prompt += `The player triggered a random supernatural event.\nContext:\n${storyLines}\n\nGenerate a short creepy surprise and 2–3 realistic actions.`;
   } else if (type === "narration") {
-    prompt = `You are the narrator of a supernatural thriller. Here's what the player narrated:\n"${input}"\n\nContext:\n${storyLines}\n\nRespond with 2–3 short, vivid sentences that describe the consequences. Avoid long descriptions. End with 2–3 realistic options in this format:\n[Look under the seat]\n[Call for help]\n[Stay still]`;
+    prompt += `The player narrates an action:\n"${input}"\nContext:\n${storyLines}\n\nDescribe the consequences in 2–3 short vivid sentences. End with 2–3 realistic player options like:\n[Hide under the table]\n[Call Sam]\n[Stay quiet]`;
   } else {
-    prompt = `Context:\n${storyLines}\n\nThe player (${player.name}) says to ${speakerNames}: "${input}"\n\nRespond only as the selected characters. Keep the dialogue short and consistent with the situation. End with 2–3 fitting player options like:\n[Open the trunk]\n[Draw your gun]\n[Ask a question]`;
+    prompt += `The player (${player.name}) says to ${speakerNames}:\n"${input}"\n\nContext:\n${storyLines}\n\nOnly the selected characters may respond. Keep dialogue short, in character, and fitting the tone. End with 2–3 smart choices like:\n[Draw your gun]\n[Inspect the mirror]\n[Call Bobby]`;
   }
 
   try {
@@ -263,7 +227,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     const lines = reply.split("\n").filter(line => line.trim() !== "");
 
     for (const line of lines) {
-      const colonIndex = line.indexOf(":" );
+      const colonIndex = line.indexOf(":");
       const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
 
       if (name.toLowerCase() === player.name.toLowerCase()) continue;
@@ -285,7 +249,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     choicesDiv.innerHTML = "";
 
     choiceLines.forEach(choice => {
-      const choiceText = choice.replace(/[[\]]/g, "");
+      const choiceText = choice.replace(/[\[\]]/g, "");
       const btn = document.createElement("button");
       btn.className = "choice-btn";
       btn.textContent = choiceText;
@@ -297,21 +261,19 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       };
       choicesDiv.appendChild(btn);
     });
-  
+
   } catch (err) {
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
   }
 }
-// PART 3: Remaining helpers and exorcism animation
 
 function triggerRandomEvent() {
   sendToGPT("random", "narration", true);
 }
 
 function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('open');
+  document.getElementById('sidebar').classList.toggle('open');
 }
 
 function toggleMusic() {
@@ -352,5 +314,3 @@ function triggerExorcismEvent() {
 }
 
 window.startGame = startGame;
-
-
