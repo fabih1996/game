@@ -404,23 +404,22 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
         characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
     );
 
- lines.forEach(line => {
-  allCharacterNames.forEach(name => {
+lines.forEach(line => {
+  // Aggiunta solo se la riga comincia con "Nome:"
+  if (/^([A-Z][a-z]+):/.test(line)) {
+    const speaker = line.split(":")[0].trim();
     if (
-      line.includes(name) &&
-      !characterExists(name) &&
-      name !== player.name &&
-      name !== "Narrator"
+      speaker !== player.name &&
+      speaker !== "Narrator" &&
+      !characterExists(speaker)
     ) {
-      characters.push({ name, status: "present" }); // ✅ oggetto ben formato
-
-      if (!selectedCharacters.includes(name)) {
-        selectedCharacters.push(name);
+      characters.push({ name: speaker, status: "present" });
+      if (!selectedCharacters.includes(speaker)) {
+        selectedCharacters.push(speaker);
       }
-
-      newCharacters.add(name);
+      newCharacters.add(speaker);
     }
-  });
+  }
 });
 
     if (newCharacters.size > 0) {
