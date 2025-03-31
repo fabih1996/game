@@ -285,6 +285,7 @@ function triggerSounds(text) {
   }
 }
 async function sendToGPT(message, type = "dialogue", isRandom = false) {
+  const newCharacters = new Set();
   const input = message.trim();
   if (!input) return;
 
@@ -391,8 +392,6 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
       refreshSidebar();
     }
     const isDialogueLine = (line) => /^[A-Z][a-z]+: /.test(line);
-
-const newCharacters = new Set();
 
 for (const line of lines) {
   if (isDialogueLine(line)) {
