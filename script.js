@@ -1,6 +1,8 @@
 // Supernatural RPG - Final JavaScript File with Character Lore Support
 
-let characters = ["Narrator"];
+let characters = [
+  { name: "Narrator", status: "present" }  // status può essere "present" o "remote"
+];
 let selectedCharacters = ["Narrator"];
 let player = {
   name: "User",
@@ -81,30 +83,34 @@ function refreshSidebar() {
   presentList.innerHTML = "";
   remoteList.innerHTML = "";
 
-  characters.forEach(name => {
-    const li = document.createElement("li");
-    const img = document.createElement("img");
-    img.src = `images/${name.toLowerCase()}.png`;
-    img.alt = name;
-    img.className = "char-icon";
-    img.style.color = characterColors[name] || "#eee";
+characters.forEach(({ name, status }) => {
+  const li = document.createElement("li");
+  const img = document.createElement("img");
+  img.src = `images/${name.toLowerCase()}.png`;
+  img.alt = name;
+  img.className = "char-icon";
+  img.style.color = characterColors[name] || "#eee";
 
-    const isSelected = selectedCharacters.includes(name);
-    const isRemote = !isSelected && name !== "Narrator" && name !== player.name;
+  if (selectedCharacters.includes(name)) {
+    img.classList.add("selected");
+    img.onclick = () => {
+      selectedCharacters = selectedCharacters.filter(n => n !== name);
+      refreshSidebar();
+    };
+  } else {
+    img.onclick = () => {
+      selectedCharacters.push(name);
+      refreshSidebar();
+    };
+  }
 
-    if (isSelected) {
-      img.classList.add("selected");
-      img.onclick = () => {
-        selectedCharacters = selectedCharacters.filter(n => n !== name);
-        refreshSidebar();
-      };
-      li.appendChild(img);
-      presentList.appendChild(li);
-    } else if (isRemote) {
-      li.appendChild(img);
-      remoteList.appendChild(li);
-    }
-  });
+  li.appendChild(img);
+  if (status === "present") {
+    presentList.appendChild(li);
+  } else if (status === "remote") {
+    remoteList.appendChild(li);
+  }
+});
 }
 
 function setupActions() {
@@ -173,9 +179,11 @@ function addSelectedCharacter() {
 
 function addCustomCharacter() {
   const name = document.getElementById("customCharName").value.trim();
-  if (!name || characters.includes(name)) return;
+  const status = document.getElementById("customCharStatus").value;
 
-  characters.push(name);
+  if (!name || characters.some(c => c.name === name)) return;
+
+  characters.push({ name, status });
   allAvailableCharacters.push(name);
   refreshSidebar();
   loadDropdown();
@@ -290,7 +298,11 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   if (!input) return;
 
   const storyDiv = document.getElementById("story");
-  const speakerNames = selectedCharacters.filter(name => name !== player.name).join(" and ");
+const speakerNames = characters
+  .filter(c => selectedCharacters.includes(c.name) && c.status === "present")
+  .map(c => c.name)
+  .filter(name => name !== player.name)
+  .join(" and ");
   const storyLines = Array.from(storyDiv.querySelectorAll("p"))
     .slice(-6)
     .map(p => p.textContent)
