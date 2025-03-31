@@ -171,7 +171,7 @@ function addSelectedCharacter() {
   const dropdown = document.getElementById("charDropdown");
   const name = dropdown.value;
   if (name && name !== "Other..." && !characters.includes(name)) {
-    characters.push(name);
+    addCharacter(name, "present");
     refreshSidebar();
     dropdown.value = "";
   }
@@ -183,7 +183,7 @@ function addCustomCharacter() {
 
   if (!name || characters.includes(name)) return;
 
-  characters.push(name);
+  addCharacter(name, status);
   allAvailableCharacters.push(name);
 
   if (status === "present") {
@@ -299,6 +299,18 @@ function triggerSounds(text) {
     }
   }
 }
+
+function characterExists(name) {
+  return characters.some(c => c.name === name);
+}
+
+function addCharacter(name, status = "remote") {
+  if (!characterExists(name)) {
+    characters.push({ name, status });
+    if (status === "present") selectedCharacters.push(name);
+  }
+}
+
 async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const newCharacters = new Set();
   const input = message.trim();
@@ -371,21 +383,19 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     const lines = reply.split("\n").filter(line => line.trim() !== "");
 
     // Detect speakers
-    const isDialogueLine = /^[A-Z][a-z]+:/.test(line);
-    for (const line of lines) {
-      if (isDialogueLine) {
-        const name = line.split(":")[0].trim();
-        if (
-          name.toLowerCase() !== player.name.toLowerCase() &&
-          !characters.includes(name) &&
-          name !== "Narrator"
-        ) {
-          characters.push(name);
-          selectedCharacters.push(name);
-          newCharacters.add(name);
-        }
+  for (const line of lines) {
+    if (/^[A-Z][a-z]+:/.test(line)) {
+      const name = line.split(":")[0].trim();
+      if (
+        name.toLowerCase() !== player.name.toLowerCase() &&
+        !characterExists(name) &&
+        name !== "Narrator"
+      ) {
+        addCharacter(name, "present");  // li consideriamo presenti se parlano
+        newCharacters.add(name);
       }
     }
+  }
 
     // Detect characters mentioned in narration
     const allCharacterNames = allAvailableCharacters.concat(
