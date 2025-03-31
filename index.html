@@ -22,9 +22,16 @@
     <button onclick="addSelectedCharacter()">Add</button>
 
     <div id="customCharFields" style="display: none;">
-      <input type="text" id="customCharName" placeholder="New name" />
-      <input type="text" id="customCharDesc" placeholder="Description" />
-      <button onclick="addCustomCharacter()">Create</button>
+      <input type="text" id="customCharName" placeholder="Enter character name" />
+      <textarea id="customCharDesc" placeholder="Enter character background (optional)"></textarea>
+    
+      <label for="customCharStatus">Status:</label>
+      <select id="customCharStatus">
+        <option value="present">Present</option>
+        <option value="remote">Remote Contact</option>
+      </select>
+    
+      <button onclick="addCustomCharacter()">Add Character</button>
     </div>
 
     <h4>🎲 Random Event</h4>
