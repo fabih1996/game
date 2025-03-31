@@ -352,8 +352,8 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     const lines = reply.split("\n").filter(line => line.trim() !== "");
 
     // Detect speakers
+    const isDialogueLine = /^[A-Z][a-z]+:/.test(line);
     for (const line of lines) {
-      const isDialogueLine = /^[A-Z][a-z]+:/.test(line);
       if (isDialogueLine) {
         const name = line.split(":")[0].trim();
         if (
@@ -391,23 +391,7 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     if (newCharacters.size > 0) {
       refreshSidebar();
     }
-    const isDialogueLine = (line) => /^[A-Z][a-z]+: /.test(line);
 
-for (const line of lines) {
-  if (isDialogueLine(line)) {
-    const name = line.split(":")[0].trim();
-
-    if (
-      name.toLowerCase() !== player.name.toLowerCase() &&
-      !characters.includes(name) &&
-      name !== "Narrator"
-    ) {
-      characters.push(name);
-      selectedCharacters.push(name);
-      newCharacters.add(name);
-    }
-  }
-}
 if (newCharacters.size > 0) {
   refreshSidebar();
 }
