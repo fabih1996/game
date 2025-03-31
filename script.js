@@ -204,11 +204,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   setupActions();
   await loadCharacterLore();
 
+document.addEventListener("click", () => {
   const bgm = document.getElementById("background-music");
-  if (bgm) {
+  if (bgm && bgm.paused) {
     bgm.volume = 0.3;
-    bgm.play();
+    bgm.play().catch(err => console.warn("Audio play blocked:", err));
   }
+}, { once: true }); // parte solo al primo click
 
   const narrationInput = document.getElementById("narrationInput");
   const dialogueInput = document.getElementById("dialogueInput");
@@ -301,7 +303,7 @@ function triggerSounds(text) {
 }
 
 function characterExists(name) {
-  return characters.some(c => c.name === name);
+  return characters.some(c => typeof c === "object" && c.name === name);
 }
 
 function addCharacter(name, status = "remote") {
@@ -399,23 +401,27 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 
     // Detect characters mentioned in narration
     const allCharacterNames = allAvailableCharacters.concat(
-      characters.filter(name => !allAvailableCharacters.includes(name))
+        characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
     );
 
-    lines.forEach(line => {
-      allCharacterNames.forEach(name => {
-        if (
-          line.includes(name) &&
-          !characters.includes(name) &&
-          name !== player.name &&
-          name !== "Narrator"
-        ) {
-          characters.push(name);
-          selectedCharacters.push(name);
-          newCharacters.add(name);
-        }
-      });
-    });
+ lines.forEach(line => {
+  allCharacterNames.forEach(name => {
+    if (
+      line.includes(name) &&
+      !characterExists(name) &&
+      name !== player.name &&
+      name !== "Narrator"
+    ) {
+      characters.push({ name, status: "present" }); // ✅ oggetto ben formato
+
+      if (!selectedCharacters.includes(name)) {
+        selectedCharacters.push(name);
+      }
+
+      newCharacters.add(name);
+    }
+  });
+});
 
     if (newCharacters.size > 0) {
       refreshSidebar();
