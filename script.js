@@ -181,14 +181,21 @@ function addCustomCharacter() {
   const name = document.getElementById("customCharName").value.trim();
   const status = document.getElementById("customCharStatus").value;
 
-  if (!name || characters.some(c => c.name === name)) return;
+  if (!name || characters.includes(name)) return;
 
-  characters.push({ name, status });
+  characters.push(name);
   allAvailableCharacters.push(name);
+
+  if (status === "present") {
+    selectedCharacters.push(name); // Present means selectable
+  }
+
   refreshSidebar();
   loadDropdown();
+
   document.getElementById("customCharName").value = "";
   document.getElementById("customCharDesc").value = "";
+  document.getElementById("customCharStatus").value = "present";
   document.getElementById("customCharFields").style.display = "none";
 }
 
