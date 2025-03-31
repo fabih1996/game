@@ -370,7 +370,22 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 - If a character is mentioned narratively, they must not speak unless they are in the list.
 - If a new character appears in the story, include them only as narration. The player must explicitly add them to interact.
 `;
+prompt += `
+IMPORTANT:
+- If the player mentions a character (e.g., "I'll call Dean"), that character must NOT respond unless:
+  - They are already marked as 'present' in the scene
+  - Or the narrator explicitly brings them into the scene
 
+- Characters must NEVER simply repeat what the player just said (e.g., "I'll call Dean!") as their own line. They must react naturally or wait to be summoned.
+
+- Characters who are not present must not speak. They can only be mentioned in the narration if needed.
+
+- Dialogue must never begin with a character saying something the player already said.
+
+- Be especially careful with phone calls: if the player says they’re calling someone, only the narrator can describe interference, the call going through, or that character’s arrival.
+
+Only the narrator may describe the result of such actions.`;
+  
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
