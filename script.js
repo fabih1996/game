@@ -382,6 +382,12 @@ Rules:
 - End with 2–3 FRESH and realistic player choices formatted like [Inspect the mirror]
 - Narrator should add brief and cinematic transitions, not long descriptions
 
+If a character becomes physically present in the scene, include a separate line formatted as:
+#PRESENT: CharacterName
+
+If a character is contacted remotely (e.g. by phone or other means), include:
+#REMOTE: CharacterName
+
 Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}.
 - DO NOT include dialogue or actions for any character not in this list.
 - If a character is mentioned narratively, they must not speak unless they are in the list.
@@ -400,6 +406,33 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
+
+lines.forEach(line => {
+  const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
+  const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
+
+  if (presentMatch) {
+    const name = presentMatch[1].trim();
+    if (!characterExists(name)) {
+      characters.push({ name, status: "present" });
+    }
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
+    newCharacters.add(name);
+  }
+
+  if (remoteMatch) {
+    const name = remoteMatch[1].trim();
+    if (!characterExists(name)) {
+      characters.push({ name, status: "remote" });
+    }
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
+    newCharacters.add(name);
+  }
+});
 
 for (const line of lines) {
   if (/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?:/.test(line)) {
