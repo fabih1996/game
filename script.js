@@ -400,8 +400,8 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 
     // Detect speakers
   for (const line of lines) {
-    if (/^[A-Z][a-z]+:/.test(line)) {
-      const name = line.split(":")[0].trim();
+  if (/^[A-Z][a-z]+:/.test(line) && !/^Choices:|Options:|Actions:/.test(line)) {
+    const name = line.split(":")[0].trim();
       if (
         name.toLowerCase() !== player.name.toLowerCase() &&
         !characterExists(name) &&
