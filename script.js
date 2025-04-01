@@ -401,20 +401,47 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
 
-    // Detect speakers
-  for (const line of lines) {
-  if (/^[A-Z][a-z]+:/.test(line) && !/^Choices:|Options:|Actions:/.test(line)) {
+for (const line of lines) {
+  if (/^[A-Z][a-z]+:/.test(line)) {
     const name = line.split(":")[0].trim();
+
+    if (
+      name.toLowerCase() !== player.name.toLowerCase() &&
+      !characterExists(name) &&
+      name !== "Narrator"
+    ) {
+      // Se il personaggio parla, lo consideriamo presente
+      addCharacter(name, "present");
+      newCharacters.add(name);
+    }
+  } else {
+    // Se non è una battuta diretta, analizziamo la riga per contatti remoti
+    allAvailableCharacters.forEach(name => {
       if (
-        name.toLowerCase() !== player.name.toLowerCase() &&
+        line.includes(name) &&
         !characterExists(name) &&
+        name !== player.name &&
         name !== "Narrator"
       ) {
-        addCharacter(name, "present");  // li consideriamo presenti se parlano
+        const lowerLine = line.toLowerCase();
+
+        if (/appears|arrives|materializes|joins|enters|emerges/.test(lowerLine)) {
+          characters.push({ name, status: "present" });
+        } else if (/call|contact|reach|phone|signal|dial|connect|voice\s+breaks\s+through|answer/i.test(lowerLine)) {
+          characters.push({ name, status: "remote" });
+        } else {
+          return; // non aggiungiamo se la frase non implica una comparsa
+        }
+
+        if (!selectedCharacters.includes(name)) {
+          selectedCharacters.push(name);
+        }
+
         newCharacters.add(name);
       }
-    }
+    });
   }
+}
 
     // Detect characters mentioned in narration
     const allCharacterNames = allAvailableCharacters.concat(
