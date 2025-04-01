@@ -353,20 +353,34 @@ That character must respond with a direct line of dialogue, not just be describe
 Do not only describe the character’s reaction — include a spoken reply that fits their personality.`;
   }
 prompt += `
-IMPORTANT:
+IMPORTANT BEHAVIOUR RULES:
+
 - If the player mentions a character (e.g., "I'll call Dean"), that character must NOT respond unless:
-  - They are already marked as 'present' in the scene
-  - Or the narrator explicitly brings them into the scene
+  - They are already marked as 'present' in the scene, or
+  - The narrator explicitly introduces them into the scene.
 
-- Characters must NEVER simply repeat what the player just said (e.g., "I'll call Dean!") as their own line. They must react naturally or wait to be summoned.
+- Do NOT repeat what the player just said as a character's line.
+  For example, if the player says: "I'll call Dean!" — Dean must not reply: "I'll call Dean!".
+  Characters must respond naturally or remain silent until properly introduced.
 
-- Characters who are not present must not speak. They can only be mentioned in the narration if needed.
+- When a character speaks, always format it as:
+CharacterName: "Their line of dialogue"
 
-- Dialogue must never begin with a character saying something the player already said.
+Do NOT embed dialogue inside narration.
+Avoid:
+Narrator: Bobby looks at you and says, "Be careful."
 
-- Be especially careful with phone calls: if the player says they’re calling someone, only the narrator can describe interference, the call going through, or that character’s arrival.
+Instead, write:
+Bobby: "Be careful."
 
-Only the narrator may describe the result of such actions.`;
+- Characters who are not present or contacted remotely must NOT speak.
+  They can only be mentioned by the narrator.
+
+- In the case of phone calls, only the narrator may describe the action of calling, interference, or the contact beginning.
+  Only after that may the contacted character speak.
+
+- Only the narrator may describe the results of player actions such as summoning, calling, or approaching someone.
+`;
   prompt += `
 Characters must act consistently with their personalities and experiences from the show.
 Their lines should:
