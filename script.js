@@ -347,7 +347,10 @@ const speakerNames = characters
     prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. 
     Characters must NEVER propose player options themselves.
 Only the narrator can suggest actions like [Inspect the sigil] or [Call Bobby].
-All player options must be presented by the narrator only.`;
+All player options must be presented by the narrator only.
+The player is speaking directly to a character.
+That character must respond with a direct line of dialogue, not just be described.
+Do not only describe the character’s reaction — include a spoken reply that fits their personality.`;
   }
 prompt += `
 IMPORTANT:
