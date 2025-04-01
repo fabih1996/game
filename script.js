@@ -402,7 +402,7 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
     const lines = reply.split("\n").filter(line => line.trim() !== "");
 
 for (const line of lines) {
-  if (/^[A-Z][a-z]+:/.test(line)) {
+  if (/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?:/.test(line)) {
     const name = line.split(":")[0].trim();
 
     if (
