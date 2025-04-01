@@ -352,6 +352,18 @@ Do not only describe the character’s expression or actions — include what th
 }
 
 prompt += `
+# Trigger Tags:
+If a character becomes physically present in the scene, include this tag on its own line:
+#PRESENT: CharacterName
+
+If a character was previously remote and now joins the scene in person, also include:
+#PRESENT: CharacterName
+
+If a character is contacted remotely (e.g. by phone), include:
+#REMOTE: CharacterName
+
+These tags must appear on a separate line, outside of narration or dialogue.
+
 IMPORTANT BEHAVIOUR RULES:
 
 - If the player mentions a character (e.g. "I'll call Dean"), that character must NOT respond unless:
@@ -372,9 +384,9 @@ CharacterName: "Their line"
 
 - For phone calls or remote contacts:
   Only the narrator can describe interference, ringing, or connection.
-  Only AFTER that can the contacted character speak.
+  Only AFTER that may the contacted character speak.
 
-- Only the narrator may describe the result of player actions like calling, summoning, or approaching someone.
+- Only the narrator may describe the results of player actions like calling, summoning, or approaching someone.
 
 CHARACTER DYNAMICS AND OUTPUT:
 
@@ -392,19 +404,11 @@ CHARACTER DYNAMICS AND OUTPUT:
   [Call Castiel]
   [Look for weapons]
 
-# Trigger Tags:
-If a character becomes physically present, include this tag:
-#PRESENT: CharacterName
-
-If a character is contacted remotely (e.g. by phone), include:
-#REMOTE: CharacterName
-
 Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}.
 - DO NOT include dialogue or actions for characters not in this list.
 - If a new character enters the story, include them only in narration.
 - The player must explicitly add a character before they can speak.
 `;
-  
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
