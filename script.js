@@ -426,8 +426,10 @@ for (const line of lines) {
     ) {
         const lowerLine = line.toLowerCase();
 
-        if (/appears|arrives|materializes|joins|enters|emerges/.test(lowerLine)) {
-          characters.push({ name, status: "present" });
+      if (
+        new RegExp(`${name.toLowerCase()}\\s+(appears|arrives|joins|enters|emerges)`).test(lowerLine)
+      ) {          
+        characters.push({ name, status: "present" });
         } else if (/call|contact|reach|phone|signal|dial|connect|voice\s+breaks\s+through|answer/i.test(lowerLine)) {
           characters.push({ name, status: "remote" });
         } else {
