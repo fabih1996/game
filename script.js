@@ -417,12 +417,13 @@ for (const line of lines) {
   } else {
     // Se non è una battuta diretta, analizziamo la riga per contatti remoti
     allAvailableCharacters.forEach(name => {
-      if (
-        line.includes(name) &&
-        !characterExists(name) &&
-        name !== player.name &&
-        name !== "Narrator"
-      ) {
+        if (
+          line.includes(name) &&
+          !characterExists(name) &&
+          name !== player.name &&
+          name !== "Narrator" &&
+          !line.trim().startsWith("[")  // 👈 AGGIUNTA FONDAMENTALE
+    ) {
         const lowerLine = line.toLowerCase();
 
         if (/appears|arrives|materializes|joins|enters|emerges/.test(lowerLine)) {
