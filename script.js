@@ -337,75 +337,72 @@ const speakerNames = characters
   playerMsg.textContent = `${player.name}: ${input}`;
   storyDiv.appendChild(playerMsg);
 
-  let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
+let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
 
-  if (isRandom) {
-    prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
-  } else if (type === "narration") {
-    prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the consequences of the action. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
-  } else {
-    prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed. 
-    Characters must NEVER propose player options themselves.
-Only the narrator can suggest actions like [Inspect the sigil] or [Call Bobby].
-All player options must be presented by the narrator only.
+if (isRandom) {
+  prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
+} else if (type === "narration") {
+  prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the consequences of the action. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
+} else {
+  prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed.
+
 The player is speaking directly to a character.
-That character must respond with a direct line of dialogue, not just be described.
-Do not only describe the character’s reaction — include a spoken reply that fits their personality.`;
-  }
+That character must respond with a direct line of dialogue, not just a reaction.
+Do not only describe the character’s expression or actions — include what they say.`;
+}
+
 prompt += `
 IMPORTANT BEHAVIOUR RULES:
 
-- If the player mentions a character (e.g., "I'll call Dean"), that character must NOT respond unless:
-  - They are already marked as 'present' in the scene, or
-  - The narrator explicitly introduces them into the scene.
+- If the player mentions a character (e.g. "I'll call Dean"), that character must NOT respond unless:
+  - They are already marked as 'present', OR
+  - The narrator explicitly brings them into the scene.
 
-- Do NOT repeat what the player just said as a character's line.
-  For example, if the player says: "I'll call Dean!" — Dean must not reply: "I'll call Dean!".
-  Characters must respond naturally or remain silent until properly introduced.
+- Do NOT repeat what the player just said as a line of dialogue.
+  Example: if the player says "Bobby! Can you hear me?", do NOT write that again.
 
-- When a character speaks, always format it as:
-CharacterName: "Their line of dialogue"
+- When a character speaks, always use this format:
+CharacterName: "Their line"
 
-Do NOT embed dialogue inside narration.
-Avoid:
-Narrator: Bobby looks at you and says, "Be careful."
+- NEVER embed dialogue in narration.
+  ❌ Wrong: Narrator: Bobby looks at you and says, "Be careful."
+  ✅ Correct: Bobby: "Be careful."
 
-Instead, write:
-Bobby: "Be careful."
+- Characters who are not present or contacted remotely must NOT speak. They can be mentioned by the narrator, but cannot reply.
 
-- Characters who are not present or contacted remotely must NOT speak.
-  They can only be mentioned by the narrator.
+- For phone calls or remote contacts:
+  Only the narrator can describe interference, ringing, or connection.
+  Only AFTER that can the contacted character speak.
 
-- In the case of phone calls, only the narrator may describe the action of calling, interference, or the contact beginning.
-  Only after that may the contacted character speak.
+- Only the narrator may describe the result of player actions like calling, summoning, or approaching someone.
 
-- Only the narrator may describe the results of player actions such as summoning, calling, or approaching someone.
-`;
-  prompt += `
-Characters must act consistently with their personalities and experiences from the show.
-Their lines should:
-- React meaningfully to what the player said
-- Build on the previous dialogue and story events
-- Reveal insights, fears, or memories relevant to the scene
-- Avoid repeating themselves or each other
-- Avoid generic filler like “Stay sharp” unless it’s contextually appropriate
-- Stay emotionally grounded and true to character arcs
+CHARACTER DYNAMICS AND OUTPUT:
 
-Rules:
-- Do not include actions already performed in the last turn
-- End with 2–3 FRESH and realistic player choices formatted like [Inspect the mirror]
-- Narrator should add brief and cinematic transitions, not long descriptions
+- Characters must act consistently with their personalities and story arcs.
+- Their lines should:
+  - React meaningfully to what the player said
+  - Build on recent events
+  - Avoid generic filler like “Stay sharp” (unless it truly fits)
+  - Be emotionally grounded and unique to each character
 
-If a character becomes physically present in the scene, include a separate line formatted as:
+- Avoid repeating actions already taken in the last turn.
+
+- Always end with 2–3 fresh and realistic player choices, in this format:
+  [Inspect the mirror]
+  [Call Castiel]
+  [Look for weapons]
+
+# Trigger Tags:
+If a character becomes physically present, include this tag:
 #PRESENT: CharacterName
 
-If a character is contacted remotely (e.g. by phone or other means), include:
+If a character is contacted remotely (e.g. by phone), include:
 #REMOTE: CharacterName
 
 Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}.
-- DO NOT include dialogue or actions for any character not in this list.
-- If a character is mentioned narratively, they must not speak unless they are in the list.
-- If a new character appears in the story, include them only as narration. The player must explicitly add them to interact.
+- DO NOT include dialogue or actions for characters not in this list.
+- If a new character enters the story, include them only in narration.
+- The player must explicitly add a character before they can speak.
 `;
   
   try {
