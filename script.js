@@ -24,7 +24,8 @@ const characterColors = {
   "Jo": "#FF8C00",
   "Ellen": "#8A2BE2",
   "Narrator": "#dddddd",
-  "User": "#3399ff"
+  "User": "#3399ff",
+  "default": "#cccccc" // fallback
 };
 
 const quickActions = [
@@ -86,10 +87,18 @@ function refreshSidebar() {
 characters.forEach(({ name, status }) => {
   const li = document.createElement("li");
   const img = document.createElement("img");
-  img.src = `images/${name.toLowerCase()}.png`;
+  const knownNames = Object.keys(characterColors);
+  const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
+  
+  if (knownNames.includes(name)) {
+    img.src = `images/${sanitizedName}.png`;
+  } else {
+    const rand = Math.floor(Math.random() * 4) + 1; // immagini da ghost1.png a ghost4.png
+    img.src = `images/ghost${rand}.png`;
+  }
   img.alt = name;
   img.className = "char-icon";
-  img.style.color = characterColors[name] || "#eee";
+  img.style.color = characterColors[name] || characterColors["default"];
 
   if (selectedCharacters.includes(name)) {
     img.classList.add("selected");
