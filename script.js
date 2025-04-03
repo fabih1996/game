@@ -440,7 +440,14 @@ Only the following characters are allowed to speak: ${selectedCharacters.join(",
 - DO NOT include dialogue or actions for characters not in this list.
 - If a new character enters the story, include them only in narration.
 - The player must explicitly add a character before they can speak.
+
+If the player clearly asks a character to leave (e.g. "please go", "leave me alone", "you can go now"), and that character is a peaceful or cooperative supernatural presence (like a ghost seeking closure), then you may end their presence with:
+
+#LEAVE: CharacterName
+
+Do NOT use this tag for hostile or uncooperative entities (e.g. demons, monsters, or aggressive spirits) unless the context makes their exit logical (e.g. they flee, are banished, or retreat for story reasons).
 `;
+  
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
