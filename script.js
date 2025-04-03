@@ -533,18 +533,24 @@ lines.forEach(line => {
   // Aggiunta solo se la riga comincia con "Nome:"
   if (/^([A-Z][a-z]+):/.test(line)) {
     const speaker = line.split(":")[0].trim();
-    if (
-      speaker !== player.name &&
-      speaker !== "Narrator" &&
-      !characterExists(speaker)
-    ) {
-      characters.push({ name: speaker, status: "present" });
-      if (!selectedCharacters.includes(speaker)) {
-        selectedCharacters.push(speaker);
-      }
-      newCharacters.add(speaker);
-    }
+const blockedNames = [
+  "creature", "lurker", "shadow", "figure",
+  "thing", "entity", "monster", "spirit",
+  "demon", "ghost", "voice", "presence"
+];
+
+if (
+  speaker !== player.name &&
+  speaker !== "Narrator" &&
+  !characterExists(speaker) &&
+  !blockedNames.includes(speaker.toLowerCase())
+) {
+  characters.push({ name: speaker, status: "present" });
+  if (!selectedCharacters.includes(speaker)) {
+    selectedCharacters.push(speaker);
   }
+  newCharacters.add(speaker);
+}  }
 });
 
     if (newCharacters.size > 0) {
