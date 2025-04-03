@@ -467,15 +467,14 @@ for (const line of lines) {
   if (/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?:/.test(line)) {
     const name = line.split(":")[0].trim();
 
-    if (
-      name.toLowerCase() !== player.name.toLowerCase() &&
-      !characterExists(name) &&
-      name !== "Narrator"
-    ) {
-      // Se il personaggio parla, lo consideriamo presente
-      addCharacter(name, "present");
-      newCharacters.add(name);
-    }
+  if (
+  name.toLowerCase() !== player.name.toLowerCase() &&
+  !characterExists(name) &&
+  name !== "Narrator"
+) {
+  // Non aggiungere automaticamente. Solo se GPT ha incluso un #PRESENT o #REMOTE
+  return; // ignoriamo questa linea
+}
   } else {
     // Se non è una battuta diretta, analizziamo la riga per contatti remoti
 const allCharacterNames = allAvailableCharacters.concat(
