@@ -513,18 +513,32 @@ for (const line of lines) {
     removeCharacter(name); // Funzione che aggiungeremo tra poco
     continue; // Passa alla prossima riga
   }
-  if (/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?:/.test(line)) {
-    const name = line.split(":")[0].trim();
+if (/^[A-Z][a-z]+:/.test(line)) {
+  const name = line.split(":")[0].trim();
+
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure",
+    "thing", "entity", "monster", "spirit",
+    "demon", "ghost", "voice", "presence"
+  ];
 
   if (
-  name.toLowerCase() !== player.name.toLowerCase() &&
-  !characterExists(name) &&
-  name !== "Narrator"
-) {
-  // Non aggiungere automaticamente. Solo se GPT ha incluso un #PRESENT o #REMOTE
-  return; // ignoriamo questa linea
-}
-  } else {
+    name.toLowerCase() !== player.name.toLowerCase() &&
+    !characterExists(name) &&
+    !newCharacters.has(name) && // 👈 solo se GPT l'ha introdotto prima
+    !selectedCharacters.includes(name) &&
+    name !== "Narrator" &&
+    !blockedNames.includes(name.toLowerCase())
+  ) {
+    return; // ❌ non lo processiamo
+  }
+
+  const p = document.createElement("p");
+  p.className = `character-color-${name}`;
+  p.textContent = line;
+  storyDiv.appendChild(p);
+  triggerSounds(line);
+} else {
     // Se non è una battuta diretta, analizziamo la riga per contatti remoti
 const allCharacterNames = allAvailableCharacters.concat(
   characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
