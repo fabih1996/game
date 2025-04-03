@@ -545,7 +545,7 @@ if (/^[A-Z][a-z]+:/.test(line)) {
   storyDiv.appendChild(p);
   triggerSounds(line);
 } else {
-    // Se non è una battuta diretta, analizziamo la riga per contatti remoti
+    return;
   }
 }
 
