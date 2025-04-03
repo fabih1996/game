@@ -555,9 +555,35 @@ if (/^[A-Z][a-z]+:/.test(line)) {
     );
 
 lines.forEach(line => {
-  // Aggiunta solo se la riga comincia con "Nome:"
-  if (/^([A-Z][a-z]+):/.test(line)) {
-    const speaker = line.split(":")[0].trim();
+  if (/^[A-Z][a-z]+:/.test(line)) {
+    const name = line.split(":")[0].trim();
+
+    const blockedNames = [
+      "creature", "lurker", "shadow", "figure",
+      "thing", "entity", "monster", "spirit",
+      "demon", "ghost", "voice", "presence"
+    ];
+
+    // ❌ NON aggiungere personaggi mai apparsi esplicitamente
+    if (
+      !characterExists(name) &&
+      !newCharacters.has(name) &&  // deve venire da #PRESENT o #REMOTE
+      !selectedCharacters.includes(name) &&
+      name !== player.name &&
+      name !== "Narrator" &&
+      !blockedNames.includes(name.toLowerCase())
+    ) {
+      return;
+    }
+
+    // Mostra battuta solo se è ammessa
+    const p = document.createElement("p");
+    p.className = `character-color-${name}`;
+    p.textContent = line;
+    storyDiv.appendChild(p);
+    triggerSounds(line);
+  }
+});
 const blockedNames = [
   "creature", "lurker", "shadow", "figure",
   "thing", "entity", "monster", "spirit",
