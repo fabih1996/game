@@ -77,6 +77,7 @@ function loadIntro() {
   triggerSounds(intro);
 }
 
+const characterImages = {}; // memorizza l’immagine scelta per ogni personaggio
 function refreshSidebar() {
   const presentList = document.getElementById("charListPresent");
   const remoteList = document.getElementById("charListRemote");
@@ -90,12 +91,19 @@ characters.forEach(({ name, status }) => {
   const knownNames = Object.keys(characterColors);
   const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
   
+let imgSrc;
+if (characterImages[name]) {
+  imgSrc = characterImages[name]; // usa quella già scelta
+} else {
   if (knownNames.includes(name)) {
-    img.src = `images/${sanitizedName}.png`;
+    imgSrc = `images/${sanitizedName}.png`;
   } else {
-    const rand = Math.floor(Math.random() * 4) + 1; // immagini da ghost1.png a ghost4.png
-    img.src = `images/ghost${rand}.png`;
+    const rand = Math.floor(Math.random() * 4) + 1;
+    imgSrc = `images/ghost${rand}.png`;
   }
+  characterImages[name] = imgSrc; // salva l'immagine per il futuro
+}
+    img.src = imgSrc;
   img.alt = name;
   img.className = "char-icon";
   img.style.color = characterColors[name] || characterColors["default"];
