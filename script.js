@@ -233,17 +233,6 @@ document.addEventListener("click", () => {
     });
   });
 });
-function setupActions() {
-  const container = document.getElementById("actions-container");
-  container.innerHTML = "";
-  quickActions.forEach(action => {
-    const btn = document.createElement("button");
-    btn.textContent = action;
-    btn.className = "action-btn";
-    btn.onclick = () => sendToGPT(action, "narration");
-    container.appendChild(btn);
-  });
-}
 
 function startGame() {
   const selection = document.getElementById("playerSelect").value;
