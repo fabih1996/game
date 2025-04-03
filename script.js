@@ -482,7 +482,6 @@ const allCharacterNames = allAvailableCharacters.concat(
   characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
 );
 
-allCharacterNames.forEach(name => { 
 for (const name of allCharacterNames) {
   const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`\\b${safeName}\\b`, 'i');
@@ -495,23 +494,26 @@ for (const name of allCharacterNames) {
     !/^\[.*\]$/.test(line.trim()) &&
     !/^([A-Z][a-z]+):/.test(line.trim())
   ) {
-    const result = await askCharacterArbiter(name, line, storyLines);
-    if (result === "present") {
-      characters.push({ name, status: "present" });
-    } else if (result === "remote") {
-      characters.push({ name, status: "remote" });
-    } else {
-      continue;
-    }
+    try {
+      const result = await askCharacterArbiter(name, line, storyLines);
+      if (result === "present") {
+        characters.push({ name, status: "present" });
+      } else if (result === "remote") {
+        characters.push({ name, status: "remote" });
+      } else {
+        continue;
+      }
 
-    if (!selectedCharacters.includes(name)) {
-      selectedCharacters.push(name);
-    }
+      if (!selectedCharacters.includes(name)) {
+        selectedCharacters.push(name);
+      }
 
-    newCharacters.add(name);
+      newCharacters.add(name);
+    } catch (err) {
+      console.warn(`Errore durante il controllo di ${name}:`, err);
+    }
   }
 }
-});
   }
 }
 
