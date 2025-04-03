@@ -601,7 +601,7 @@ if (
     selectedCharacters.push(speaker);
   }
   newCharacters.add(speaker);
-}  }
+}
 });
 
     if (newCharacters.size > 0) {
