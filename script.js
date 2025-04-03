@@ -338,7 +338,13 @@ Only respond with one of those options.
   });
 
   const data = await response.json();
-  const reply = data.choices[0].message.content.trim().toLowerCase();
+  if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+  alert("GPT did not return a valid response.");
+  console.error("GPT response issue:", data);
+  return;
+}
+
+const reply = data.choices[0].message.content.trim();
 
   if (reply.includes("yes-present")) return "present";
   if (reply.includes("yes-remote")) return "remote";
