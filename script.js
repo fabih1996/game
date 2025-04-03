@@ -602,7 +602,7 @@ if (
   }
   newCharacters.add(speaker);
 }
-});
+}
 
     if (newCharacters.size > 0) {
       refreshSidebar();
