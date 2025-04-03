@@ -84,83 +84,66 @@ function refreshSidebar() {
 
   presentList.innerHTML = "";
   remoteList.innerHTML = "";
-  const knownNames = Object.keys(characterColors); // ✅ mettila qui, UNA SOLA VOLTA
 
-characters.forEach(({ name, status }) => {
-  const li = document.createElement("li");
-const wrapper = document.createElement("div");
-wrapper.style.position = "relative";
+  const knownNames = Object.keys(characterColors);
 
-const img = document.createElement("img");
-const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
+  characters.forEach(({ name, status }) => {
+    const li = document.createElement("li");
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "relative";
 
-let imgSrc;
-if (characterImages[name]) {
-  imgSrc = characterImages[name];
-} else {
-  if (knownNames.includes(name)) {
-    imgSrc = `images/${sanitizedName}.png`;
-  } else {
-    const rand = Math.floor(Math.random() * 4) + 1;
-    imgSrc = `images/ghost${rand}.png`;
-  }
-  characterImages[name] = imgSrc;
-}
+    const img = document.createElement("img");
+    const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
 
-img.src = imgSrc;
-img.alt = name;
-img.className = "char-icon";
-img.setAttribute("data-name", name);
-const dismissBtn = document.createElement("button");
-dismissBtn.textContent = "Dismiss";
-dismissBtn.className = "dismiss-btn";
-dismissBtn.style.position = "absolute";
-dismissBtn.style.top = "0";
-dismissBtn.style.right = "0";
-dismissBtn.style.display = "none";
-dismissBtn.onclick = () => dismissCharacter(name);
-img.style.color = characterColors[name] || characterColors["default"];
-  const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
-  
-let imgSrc;
-if (characterImages[name]) {
-  imgSrc = characterImages[name]; // usa quella già scelta
-} else {
-  if (knownNames.includes(name)) {
-    imgSrc = `images/${sanitizedName}.png`;
-  } else {
-    const rand = Math.floor(Math.random() * 4) + 1;
-    imgSrc = `images/ghost${rand}.png`;
-  }
-  characterImages[name] = imgSrc; // salva l'immagine per il futuro
-}
+    let imgSrc;
+    if (characterImages[name]) {
+      imgSrc = characterImages[name];
+    } else {
+      if (knownNames.includes(name)) {
+        imgSrc = `images/${sanitizedName}.png`;
+      } else {
+        const rand = Math.floor(Math.random() * 4) + 1;
+        imgSrc = `images/ghost${rand}.png`;
+      }
+      characterImages[name] = imgSrc;
+    }
+
     img.src = imgSrc;
-  img.alt = name;
-  img.className = "char-icon";
-  img.style.color = characterColors[name] || characterColors["default"];
+    img.alt = name;
+    img.className = "char-icon";
+    img.setAttribute("data-name", name);
+    img.style.color = characterColors[name] || characterColors["default"];
 
-img.onclick = () => {
-  // Toggle selezione e mostra/nasconde il pulsante
-  if (selectedCharacters.includes(name)) {
-    selectedCharacters = selectedCharacters.filter(n => n !== name);
+    const dismissBtn = document.createElement("button");
+    dismissBtn.textContent = "Dismiss";
+    dismissBtn.className = "dismiss-btn";
+    dismissBtn.style.position = "absolute";
+    dismissBtn.style.top = "0";
+    dismissBtn.style.right = "0";
     dismissBtn.style.display = "none";
-  } else {
-    selectedCharacters.push(name);
-    dismissBtn.style.display = "inline";
-  }
-  refreshSidebar();
-};
+    dismissBtn.onclick = () => dismissCharacter(name);
 
-  li.appendChild(img);
-  wrapper.appendChild(img);
-  wrapper.appendChild(dismissBtn);
-  li.appendChild(wrapper);
-  if (status === "present") {
-    presentList.appendChild(li);
-  } else if (status === "remote") {
-    remoteList.appendChild(li);
-  }
-});
+    img.onclick = () => {
+      if (selectedCharacters.includes(name)) {
+        selectedCharacters = selectedCharacters.filter(n => n !== name);
+        dismissBtn.style.display = "none";
+      } else {
+        selectedCharacters.push(name);
+        dismissBtn.style.display = "inline";
+      }
+      refreshSidebar();
+    };
+
+    wrapper.appendChild(img);
+    wrapper.appendChild(dismissBtn);
+    li.appendChild(wrapper);
+
+    if (status === "present") {
+      presentList.appendChild(li);
+    } else if (status === "remote") {
+      remoteList.appendChild(li);
+    }
+  });
 }
 
 function removeCharacter(name) {
