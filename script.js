@@ -483,7 +483,7 @@ const allCharacterNames = allAvailableCharacters.concat(
 );
 
 allCharacterNames.forEach(name => { 
-  for (const name of allCharacterNames) {
+for (const name of allCharacterNames) {
   const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`\\b${safeName}\\b`, 'i');
 
@@ -492,7 +492,7 @@ allCharacterNames.forEach(name => {
     !characterExists(name) &&
     name !== player.name &&
     name !== "Narrator" &&
-    !/^\[.*\]$/.test(line.trim()) &&     
+    !/^\[.*\]$/.test(line.trim()) &&
     !/^([A-Z][a-z]+):/.test(line.trim())
   ) {
     const result = await askCharacterArbiter(name, line, storyLines);
@@ -501,7 +501,7 @@ allCharacterNames.forEach(name => {
     } else if (result === "remote") {
       characters.push({ name, status: "remote" });
     } else {
-      continue; // Skip if GPT says no
+      continue;
     }
 
     if (!selectedCharacters.includes(name)) {
