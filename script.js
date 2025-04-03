@@ -84,6 +84,7 @@ function refreshSidebar() {
 
   presentList.innerHTML = "";
   remoteList.innerHTML = "";
+  const knownNames = Object.keys(characterColors); // ✅ mettila qui, UNA SOLA VOLTA
 
 characters.forEach(({ name, status }) => {
   const li = document.createElement("li");
@@ -91,7 +92,6 @@ const wrapper = document.createElement("div");
 wrapper.style.position = "relative";
 
 const img = document.createElement("img");
-const knownNames = Object.keys(characterColors);
 const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
 
 let imgSrc;
@@ -120,7 +120,6 @@ dismissBtn.style.right = "0";
 dismissBtn.style.display = "none";
 dismissBtn.onclick = () => dismissCharacter(name);
 img.style.color = characterColors[name] || characterColors["default"];
-  const knownNames = Object.keys(characterColors);
   const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
   
 let imgSrc;
