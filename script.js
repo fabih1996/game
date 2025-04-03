@@ -87,7 +87,39 @@ function refreshSidebar() {
 
 characters.forEach(({ name, status }) => {
   const li = document.createElement("li");
-  const img = document.createElement("img");
+const wrapper = document.createElement("div");
+wrapper.style.position = "relative";
+
+const img = document.createElement("img");
+const knownNames = Object.keys(characterColors);
+const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
+
+let imgSrc;
+if (characterImages[name]) {
+  imgSrc = characterImages[name];
+} else {
+  if (knownNames.includes(name)) {
+    imgSrc = `images/${sanitizedName}.png`;
+  } else {
+    const rand = Math.floor(Math.random() * 4) + 1;
+    imgSrc = `images/ghost${rand}.png`;
+  }
+  characterImages[name] = imgSrc;
+}
+
+img.src = imgSrc;
+img.alt = name;
+img.className = "char-icon";
+img.setAttribute("data-name", name);
+const dismissBtn = document.createElement("button");
+dismissBtn.textContent = "Dismiss";
+dismissBtn.className = "dismiss-btn";
+dismissBtn.style.position = "absolute";
+dismissBtn.style.top = "0";
+dismissBtn.style.right = "0";
+dismissBtn.style.display = "none";
+dismissBtn.onclick = () => dismissCharacter(name);
+img.style.color = characterColors[name] || characterColors["default"];
   const knownNames = Object.keys(characterColors);
   const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
   
@@ -108,20 +140,22 @@ if (characterImages[name]) {
   img.className = "char-icon";
   img.style.color = characterColors[name] || characterColors["default"];
 
+img.onclick = () => {
+  // Toggle selezione e mostra/nasconde il pulsante
   if (selectedCharacters.includes(name)) {
-    img.classList.add("selected");
-    img.onclick = () => {
-      selectedCharacters = selectedCharacters.filter(n => n !== name);
-      refreshSidebar();
-    };
+    selectedCharacters = selectedCharacters.filter(n => n !== name);
+    dismissBtn.style.display = "none";
   } else {
-    img.onclick = () => {
-      selectedCharacters.push(name);
-      refreshSidebar();
-    };
+    selectedCharacters.push(name);
+    dismissBtn.style.display = "inline";
   }
+  refreshSidebar();
+};
 
   li.appendChild(img);
+  wrapper.appendChild(img);
+  wrapper.appendChild(dismissBtn);
+  li.appendChild(wrapper);
   if (status === "present") {
     presentList.appendChild(li);
   } else if (status === "remote") {
