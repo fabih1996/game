@@ -602,6 +602,9 @@ if (
   }
   newCharacters.add(speaker);
 }
+} catch (err) {
+  console.error("Fetch failed:", err);
+  alert("Something went wrong: " + err.message);
 }
 
     if (newCharacters.size > 0) {
