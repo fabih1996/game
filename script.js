@@ -263,15 +263,7 @@ function startGame() {
   loadIntro();
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  await loadCharacterLore();
-  setupActions();
-  loadDropdown(); // This must be defined in another part of your script
-  const bgm = document.getElementById("background-music");
-  if (bgm) {
-    bgm.volume = 0.3;
-    bgm.play();
-  }
+
 
   const narrationInput = document.getElementById("narrationInput");
   const dialogueInput = document.getElementById("dialogueInput");
@@ -677,14 +669,29 @@ function triggerExorcismEvent() {
     overlay.classList.add('hidden');
   }, 5500);
 }
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("charDropdown").addEventListener("change", function () {
-    const customFields = document.getElementById("customCharFields");
-    if (this.value === "custom") {
-      customFields.style.display = "block";
-    } else {
-      customFields.style.display = "none";
+window.addEventListener("DOMContentLoaded", async () => {
+  loadDropdown();
+  setupActions();
+  await loadCharacterLore();
+
+  document.addEventListener("click", () => {
+    const bgm = document.getElementById("background-music");
+    if (bgm && bgm.paused) {
+      bgm.volume = 0.3;
+      bgm.play().catch(err => console.warn("Audio play blocked:", err));
     }
+  }, { once: true });
+
+  const narrationInput = document.getElementById("narrationInput");
+  const dialogueInput = document.getElementById("dialogueInput");
+  [narrationInput, dialogueInput].forEach(input => {
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const type = input === narrationInput ? "narration" : "dialogue";
+        sendToGPT(input.value, type);
+        input.value = "";
+      }
+    });
   });
 });
 window.startGame = startGame;
