@@ -719,6 +719,81 @@ function triggerExorcismEvent() {
     overlay.classList.add('hidden');
   }, 5500);
 }
+
+async function dismissCharacter(name) {
+  const storyDiv = document.getElementById("story");
+
+  const recentStory = Array.from(storyDiv.querySelectorAll("p"))
+    .slice(-6)
+    .map(p => p.textContent)
+    .join("\n");
+
+  const prompt = `
+You are writing the next line in a Supernatural role-playing game.
+
+The character "${name}" is currently present in the scene.
+
+The player wants to dismiss this character in a way that fits the current context.
+
+Here is the recent story:
+
+${recentStory}
+
+Write a short and in-character response where "${name}" leaves the scene, including any explanation or reason they might give.
+
+If it makes sense, end with:
+#LEAVE: ${name}
+
+Rules:
+- Keep the tone consistent with the story.
+- If "${name}" is supernatural (e.g., ghost, angel), describe how they leave (e.g., vanishing, flying off).
+- If "${name}" has no reason to stay, it's okay to leave silently or respectfully.
+- Only use #LEAVE if they are really gone.
+`;
+
+  try {
+    const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const reply = data.choices[0].message.content.trim();
+    const lines = reply.split("\n").filter(line => line.trim() !== "");
+
+    lines.forEach(line => {
+      const p = document.createElement("p");
+      const colonIndex = line.indexOf(":");
+      const who = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
+
+      if (/^#LEAVE:/i.test(line)) {
+        const toRemove = line.replace("#LEAVE:", "").trim();
+        removeCharacter(toRemove);
+        return;
+      }
+
+      if (/^[A-Z][a-z]+:/.test(line)) {
+        p.className = `character-color-${who}`;
+        p.textContent = line;
+      } else {
+        p.classList.add("narration");
+        p.textContent = line;
+      }
+
+      storyDiv.appendChild(p);
+    });
+
+    refreshSidebar();
+  } catch (err) {
+    console.error("Failed to dismiss character:", err);
+    alert("Failed to dismiss character: " + err.message);
+  }
+}
+
+
 window.addEventListener("DOMContentLoaded", async () => {
   loadDropdown();
   setupActions();
