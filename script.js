@@ -190,7 +190,7 @@ function addCustomCharacter() {
   const name = document.getElementById("customCharName").value.trim();
   const status = document.getElementById("customCharStatus").value;
 
-  if (!name || characters.includes(name)) return;
+  if (!name || characterExists(name)) return;
 
   addCharacter(name, status);
   allAvailableCharacters.push(name);
