@@ -245,7 +245,6 @@ document.addEventListener("click", () => {
       }
     });
   });
-});
 
 function triggerSounds(text) {
   const lowerText = text.toLowerCase();
