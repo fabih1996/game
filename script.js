@@ -122,6 +122,19 @@ characters.forEach(({ name, status }) => {
 });
 }
 
+function removeCharacter(name) {
+  characters = characters.filter(c => c.name !== name);
+  selectedCharacters = selectedCharacters.filter(n => n !== name);
+  newCharacters.delete(name);
+
+  // Rimuove l'icona dalla sidebar
+  const icon = document.querySelector(`.char-icon[data-name="${name}"]`);
+  if (icon) icon.remove();
+
+  refreshSidebar();
+}
+
+
 function setupActions() {
   const container = document.getElementById("actions-container");
   container.innerHTML = "";
@@ -464,6 +477,11 @@ if (presentMatch) {
 });
 
 for (const line of lines) {
+  if (line.startsWith("#LEAVE:")) {
+    const name = line.replace("#LEAVE:", "").trim();
+    removeCharacter(name); // Funzione che aggiungeremo tra poco
+    continue; // Passa alla prossima riga
+  }
   if (/^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?:/.test(line)) {
     const name = line.split(":")[0].trim();
 
