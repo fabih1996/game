@@ -470,7 +470,7 @@ If the player clearly asks a character to leave (e.g. "please go", "leave me alo
 Do NOT use this tag for hostile or uncooperative entities (e.g. demons, monsters, or aggressive spirits) unless the context makes their exit logical (e.g. they flee, are banished, or retreat for story reasons).
 `;
   
-  try {
+ // try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
