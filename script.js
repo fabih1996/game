@@ -660,8 +660,8 @@ for (const line of filteredLines) {
       };
       choicesDiv.appendChild(btn);
     });
-
-  } catch (err) {
+}
+catch (err) {
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
   }
