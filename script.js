@@ -635,23 +635,28 @@ if (newCharacters.size > 0) {
     !line.startsWith('"') &&  // Remove the echoed player input
     !/^#PRESENT:|^#REMOTE:/i.test(line)
   );
-    for (const line of filteredLines) {
-      const colonIndex = line.indexOf(":");
-      const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
+let lastLine = "";
 
-      if (name.toLowerCase() === player.name.toLowerCase()) continue;
+for (const line of filteredLines) {
+  if (line === lastLine) continue; // ❌ salta i duplicati esatti
+  lastLine = line;
 
-      const p = document.createElement("p");
-      if (/^[A-Z][a-z]+:/.test(line)) {
-        p.className = `character-color-${name}`;
-        p.textContent = line;
-      } else {
-        p.classList.add("narration");
-        p.textContent = line;
-      }
-      triggerSounds(line);
-      storyDiv.appendChild(p);
-    }
+  const colonIndex = line.indexOf(":");
+  const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
+
+  if (name.toLowerCase() === player.name.toLowerCase()) continue;
+
+  const p = document.createElement("p");
+  if (/^[A-Z][a-z]+:/.test(line)) {
+    p.className = `character-color-${name}`;
+    p.textContent = line;
+  } else {
+    p.classList.add("narration");
+    p.textContent = line;
+  }
+  triggerSounds(line);
+  storyDiv.appendChild(p);
+}
 
     const choicesDiv = document.getElementById("choices");
     const choiceLines = lines.filter(line => line.startsWith("["));
