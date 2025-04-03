@@ -483,7 +483,7 @@ for (const line of lines) {
     // Se non è una battuta diretta, analizziamo la riga per contatti remoti
     allAvailableCharacters.forEach(name => {
         if (
-          line.includes(name) &&
+          new RegExp(`\\b${name}\\b`, 'i').test(line) &&
           !characterExists(name) &&
           name !== player.name &&
           name !== "Narrator" &&
