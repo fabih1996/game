@@ -341,10 +341,15 @@ const speakerNames = characters
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
 
-  const playerMsg = document.createElement("p");
+const playerMsg = document.createElement("p");
+if (type === "dialogue") {
   playerMsg.className = `character-color-User`;
-  playerMsg.textContent = `${player.name}: ${input}`;
-  storyDiv.appendChild(playerMsg);
+  playerMsg.textContent = `${player.name}: "${input}"`;
+} else {
+  playerMsg.className = "narration";
+  playerMsg.textContent = input;
+}
+storyDiv.appendChild(playerMsg);
 
 let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
 
@@ -435,16 +440,19 @@ lines.forEach(line => {
   const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
   const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
 
-  if (presentMatch) {
-    const name = presentMatch[1].trim();
-    if (!characterExists(name)) {
-      characters.push({ name, status: "present" });
-    }
-    if (!selectedCharacters.includes(name)) {
-      selectedCharacters.push(name);
-    }
-    newCharacters.add(name);
+if (presentMatch) {
+  const name = presentMatch[1].trim();
+  const existing = characters.find(c => c.name === name);
+  if (existing) {
+    existing.status = "present"; // 👈 make sure their status is updated
+  } else {
+    characters.push({ name, status: "present" });
   }
+  if (!selectedCharacters.includes(name)) {
+    selectedCharacters.push(name);
+  }
+  newCharacters.add(name);
+}
 
   if (remoteMatch) {
     const name = remoteMatch[1].trim();
@@ -479,7 +487,7 @@ for (const line of lines) {
           !characterExists(name) &&
           name !== player.name &&
           name !== "Narrator" &&
-          !line.trim().startsWith("[")  // 👈 AGGIUNTA FONDAMENTALE
+          !/^\[.*\]$/.test(line.trim()) // 👈 AGGIUNTA FONDAMENTALE
     ) {
         const lowerLine = line.toLowerCase();
 
@@ -533,7 +541,13 @@ lines.forEach(line => {
 if (newCharacters.size > 0) {
   refreshSidebar();
 }
-    for (const line of lines) {
+    const filteredLines = lines.filter(line =>
+    !line.startsWith("#CURRENT SITUATION:") &&
+    !line.startsWith("The player narrates an action:") &&
+    !line.startsWith('"') &&  // Remove the echoed player input
+    !/^#PRESENT:|^#REMOTE:/i.test(line)
+  );
+    for (const line of filteredLines) {
       const colonIndex = line.indexOf(":");
       const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
 
