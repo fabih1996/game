@@ -484,7 +484,15 @@ const allCharacterNames = allAvailableCharacters.concat(
 for (const name of allCharacterNames) {
   const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`\\b${safeName}\\b`, 'i');
-
+  // Blocca nomi troppo generici o mostri anonimi
+   const blockedNames = [
+    "creature", "lurker", "shadow", "figure",
+    "thing", "entity", "monster", "spirit",
+    "demon", "ghost", "voice", "presence"
+  ];
+  if (blockedNames.includes(name.toLowerCase())) {
+    continue; // Ignora questi nomi
+  }
   if (
     regex.test(line) &&
     !characterExists(name) &&
