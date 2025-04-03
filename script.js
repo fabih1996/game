@@ -311,6 +311,43 @@ function triggerSounds(text) {
   }
 }
 
+async function askCharacterArbiter(name, line, context) {
+  const prompt = `
+You're helping moderate a roleplaying game. Your job is to decide whether a character should be added to the game as a present or remote participant, based on recent story events.
+
+STORY CONTEXT:
+${context}
+
+NEW LINE:
+${line}
+
+CHARACTER TO ANALYSE:
+"${name}"
+
+Question: Based on the context and the new line, should this character be added as a speaking character in the story?
+
+Reply with:
+- "yes-present" if they should be added as a physically present character
+- "yes-remote" if they should be added as a remote character (e.g., phone call)
+- "no" if they are just passively mentioned
+
+Only respond with one of those options.
+`;
+
+  const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+  });
+
+  const data = await response.json();
+  const reply = data.choices[0].message.content.trim().toLowerCase();
+
+  if (reply.includes("yes-present")) return "present";
+  if (reply.includes("yes-remote")) return "remote";
+  return null;
+}
+
 function characterExists(name) {
   return characters.some(c => typeof c === "object" && c.name === name);
 }
@@ -485,8 +522,9 @@ const allCharacterNames = allAvailableCharacters.concat(
   characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
 );
 
-allCharacterNames.forEach(name => {
-  const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex symbols
+allCharacterNames.forEach(name => { 
+  for (const name of allCharacterNames) {
+  const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`\\b${safeName}\\b`, 'i');
 
   if (
@@ -494,21 +532,16 @@ allCharacterNames.forEach(name => {
     !characterExists(name) &&
     name !== player.name &&
     name !== "Narrator" &&
-    !/^\[.*\]$/.test(line.trim()) &&     // Not an option
-    !/^([A-Z][a-z]+):/.test(line.trim()) // Not direct speaker
+    !/^\[.*\]$/.test(line.trim()) &&     
+    !/^([A-Z][a-z]+):/.test(line.trim())
   ) {
-    const lowerLine = line.toLowerCase();
-
-    if (
-      new RegExp(`${name.toLowerCase()}\\s+(appears|arrives|joins|enters|emerges)`).test(lowerLine)
-    ) {
+    const result = await askCharacterArbiter(name, line, storyLines);
+    if (result === "present") {
       characters.push({ name, status: "present" });
-    } else if (
-      /call|contact|reach|phone|signal|dial|connect|voice\s+breaks\s+through|answer/.test(lowerLine)
-    ) {
+    } else if (result === "remote") {
       characters.push({ name, status: "remote" });
     } else {
-      return; // Skip if no explicit action
+      continue; // Skip if GPT says no
     }
 
     if (!selectedCharacters.includes(name)) {
@@ -517,6 +550,7 @@ allCharacterNames.forEach(name => {
 
     newCharacters.add(name);
   }
+}
 });
   }
 }
