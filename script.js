@@ -234,26 +234,6 @@ document.addEventListener("click", () => {
   });
 });
 
-function startGame() {
-  const selection = document.getElementById("playerSelect").value;
-  if (selection === "custom") {
-    const name = document.getElementById("playerName").value.trim();
-    if (name) player.name = name;
-    player.isCustom = true;
-  } else if (selection !== "") {
-    player.name = selection;
-    player.isCustom = false;
-  }
-
-  characterColors["User"] = "#3399ff";
-  document.getElementById("user-character-select").style.display = "none";
-  document.getElementById("game-interface").style.display = "block";
-  refreshSidebar();
-  loadIntro();
-}
-
-
-
   const narrationInput = document.getElementById("narrationInput");
   const dialogueInput = document.getElementById("dialogueInput");
   [narrationInput, dialogueInput].forEach(input => {
