@@ -546,50 +546,6 @@ if (/^[A-Z][a-z]+:/.test(line)) {
   triggerSounds(line);
 } else {
     // Se non è una battuta diretta, analizziamo la riga per contatti remoti
-const allCharacterNames = allAvailableCharacters.concat(
-  characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
-);
-
-for (const name of allCharacterNames) {
-  const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const regex = new RegExp(`\\b${safeName}\\b`, 'i');
-  // Blocca nomi troppo generici o mostri anonimi
-   const blockedNames = [
-    "creature", "lurker", "shadow", "figure",
-    "thing", "entity", "monster", "spirit",
-    "demon", "ghost", "voice", "presence"
-  ];
-  if (blockedNames.includes(name.toLowerCase())) {
-    continue; // Ignora questi nomi
-  }
-  if (
-    regex.test(line) &&
-    !characterExists(name) &&
-    name !== player.name &&
-    name !== "Narrator" &&
-    !/^\[.*\]$/.test(line.trim()) &&
-    !/^([A-Z][a-z]+):/.test(line.trim())
-  ) {
-    try {
-      const result = await askCharacterArbiter(name, line, storyLines);
-      if (result === "present") {
-        characters.push({ name, status: "present" });
-      } else if (result === "remote") {
-        characters.push({ name, status: "remote" });
-      } else {
-        continue;
-      }
-
-      if (!selectedCharacters.includes(name)) {
-        selectedCharacters.push(name);
-      }
-
-      newCharacters.add(name);
-    } catch (err) {
-      console.warn(`Errore durante il controllo di ${name}:`, err);
-    }
-  }
-}
   }
 }
 
