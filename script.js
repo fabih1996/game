@@ -677,5 +677,14 @@ function triggerExorcismEvent() {
     overlay.classList.add('hidden');
   }, 5500);
 }
-
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("charDropdown").addEventListener("change", function () {
+    const customFields = document.getElementById("customCharFields");
+    if (this.value === "custom") {
+      customFields.style.display = "block";
+    } else {
+      customFields.style.display = "none";
+    }
+  });
+});
 window.startGame = startGame;
