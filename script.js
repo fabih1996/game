@@ -481,33 +481,43 @@ for (const line of lines) {
     }
   } else {
     // Se non è una battuta diretta, analizziamo la riga per contatti remoti
-    allAvailableCharacters.forEach(name => {
-        if (
-          new RegExp(`\\b${name}\\b`, 'i').test(line) &&
-          !characterExists(name) &&
-          name !== player.name &&
-          name !== "Narrator" &&
-          !/^\[.*\]$/.test(line.trim()) // 👈 AGGIUNTA FONDAMENTALE
+const allCharacterNames = allAvailableCharacters.concat(
+  characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
+);
+
+allCharacterNames.forEach(name => {
+  const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape regex symbols
+  const regex = new RegExp(`\\b${safeName}\\b`, 'i');
+
+  if (
+    regex.test(line) &&
+    !characterExists(name) &&
+    name !== player.name &&
+    name !== "Narrator" &&
+    !/^\[.*\]$/.test(line.trim()) &&     // Not an option
+    !/^([A-Z][a-z]+):/.test(line.trim()) // Not direct speaker
+  ) {
+    const lowerLine = line.toLowerCase();
+
+    if (
+      new RegExp(`${name.toLowerCase()}\\s+(appears|arrives|joins|enters|emerges)`).test(lowerLine)
     ) {
-        const lowerLine = line.toLowerCase();
+      characters.push({ name, status: "present" });
+    } else if (
+      /call|contact|reach|phone|signal|dial|connect|voice\s+breaks\s+through|answer/.test(lowerLine)
+    ) {
+      characters.push({ name, status: "remote" });
+    } else {
+      return; // Skip if no explicit action
+    }
 
-      if (
-        new RegExp(`${name.toLowerCase()}\\s+(appears|arrives|joins|enters|emerges)`).test(lowerLine)
-      ) {          
-        characters.push({ name, status: "present" });
-        } else if (/call|contact|reach|phone|signal|dial|connect|voice\s+breaks\s+through|answer/i.test(lowerLine)) {
-          characters.push({ name, status: "remote" });
-        } else {
-          return; // non aggiungiamo se la frase non implica una comparsa
-        }
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
 
-        if (!selectedCharacters.includes(name)) {
-          selectedCharacters.push(name);
-        }
-
-        newCharacters.add(name);
-      }
-    });
+    newCharacters.add(name);
+  }
+});
   }
 }
 
