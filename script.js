@@ -569,7 +569,11 @@ const reply = replyRaw.trim();
     storyDiv.appendChild(p);
     triggerSounds(line);
   } else {
-      return;
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = line;
+      storyDiv.appendChild(p);
+      triggerSounds(line);
     }
   }
   
