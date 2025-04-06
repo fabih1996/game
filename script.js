@@ -638,24 +638,6 @@ lines.forEach(line => {
   if (newCharacters.size > 0) {
     refreshSidebar();
   }
-  
-      const choicesDiv = document.getElementById("choices");
-      const choiceLines = lines.filter(line => line.startsWith("["));
-      choicesDiv.innerHTML = "";
-  
-      choiceLines.forEach(choice => {
-        const choiceText = choice.replace(/[\[\]]/g, "");
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = choiceText;
-        btn.onclick = () => {
-          if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-            triggerExorcismEvent();
-          }
-          sendToGPT(choiceText, "dialogue");
-        };
-        choicesDiv.appendChild(btn);
-      });
   }
   
   function triggerRandomEvent() {
@@ -800,14 +782,30 @@ lines.forEach(line => {
       });
   
       refreshSidebar();
+      const choicesDiv = document.getElementById("choices");
+      const choiceLines = lines.filter(line => line.startsWith("["));
+      choicesDiv.innerHTML = "";
+  
+      choiceLines.forEach(choice => {
+        const choiceText = choice.replace(/[\[\]]/g, "");
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.textContent = choiceText;
+        btn.onclick = () => {
+          if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+            triggerExorcismEvent();
+          }
+          sendToGPT(choiceText, "dialogue");
+        };
+        choicesDiv.appendChild(btn);
+      });
     } catch (err) {
       console.error("Failed to dismiss character:", err);
       alert("Failed to dismiss character: " + err.message);
     }
   }
-  
-  
-  window.addEventListener("DOMContentLoaded", async () => {
+    
+window.addEventListener("DOMContentLoaded", async () => {
     loadDropdown();
     setupActions();
     await loadCharacterLore();
