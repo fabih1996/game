@@ -749,7 +749,8 @@ const reply = replyRaw.trim();
       const choicesDiv = document.getElementById("choices");
     const choiceLines = reply
       .split("\n")
-      .filter(line => line.trim().startsWith("["));      
+      .filter(line => line.trim().startsWith("[")); 
+        console.log("Scelte trovate:", choiceLines);
         choicesDiv.innerHTML = "";
   
       choiceLines.forEach(choice => {
