@@ -491,9 +491,19 @@ const reply = replyRaw.trim();
       });
   
       const data = await response.json();
-      if (data.error) throw new Error(data.error.message);
-  
-      const reply = data.choices[0].message.content.trim();
+    if (
+      !data ||
+      !data.choices ||
+      !data.choices[0] ||
+      !data.choices[0].message ||
+      !data.choices[0].message.content
+    ) {
+      alert("⚠️ GPT did not return a valid response. Try again or check your internet connection.");
+      console.error("Invalid GPT response:", data);
+      return;
+    }
+    
+    const reply = data.choices[0].message.content.trim();
       const lines = reply.split("\n").filter(line => line.trim() !== "");
   
   lines.forEach(line => {
