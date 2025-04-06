@@ -110,7 +110,9 @@ let characters = [
   
       img.src = imgSrc;
       img.alt = name;
-      img.className = "char-icon";
+      if (selectedCharacters.includes(name)) {
+          img.classList.add("selected");
+        }
       img.setAttribute("data-name", name);
       img.style.color = characterColors[name] || characterColors["default"];
   
