@@ -407,9 +407,9 @@ const reply = replyRaw.trim();
   
   if (isRandom) {
     prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
-  } else if (type === "narration") {
-    prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the consequences of the action. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
-  } else {
+} else if (type === "narration") {
+  prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the **consequences** of the action — do **not repeat** what the player just did. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
+} else {
     prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed.
   
   The player is speaking directly to a character.
@@ -745,8 +745,10 @@ const reply = replyRaw.trim();
   
       refreshSidebar();
       const choicesDiv = document.getElementById("choices");
-      const choiceLines = lines.filter(line => line.startsWith("["));
-      choicesDiv.innerHTML = "";
+    const choiceLines = reply
+      .split("\n")
+      .filter(line => line.trim().startsWith("["));      
+        choicesDiv.innerHTML = "";
   
       choiceLines.forEach(choice => {
         const choiceText = choice.replace(/[\[\]]/g, "");
