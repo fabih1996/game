@@ -766,6 +766,7 @@ const reply = replyRaw.trim();
           sendToGPT(choiceText, "dialogue");
         };
         choicesDiv.appendChild(btn);
+        console.log("✅ Pulsante creato:", btn);
       });
     } catch (err) {
       console.error("Failed to dismiss character:", err);
