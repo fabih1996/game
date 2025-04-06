@@ -594,11 +594,27 @@ const reply = replyRaw.trim();
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
   }
-  
-      if (newCharacters.size > 0) {
-        refreshSidebar();
-      }
-  
+  // Aggiungi scelte come bottoni (dopo risposta GPT)
+const choicesDiv = document.getElementById("choices");
+const choiceLines = reply
+  .split("\n")
+  .filter(line => line.trim().startsWith("["));
+
+choicesDiv.innerHTML = "";
+
+choiceLines.forEach(choice => {
+  const choiceText = choice.replace(/[\[\]]/g, "");
+  const btn = document.createElement("button");
+  btn.className = "choice-btn";
+  btn.textContent = choiceText;
+  btn.onclick = () => {
+    if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+      triggerExorcismEvent();
+    }
+    sendToGPT(choiceText, "dialogue");
+  };
+  choicesDiv.appendChild(btn);
+});  
   if (newCharacters.size > 0) {
     refreshSidebar();
   }
