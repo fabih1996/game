@@ -508,6 +508,27 @@ const reply = replyRaw.trim();
     const reply = data.choices[0].message.content.trim();
     console.log("GPT reply:", reply);
     const lines = reply.split("\n").filter(line => line.trim() !== "");
+    // Aggiungi scelte come bottoni (dopo risposta GPT)
+const choicesDiv = document.getElementById("choices");
+const choiceLines = reply
+  .split("\n")
+  .filter(line => line.trim().startsWith("["));
+
+choicesDiv.innerHTML = "";
+
+choiceLines.forEach(choice => {
+  const choiceText = choice.replace(/[\[\]]/g, "");
+  const btn = document.createElement("button");
+  btn.className = "choice-btn";
+  btn.textContent = choiceText;
+  btn.onclick = () => {
+    if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+      triggerExorcismEvent();
+    }
+    sendToGPT(choiceText, "dialogue");
+  };
+  choicesDiv.appendChild(btn);
+});
   
   lines.forEach(line => {
     const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
@@ -594,27 +615,6 @@ const reply = replyRaw.trim();
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
   }
-  // Aggiungi scelte come bottoni (dopo risposta GPT)
-const choicesDiv = document.getElementById("choices");
-const choiceLines = reply
-  .split("\n")
-  .filter(line => line.trim().startsWith("["));
-
-choicesDiv.innerHTML = "";
-
-choiceLines.forEach(choice => {
-  const choiceText = choice.replace(/[\[\]]/g, "");
-  const btn = document.createElement("button");
-  btn.className = "choice-btn";
-  btn.textContent = choiceText;
-  btn.onclick = () => {
-    if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-      triggerExorcismEvent();
-    }
-    sendToGPT(choiceText, "dialogue");
-  };
-  choicesDiv.appendChild(btn);
-});  
   if (newCharacters.size > 0) {
     refreshSidebar();
   }
@@ -760,30 +760,7 @@ choiceLines.forEach(choice => {
   
         storyDiv.appendChild(p);
       });
-  
       refreshSidebar();
-      const choicesDiv = document.getElementById("choices");
-    const choiceLines = reply
-      .split("\n")
-      .filter(line => line.trim().startsWith("[")); 
-        console.log("Scelte trovate:", choiceLines);
-        choicesDiv.innerHTML = "";
-  
-      choiceLines.forEach(choice => {
-        const choiceText = choice.replace(/[\[\]]/g, "");
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = choiceText;
-        console.log("Creo pulsante per:", choiceText);
-        btn.onclick = () => {
-          if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-            triggerExorcismEvent();
-          }
-          sendToGPT(choiceText, "dialogue");
-        };
-        choicesDiv.appendChild(btn);
-        console.log("✅ Pulsante creato:", btn);
-      });
     } catch (err) {
       console.error("Failed to dismiss character:", err);
       alert("Failed to dismiss character: " + err.message);
