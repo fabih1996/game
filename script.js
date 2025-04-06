@@ -566,32 +566,35 @@ choiceLines.forEach(choice => {
       removeCharacter(name); // Funzione che aggiungeremo tra poco
       continue; // Passa alla prossima riga
     }
-  if (/^[A-Z][a-z]+:/.test(line)) {
-    const name = line.split(":")[0].trim();
-  
-    const blockedNames = [
-      "creature", "lurker", "shadow", "figure",
-      "thing", "entity", "monster", "spirit",
-      "demon", "ghost", "voice", "presence"
-    ];
-  
-    if (
-      name.toLowerCase() !== player.name.toLowerCase() &&
-      name !== "Narrator" &&
-      !characterExists(name) &&
-      !newCharacters.has(name) &&
-      !selectedCharacters.includes(name) &&
-      !blockedNames.includes(name.toLowerCase())
-    ) {
-      return;
-    }
-  
-    const p = document.createElement("p");
-    p.className = `character-color-${name}`;
-    p.textContent = line;
-    storyDiv.appendChild(p);
-    triggerSounds(line);
-  } else {
+if (/^[A-Z][a-z]+:/.test(line)) {
+  const name = line.split(":")[0].trim();
+
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure",
+    "thing", "entity", "monster", "spirit",
+    "demon", "ghost", "voice", "presence"
+  ];
+
+  if (
+    name.toLowerCase() !== player.name.toLowerCase() &&
+    name !== "Narrator" &&
+    !characterExists(name) &&
+    !newCharacters.has(name) &&
+    !selectedCharacters.includes(name) &&
+    !blockedNames.includes(name.toLowerCase())
+  ) {
+    // 👇 ADESSO: invece di return, aggiungiamolo come remoto
+    characters.push({ name, status: "remote" });
+    selectedCharacters.push(name);
+    newCharacters.add(name);
+  }
+
+  const p = document.createElement("p");
+  p.className = `character-color-${name}`;
+  p.textContent = line;
+  storyDiv.appendChild(p);
+  triggerSounds(line);
+} else {
       const p = document.createElement("p");
       p.classList.add("narration");
       p.textContent = line;
