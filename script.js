@@ -638,11 +638,6 @@ lines.forEach(line => {
   if (newCharacters.size > 0) {
     refreshSidebar();
   }
-      const filteredLines = lines.filter(line =>
-      !line.startsWith("#CURRENT SITUATION:") &&
-      !line.startsWith("The player narrates an action:") &&
-      !line.startsWith('"') &&  // Remove the echoed player input
-      !/^#PRESENT:|^#REMOTE:/i.test(line)
     );
   let lastLine = "";
   
@@ -774,7 +769,7 @@ lines.forEach(line => {
       const data = await response.json();
       const reply = data.choices[0].message.content.trim();
       const lines = reply.split("\n").filter(line => line.trim() !== "");
-
+//MEETTILO QUI
       
         const filteredLines = lines.filter(line =>
           !line.startsWith("#CURRENT SITUATION:") &&
