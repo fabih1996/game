@@ -758,6 +758,7 @@ const reply = replyRaw.trim();
         const btn = document.createElement("button");
         btn.className = "choice-btn";
         btn.textContent = choiceText;
+        console.log("Creo pulsante per:", choiceText);
         btn.onclick = () => {
           if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
             triggerExorcismEvent();
