@@ -366,6 +366,10 @@ let characters = [
     const newCharacters = new Set();
     const input = message.trim();
     if (!input) return;
+    // 🔒 Assicura che il Narrator sia sempre presente
+      if (!characterExists("Narrator")) {
+        characters.push({ name: "Narrator", status: "present" });
+      }
   
     const storyDiv = document.getElementById("story");
   const speakerNames = characters
@@ -458,7 +462,8 @@ let characters = [
     [Call Castiel]
     [Look for weapons]
   
-  Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}.
+  Only the following characters are allowed to speak: ${selectedCharacters.join(", ")}, and the Narrator.
+  The Narrator is always allowed to describe, connect, or respond to the player's actions, even if no other character is present..
   - DO NOT include dialogue or actions for characters not in this list.
   - If a new character enters the story, include them only in narration.
   - The player must explicitly add a character before they can speak.
@@ -530,13 +535,13 @@ let characters = [
   
     if (
       name.toLowerCase() !== player.name.toLowerCase() &&
-      !characterExists(name) &&
-      !newCharacters.has(name) && // 👈 solo se GPT l'ha introdotto prima
-      !selectedCharacters.includes(name) &&
       name !== "Narrator" &&
+      !characterExists(name) &&
+      !newCharacters.has(name) &&
+      !selectedCharacters.includes(name) &&
       !blockedNames.includes(name.toLowerCase())
     ) {
-      return; // ❌ non lo processiamo
+      return;
     }
   
     const p = document.createElement("p");
