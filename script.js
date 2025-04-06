@@ -504,7 +504,8 @@ const reply = replyRaw.trim();
     }
     
     const reply = data.choices[0].message.content.trim();
-      const lines = reply.split("\n").filter(line => line.trim() !== "");
+    console.log("GPT reply:", reply);
+    const lines = reply.split("\n").filter(line => line.trim() !== "");
   
   lines.forEach(line => {
     const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
