@@ -774,6 +774,14 @@ lines.forEach(line => {
       const data = await response.json();
       const reply = data.choices[0].message.content.trim();
       const lines = reply.split("\n").filter(line => line.trim() !== "");
+
+      
+        const filteredLines = lines.filter(line =>
+          !line.startsWith("#CURRENT SITUATION:") &&
+          !line.startsWith("The player narrates an action:") &&
+          !line.startsWith('"') &&
+          !/^#PRESENT:|^#REMOTE:/i.test(line)
+        );
   
       lines.forEach(line => {
         const p = document.createElement("p");
