@@ -559,36 +559,44 @@ let characters = [
           characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
       );
   
-  lines.forEach(line => {
-    if (/^[A-Z][a-z]+:/.test(line)) {
-      const name = line.split(":")[0].trim();
-  
-      const blockedNames = [
-        "creature", "lurker", "shadow", "figure",
-        "thing", "entity", "monster", "spirit",
-        "demon", "ghost", "voice", "presence"
-      ];
-  
-      // ❌ NON aggiungere personaggi mai apparsi esplicitamente
-      if (
-        !characterExists(name) &&
-        !newCharacters.has(name) &&  // deve venire da #PRESENT o #REMOTE
-        !selectedCharacters.includes(name) &&
-        name !== player.name &&
-        name !== "Narrator" &&
-        !blockedNames.includes(name.toLowerCase())
-      ) {
-        return;
-      }
-  
-      // Mostra battuta solo se è ammessa
-      const p = document.createElement("p");
-      p.className = `character-color-${name}`;
-      p.textContent = line;
-      storyDiv.appendChild(p);
-      triggerSounds(line);
+lines.forEach(line => {
+  const colonIndex = line.indexOf(":");
+  const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
+
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure",
+    "thing", "entity", "monster", "spirit",
+    "demon", "ghost", "voice", "presence"
+  ];
+
+  // 🎭 SE È UNA BATTUTA
+  if (/^[A-Z][a-z]+:/.test(line)) {
+    if (
+      name.toLowerCase() !== player.name.toLowerCase() &&
+      name !== "Narrator" &&
+      !characterExists(name) &&
+      !newCharacters.has(name) &&
+      !selectedCharacters.includes(name) &&
+      !blockedNames.includes(name.toLowerCase())
+    ) {
+      return;
     }
-  });
+
+    const p = document.createElement("p");
+    p.className = `character-color-${name}`;
+    p.textContent = line;
+    storyDiv.appendChild(p);
+    triggerSounds(line);
+
+  } else {
+    // 📝 ALTRIMENTI È NARRAZIONE
+    const p = document.createElement("p");
+    p.classList.add("narration");
+    p.textContent = line;
+    storyDiv.appendChild(p);
+    triggerSounds(line);
+  }
+});
   const blockedNames = [
     "creature", "lurker", "shadow", "figure",
     "thing", "entity", "monster", "spirit",
