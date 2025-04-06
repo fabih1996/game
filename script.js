@@ -626,18 +626,6 @@ lines.forEach(line => {
     "demon", "ghost", "voice", "presence"
   ];
   
-  if (
-    speaker !== player.name &&
-    speaker !== "Narrator" &&
-    !characterExists(speaker) &&
-    !blockedNames.includes(speaker.toLowerCase())
-  ) {
-    characters.push({ name: speaker, status: "present" });
-    if (!selectedCharacters.includes(speaker)) {
-      selectedCharacters.push(speaker);
-    }
-    newCharacters.add(speaker);
-  }
   } catch (err) {
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
