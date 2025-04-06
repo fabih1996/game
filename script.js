@@ -565,6 +565,20 @@ choiceLines.forEach(choice => {
       selectedCharacters.push(name);
     }
     newCharacters.add(name);
+    
+  // 👇 Aggiungiamo SEMPRE la notifica (anche se non era pending)
+  const msg = document.createElement("p");
+  msg.className = "narration";
+  msg.textContent = `${name} has arrived.`;
+  storyDiv.appendChild(msg);
+
+  triggerSounds("character_arrived");
+
+  // Rimuoviamo da pending se serve
+  if (pendingArrival.has(name)) {
+    pendingArrival.delete(name);
+  }
+}
   }
     // ✅ Se il personaggio era in pendingArrival, lo rimuoviamo
 if (presentMatch) {
@@ -625,24 +639,27 @@ if (presentMatch) {
       removeCharacter(name); // Funzione che aggiungeremo tra poco
       continue; // Passa alla prossima riga
     }
-if (/^[A-Z][a-z]+:/.test(line)) {
+if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   const name = line.split(":")[0].trim();
 
   const blockedNames = [
-    "creature", "lurker", "shadow", "figure",
-    "thing", "entity", "monster", "spirit",
-    "demon", "ghost", "voice", "presence"
+    "creature", "lurker", "shadow", "figure", "thing",
+    "entity", "monster", "spirit", "demon", "ghost",
+    "voice", "presence", "apparition", "evil", "darkness",
+    "phantom", "force", "being"
   ];
+
+  if (blockedNames.includes(name.toLowerCase())) {
+    continue; // 👈 NON return!
+  }
 
   if (
     name.toLowerCase() !== player.name.toLowerCase() &&
     name !== "Narrator" &&
     !characterExists(name) &&
     !newCharacters.has(name) &&
-    !selectedCharacters.includes(name) &&
-    !blockedNames.includes(name.toLowerCase())
+    !selectedCharacters.includes(name)
   ) {
-    // 👇 ADESSO: invece di return, aggiungiamolo come remoto
     characters.push({ name, status: "remote" });
     selectedCharacters.push(name);
     newCharacters.add(name);
