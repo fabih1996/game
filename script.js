@@ -638,7 +638,6 @@ lines.forEach(line => {
   if (newCharacters.size > 0) {
     refreshSidebar();
   }
-    );
   let lastLine = "";
   
   for (const line of filteredLines) {
