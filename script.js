@@ -344,7 +344,15 @@ let characters = [
     return;
   }
   
-  const reply = data.choices[0].message.content.trim();
+  const replyRaw = data.choices[0].message.content;
+
+if (!replyRaw || replyRaw.trim() === "") {
+  alert("GPT returned an empty response.");
+  console.error("GPT reply was empty:", data);
+  return;
+}
+
+const reply = replyRaw.trim();
   
     if (reply.includes("yes-present")) return "present";
     if (reply.includes("yes-remote")) return "remote";
