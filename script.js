@@ -93,6 +93,7 @@ let characters = [
       wrapper.style.position = "relative";
   
       const img = document.createElement("img");
+      img.classList.add("char-icon");
       const sanitizedName = name.toLowerCase().replace(/\s+/g, "");
   
       let imgSrc;
@@ -525,7 +526,7 @@ choiceLines.forEach(choice => {
     if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
       triggerExorcismEvent();
     }
-    sendToGPT(choiceText, "dialogue");
+    sendToGPT(choiceText, "narration");
   };
   choicesDiv.appendChild(btn);
 });
