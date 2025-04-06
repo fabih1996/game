@@ -3,8 +3,11 @@
 let characters = [
     { name: "Narrator", status: "present" }  // status può essere "present" o "remote"
   ];
-  let selectedCharacters = ["Narrator"];
-  let player = {
+let selectedCharacters = ["Narrator"];
+
+let pendingArrival = new Set();
+
+let player = {
     name: "User",
     isCustom: true,
     color: "#3399ff"
@@ -311,6 +314,16 @@ function removeCharacter(name) {
         break;
       }
     }
+        // 👇 Aggiungi da qui in giù
+  if (text === "character_arrived") {
+    const arrivalAudio = document.getElementById("sound-arrival");
+    if (arrivalAudio) {
+      arrivalAudio.pause();
+      arrivalAudio.currentTime = 0;
+      arrivalAudio.volume = 0.8;
+      arrivalAudio.play();
+    }
+  }
   }
   
   async function askCharacterArbiter(name, line, context) {
@@ -553,6 +566,34 @@ choiceLines.forEach(choice => {
     }
     newCharacters.add(name);
   }
+    // ✅ Se il personaggio era in pendingArrival, lo rimuoviamo
+if (presentMatch) {
+  const name = presentMatch[1].trim();
+  const existing = characters.find(c => c.name === name);
+
+  if (existing) {
+    existing.status = "present";
+  } else {
+    characters.push({ name, status: "present" });
+  }
+
+  if (!selectedCharacters.includes(name)) {
+    selectedCharacters.push(name);
+  }
+
+  newCharacters.add(name);
+
+  // 👇 Se era in arrivo, lo rimuoviamo e mostriamo un messaggio
+  if (pendingArrival.has(name)) {
+    pendingArrival.delete(name);
+    const msg = document.createElement("p");
+    msg.className = "narration";
+    msg.textContent = `${name} has arrived.`;
+    storyDiv.appendChild(msg);
+
+    triggerSounds("character_arrived");
+  }
+}
   
     if (remoteMatch) {
       const name = remoteMatch[1].trim();
@@ -567,6 +608,12 @@ choiceLines.forEach(choice => {
   });
   
   for (const line of lines) {
+    const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
+    if (arrivalMatch) {
+      const name = arrivalMatch[1].trim();
+      console.log(`🕒 ${name} marked as pending arrival`);
+      pendingArrival.add(name);
+    }
     const leaveMatch = line.match(/^#LEAVE:\s*(.+)$/);
     if (leaveMatch) {
       const name = leaveMatch[1].trim();
