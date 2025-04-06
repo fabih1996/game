@@ -149,17 +149,19 @@ let characters = [
     });
   }
   
-  function removeCharacter(name) {
-    characters = characters.filter(c => c.name !== name);
-    selectedCharacters = selectedCharacters.filter(n => n !== name);
-    newCharacters.delete(name);
-  
-    // Rimuove l'icona dalla sidebar
-    const icon = document.querySelector(`.char-icon[data-name="${name}"]`);
-    if (icon) icon.remove();
-  
-    refreshSidebar();
-  }
+function removeCharacter(name) {
+  const loweredName = name.toLowerCase();
+
+  characters = characters.filter(c => c.name.toLowerCase() !== loweredName);
+  selectedCharacters = selectedCharacters.filter(n => n.toLowerCase() !== loweredName);
+  newCharacters.delete(name);
+
+  // Rimuove l'icona dalla sidebar
+  const icon = document.querySelector(`.char-icon[data-name="${name}"]`);
+  if (icon) icon.remove();
+
+  refreshSidebar();
+}
   
   
   function setupActions() {
@@ -482,6 +484,9 @@ const reply = replyRaw.trim();
   If the player clearly asks a character to leave (e.g. "please go", "leave me alone", "you can go now"), and that character is a peaceful or cooperative supernatural presence (like a ghost seeking closure), then you may end their presence with:
   
   #LEAVE: CharacterName
+
+  - If a conversation with a remote character clearly ends (for example, the player hangs up, says goodbye, or no longer engages with that character), and that character is not needed in the next action, you may end the call with:
+  #LEAVE: CharacterName
   
   Do NOT use this tag for hostile or uncooperative entities (e.g. demons, monsters, or aggressive spirits) unless the context makes their exit logical (e.g. they flee, are banished, or retreat for story reasons).
   `;
@@ -562,6 +567,12 @@ choiceLines.forEach(choice => {
   });
   
   for (const line of lines) {
+    const leaveMatch = line.match(/^#LEAVE:\s*(.+)$/);
+    if (leaveMatch) {
+      const name = leaveMatch[1].trim();
+      removeCharacter(name);
+      continue; // 👈 importante per evitare che venga processata come normale riga di testo
+    }
     if (line.startsWith("#LEAVE:")) {
       const name = line.replace("#LEAVE:", "").trim();
       removeCharacter(name); // Funzione che aggiungeremo tra poco
