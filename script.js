@@ -57,9 +57,24 @@ let characters = [
   let characterKnowledge = "";
   
   async function loadCharacterLore() {
+        try {
+                const response = await fetch("supernatural_character_profiles.txt");
+                characterKnowledge = await response.text();
+                console.log("Character lore loaded.");
+            } catch (err) {
+                console.error("Failed to load character lore:", err);
+                characterKnowledge = "";
+  }
   }
   
   function loadIntro() {
+        const intro = randomIntros[Math.floor(Math.random() * randomIntros.length)];
+        const storyDiv = document.getElementById("story");
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = intro;
+        storyDiv.appendChild(p);
+        triggerSounds(intro);
   }
   
   const characterImages = {}; // memorizza l’immagine scelta per ogni personaggio
