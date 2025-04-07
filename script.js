@@ -553,33 +553,39 @@ choiceLines.forEach(choice => {
     const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
     const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
   
-  if (presentMatch) {
-    const name = presentMatch[1].trim();
-    const existing = characters.find(c => c.name === name);
-    if (existing) {
-      existing.status = "present"; // 👈 make sure their status is updated
-    } else {
-      characters.push({ name, status: "present" });
-    }
-    if (!selectedCharacters.includes(name)) {
-      selectedCharacters.push(name);
-    }
-    newCharacters.add(name);
-    
-  // 👇 Aggiungiamo SEMPRE la notifica (anche se non era pending)
-  const msg = document.createElement("p");
-  msg.className = "narration";
-  msg.textContent = `${name} has arrived.`;
-  storyDiv.appendChild(msg);
+if (presentMatch) {
+  const name = presentMatch[1].trim();
+  const existing = characters.find(c => c.name === name);
 
-  triggerSounds("character_arrived");
+  const wasAlreadyPresent = existing && existing.status === "present";
 
-  // Rimuoviamo da pending se serve
+  if (existing) {
+    existing.status = "present"; // aggiorna stato
+  } else {
+    characters.push({ name, status: "present" });
+  }
+
+  if (!selectedCharacters.includes(name)) {
+    selectedCharacters.push(name);
+  }
+
+  newCharacters.add(name);
+
+  // ✅ Mostra la notifica solo se NON era già presente
+  if (!wasAlreadyPresent) {
+    const msg = document.createElement("p");
+    msg.className = "narration";
+    msg.textContent = `${name} has arrived.`;
+    storyDiv.appendChild(msg);
+
+    triggerSounds("character_arrived");
+  }
+
+  // ✅ Rimuoviamo da pending se necessario
   if (pendingArrival.has(name)) {
     pendingArrival.delete(name);
   }
-//}
-  }
+}
     // ✅ Se il personaggio era in pendingArrival, lo rimuoviamo
 if (presentMatch) {
   const name = presentMatch[1].trim();
