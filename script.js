@@ -578,7 +578,7 @@ choiceLines.forEach(choice => {
   if (pendingArrival.has(name)) {
     pendingArrival.delete(name);
   }
-}
+//}
   }
     // ✅ Se il personaggio era in pendingArrival, lo rimuoviamo
 if (presentMatch) {
