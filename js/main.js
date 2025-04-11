@@ -61,27 +61,4 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
-/**
- * Funzione per avviare il gioco. Viene richiamata al click di un pulsante.
- */
-function startGame() {
-  const selection = document.getElementById("playerSelect").value;
-  if (selection === "custom") {
-    const name = document.getElementById("playerName").value.trim();
-    if (name) player.name = name;
-    player.isCustom = true;
-  } else if (selection !== "") {
-    player.name = selection;
-    player.isCustom = false;
-  }
-  // Imposta il colore del giocatore e aggiorna l'interfaccia
-  player.color = "#3399ff";
-  characterColors["User"] = "#3399ff";
-  document.getElementById("user-character-select").style.display = "none";
-  document.getElementById("game-interface").style.display = "block";
-  refreshSidebar();
-  loadIntro();
-}
-
-// Rendi startGame accessibile a livello globale (usato da index.html)
 window.startGame = startGame;
