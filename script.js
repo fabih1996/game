@@ -866,6 +866,7 @@ lines.forEach(line => {
       storyDiv.appendChild(msg);
       triggerSounds("character_arrived");
     }
+    refreshSidebar();
   }
 
   const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
