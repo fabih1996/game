@@ -645,6 +645,14 @@ if (presentMatch) {
     }
 if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   const name = line.split(":")[0].trim();
+      // Non elaborare personaggi non ancora presenti
+  const isKnownCharacter = characters.some(c => c.name === name);
+  const isNarrator = name === "Narrator";
+  const isPlayer = name === player.name;
+
+  if (!isKnownCharacter && !isNarrator && !isPlayer) {
+    return; // 🔒 ignoriamo la battuta se non è un personaggio entrato nella scena
+  }
 
   const blockedNames = [
     "creature", "lurker", "shadow", "figure", "thing",
