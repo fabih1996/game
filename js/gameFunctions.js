@@ -4,18 +4,19 @@
 // Variabili globali di gioco
 // ---------------------------
 let characters = [
-  { name: "Narrator", status: "present" }  // status: "present" o "remote"
+  { name: "Narrator", status: "present" }  // status: "present" (ora non usiamo "remote")
 ];
 let selectedCharacters = ["Narrator"];
 let pendingArrival = new Set();
 const newCharacters = new Set();
 let characterKnowledge = "";
 
-//costruiamo la variabile player
+// Variabile player (verrà impostata tramite setPlayer da main.js)
 let player;
 function setPlayer(p) {
   player = p;
 }
+
 // Impostazioni predefinite per azioni e intros
 const quickActions = [
   "Let's go to the Impala",
@@ -95,16 +96,16 @@ function loadIntro() {
 // ------------------------------------------
 
 /**
- * Aggiorna la sidebar dei personaggi (presenti e remoti) in base allo stato.
+ * Aggiorna la sidebar dei personaggi (presenti) in base allo stato.
  */
 function refreshSidebar() {
   const presentList = document.getElementById("charListPresent");
-  const remoteList = document.getElementById("charListRemote");
+  // In questa versione non utilizziamo la sezione "remote" (rimuoviamo quella lista)
   presentList.innerHTML = "";
-  remoteList.innerHTML = "";
   
   const knownNames = Object.keys(characterColors);
   characters.forEach(({ name, status }) => {
+    // Trattiamo tutti i personaggi come "present"
     const li = document.createElement("li");
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
@@ -160,50 +161,47 @@ function refreshSidebar() {
     wrapper.appendChild(img);
     wrapper.appendChild(dismissBtn);
     li.appendChild(wrapper);
-    
-    if (status === "present") presentList.appendChild(li);
-    else if (status === "remote") remoteList.appendChild(li);
+    presentList.appendChild(li);
   });
 }
 
 /**
-* Add custom character function
-*/
-
-  function addCustomCharacter() {
-    const name = document.getElementById("customCharName").value.trim();
-    const status = document.getElementById("customCharStatus").value;
+ * Aggiunge un personaggio personalizzato.
+ */
+function addCustomCharacter() {
+  const name = document.getElementById("customCharName").value.trim();
+  const status = document.getElementById("customCharStatus").value;
   
-    if (!name || characterExists(name)) return;
+  if (!name || characterExists(name)) return;
   
-    addCharacter(name, status);
-    allAvailableCharacters.push(name);
+  addCharacter(name, status);
+  allAvailableCharacters.push(name);
   
-    if (status === "present") {
-      selectedCharacters.push(name); // Present means selectable
-    }
-  
-    refreshSidebar();
-    loadDropdown();
-  
-    document.getElementById("customCharName").value = "";
-    document.getElementById("customCharDesc").value = "";
-    document.getElementById("customCharStatus").value = "present";
-    document.getElementById("customCharFields").style.display = "none";
+  if (status === "present") {
+    selectedCharacters.push(name);
   }
+  
+  refreshSidebar();
+  loadDropdown();
+  
+  document.getElementById("customCharName").value = "";
+  document.getElementById("customCharDesc").value = "";
+  document.getElementById("customCharStatus").value = "present";
+  document.getElementById("customCharFields").style.display = "none";
+}
 
 /**
- * Aggiungi i personaggi
+ * Aggiunge un personaggio dalla selezione.
  */
-  function addSelectedCharacter() {
-    const dropdown = document.getElementById("charDropdown");
-    const name = dropdown.value;
-    if (name && name !== "Other..." && !characters.includes(name)) {
-      addCharacter(name, "present");
-      refreshSidebar();
-      dropdown.value = "";
-    }
+function addSelectedCharacter() {
+  const dropdown = document.getElementById("charDropdown");
+  const name = dropdown.value;
+  if (name && name !== "Other..." && !characterExists(name)) {
+    addCharacter(name, "present");
+    refreshSidebar();
+    dropdown.value = "";
   }
+}
 
 /**
  * Popola il dropdown per la scelta dei personaggi.
@@ -246,9 +244,9 @@ function characterExists(name) {
 }
 
 /**
- * Aggiunge un personaggio alla lista, con stato predefinito "remote" se non specificato.
+ * Aggiunge un personaggio alla lista, impostandolo come "present".
  */
-function addCharacter(name, status = "remote") {
+function addCharacter(name, status = "present") {
   if (!characterExists(name)) {
     characters.push({ name, status });
     if (status === "present") selectedCharacters.push(name);
@@ -275,7 +273,7 @@ function removeCharacter(name) {
 // --------------------------------------
 
 /**
- * Imposta le azioni rapide (quick actions) nell'interfaccia.
+ * Imposta le azioni rapide nell'interfaccia.
  */
 function setupActions() {
   const container = document.getElementById("actions-container");
@@ -291,14 +289,13 @@ function setupActions() {
 
 /**
  * Invia un messaggio a GPT, costruendo un prompt basato sul contesto.
- * In questo esempio, puoi caricare la parte del prompt da un file di testo separato (es. supernatural_prompt.txt).
  */
 async function sendToGPT(message, type = "dialogue", isRandom = false) {
   newCharacters.clear();
   const input = message.trim();
   if (!input) return;
   
-  // Assicura che il Narrator sia sempre presente
+  // Assicurati che il Narrator sia sempre presente
   if (!characterExists("Narrator")) {
     characters.push({ name: "Narrator", status: "present" });
   }
@@ -329,17 +326,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   }
   storyDiv.appendChild(playerMsg);
   
-  // COSTRUISCI IL PROMPT:
-  // Qui puoi leggere il prompt da un file testo (ad esempio, utilizzando fetch su "texts/supernatural_prompt.txt")
+  // COSTRUISCI IL PROMPT: caricalo da un file di testo e sostituisci i placeholder
   let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
-  
-  // Sostituisci parti dinamiche del prompt
   prompt = prompt.replace("{{PLAYER_NAME}}", player.name)
                  .replace("{{STORY_CONTEXT}}", storyLines)
                  .replace("{{INPUT}}", input)
                  .replace("{{CHARACTERS}}", speakerNames);
   
-  // Se l'azione è casuale o diversa, modifica il prompt
   if (isRandom) {
     prompt += "\nThe player triggers a sudden supernatural event...";
   } else if (type === "narration") {
@@ -348,7 +341,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character.`;
   }
   
-  // Aggiungi alla fine eventuali tag richiesti (#PRESENT, #REMOTE, #LEAVE, ecc.)
+  // Aggiungi eventuali tag richiesti alla fine del prompt
   prompt += `
 # Trigger Tags:
 ...
@@ -375,13 +368,12 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     const reply = data.choices[0].message.content.trim();
     console.log("GPT reply:", reply);
     
-    // Processa la risposta eliminando eventuali tag sconosciuti
-    const validTags = ["#PRESENT:", "#REMOTE:", "#LEAVE:"];
+    const validTags = ["#PRESENT:", "#LEAVE:"];
     const lines = reply.split("\n")
       .map(line => line.trim())
       .filter(line => line && (line[0] !== "#" || validTags.some(tag => line.startsWith(tag))));
     
-    // Aggiungi le scelte (bottoni) se presenti
+    // Aggiungi le scelte (bottoni)
     const choicesDiv = document.getElementById("choices");
     const choiceLines = reply.split("\n").filter(line => line.trim().startsWith("["));
     choicesDiv.innerHTML = "";
@@ -399,24 +391,18 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       choicesDiv.appendChild(btn);
     });
     
-    // Gestione dei tag nella risposta per aggiornare i personaggi e visualizzare il testo
+    // Gestisci i tag presenti; qui non usiamo più tag REMOTE
     lines.forEach(line => {
-      const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
-      const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
-      
-      if (presentMatch) {
-        const name = presentMatch[1].trim();
+      if (/^#PRESENT:\s*(.+)$/.test(line)) {
+        const name = line.replace("#PRESENT:", "").trim();
         const existing = characters.find(c => c.name === name);
         const wasAlreadyPresent = existing && existing.status === "present";
-        
         if (existing) { existing.status = "present"; }
         else { characters.push({ name, status: "present" }); }
-        
         if (!selectedCharacters.includes(name)) {
           selectedCharacters.push(name);
         }
         newCharacters.add(name);
-        
         if (!wasAlreadyPresent) {
           const msg = document.createElement("p");
           msg.className = "narration";
@@ -427,23 +413,15 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
         if (pendingArrival.has(name)) pendingArrival.delete(name);
         refreshSidebar();
       }
-      
-      if (remoteMatch) {
-        const name = remoteMatch[1].trim();
-        if (!characterExists(name)) {
-          characters.push({ name, status: "remote" });
-        }
-        if (!selectedCharacters.includes(name)) {
-          selectedCharacters.push(name);
-        }
-        newCharacters.add(name);
-        refreshSidebar();
+      if (/^#LEAVE:\s*(.+)$/.test(line)) {
+        const name = line.replace("#LEAVE:", "").trim();
+        removeCharacter(name);
+        return;
       }
       
-      // Gestisci dialoghi e narrazione
+      // Gestione del dialogo o narrazione
       if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
         const name = line.split(":")[0].trim();
-        // Ignora nomi non autorizzati (es.: creature, ghost, ecc.)
         const blockedNames = ["creature", "lurker", "shadow", "figure", "thing", "entity", "monster", "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil", "darkness", "phantom", "force", "being"];
         if (blockedNames.includes(name.toLowerCase())) return;
         if (name.toLowerCase() !== player.name.toLowerCase() &&
@@ -451,7 +429,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
             !characterExists(name) &&
             !newCharacters.has(name) &&
             !selectedCharacters.includes(name)) {
-          characters.push({ name, status: "remote" });
+          characters.push({ name, status: "present" });
           selectedCharacters.push(name);
           newCharacters.add(name);
         }
@@ -504,7 +482,7 @@ function triggerSounds(text) {
       break;
     }
   }
-  // Suono specifico per l'arrivo di un personaggio
+  
   if (text === "character_arrived") {
     const arrivalAudio = document.getElementById("sound-arrival");
     if (arrivalAudio) {
@@ -538,7 +516,8 @@ function scheduleArrival(characterName, delay) {
 }
 
 /**
- * Invia una richiesta per stabilire se un personaggio deve essere aggiunto come presente o remoto.
+ * Invia una richiesta per stabilire se un personaggio deve essere aggiunto come presente.
+ * (Funzione per eventuali controlli, se necessario.)
  */
 async function askCharacterArbiter(name, line, context) {
   const prompt = `
@@ -562,7 +541,6 @@ You're helping moderate a roleplaying game.
     }
     const reply = replyRaw.trim();
     if (reply.includes("yes-present")) return "present";
-    if (reply.includes("yes-remote")) return "remote";
     return null;
   } catch (err) {
     console.error("Error asking arbiter:", err);
@@ -597,7 +575,6 @@ The player wants to dismiss this character in a way that fits the context.
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
     
-    // Gestione dei tag specifici (PRESENT, REMOTE, LEAVE)
     lines.forEach(line => {
       const trimmedLine = line.trim();
       if (trimmedLine.startsWith("#PRESENT:")) {
@@ -619,48 +596,37 @@ The player wants to dismiss this character in a way that fits the context.
         refreshSidebar();
         return;
       }
-      if (trimmedLine.startsWith("#REMOTE:")) {
-        const name = trimmedLine.replace("#REMOTE:", "").trim();
-        const existing = characters.find(c => c.name === name);
-        if (!existing) { characters.push({ name, status: "remote" }); }
-        else { existing.status = "remote"; }
-        if (!selectedCharacters.includes(name)) { selectedCharacters.push(name); }
-        newCharacters.add(name);
-        const msg = document.createElement("p");
-        msg.className = "narration";
-        msg.textContent = `${name} is now on the line.`;
-        storyDiv.appendChild(msg);
-        refreshSidebar();
-        return;
-      }
       if (trimmedLine.startsWith("#LEAVE:")) {
         const name = trimmedLine.replace("#LEAVE:", "").trim();
         removeCharacter(name);
         return;
       }
       
-      // Gestione del dialogo o narrazione
-      const colonIndex = trimmedLine.indexOf(":");
-      const charName = colonIndex !== -1 ? trimmedLine.slice(0, colonIndex).trim() : "";
-      const isDialogue = /^[A-Z][a-zA-Z\s'-]+:/.test(trimmedLine);
-      const blockedNames = ["creature", "lurker", "shadow", "figure", "thing", "entity", "monster", "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil", "darkness", "phantom", "force", "being"];
-      
-      if (isDialogue && !characterExists(charName) && !newCharacters.has(charName) && !selectedCharacters.includes(charName)) {
-        characters.push({ name: charName, status: "remote" });
-        selectedCharacters.push(charName);
-        newCharacters.add(charName);
-      }
-      
-      const p = document.createElement("p");
-      if (isDialogue) {
-        p.className = `character-color-${charName}`;
+      if (/^[A-Z][a-zA-Z\s'-]+:/.test(trimmedLine)) {
+        const name = trimmedLine.split(":")[0].trim();
+        const blockedNames = ["creature", "lurker", "shadow", "figure", "thing", "entity", "monster", "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil", "darkness", "phantom", "force", "being"];
+        if (blockedNames.includes(name.toLowerCase())) return;
+        if (name.toLowerCase() !== player.name.toLowerCase() &&
+            name !== "Narrator" &&
+            !characterExists(name) &&
+            !newCharacters.has(name) &&
+            !selectedCharacters.includes(name)) {
+          characters.push({ name, status: "present" });
+          selectedCharacters.push(name);
+          newCharacters.add(name);
+        }
+        const p = document.createElement("p");
+        p.className = `character-color-${name}`;
         p.textContent = trimmedLine;
+        storyDiv.appendChild(p);
+        triggerSounds(line);
       } else {
+        const p = document.createElement("p");
         p.classList.add("narration");
         p.textContent = trimmedLine;
+        storyDiv.appendChild(p);
+        triggerSounds(line);
       }
-      storyDiv.appendChild(p);
-      triggerSounds(trimmedLine);
     });
     refreshSidebar();
   } catch (err) {
@@ -716,27 +682,32 @@ function triggerExorcismEvent() {
     overlay.classList.add('hidden');
   }, 5500);
 }
-// FUNZIONE DI INIZIO GIOCO
-//---------//
-  function startGame() {
-    const selection = document.getElementById("playerSelect").value;
-    if (selection === "custom") {
-      const name = document.getElementById("playerName").value.trim();
-      if (name) player.name = name;
-      player.isCustom = true;
-    } else if (selection !== "") {
-      player.name = selection;
-      player.isCustom = false;
-    }
-    characterColors["User"] = "#3399ff";
-    document.getElementById("user-character-select").style.display = "none";
-    document.getElementById("game-interface").style.display = "block";
-    refreshSidebar();
-    loadIntro();
-  }
 
-// Esempio di export (ES6 Modules)
+/**
+ * Funzione per avviare il gioco.
+ */
+function startGame() {
+  const selection = document.getElementById("playerSelect").value;
+  if (selection === "custom") {
+    const name = document.getElementById("playerName").value.trim();
+    if (name) player.name = name;
+    player.isCustom = true;
+  } else if (selection !== "") {
+    player.name = selection;
+    player.isCustom = false;
+  }
+  characterColors["User"] = "#3399ff";
+  document.getElementById("user-character-select").style.display = "none";
+  document.getElementById("game-interface").style.display = "block";
+  refreshSidebar();
+  loadIntro();
+}
+
+// -------------------------------
+// Export delle funzioni da usare in main.js
+// -------------------------------
 export {
+  setPlayer,
   loadDropdown,
   setupActions,
   loadCharacterLore,
@@ -749,7 +720,5 @@ export {
   addCustomCharacter,
   sendToGPT,
   dismissCharacter,
-  setPlayer,
   scheduleArrival
-  // ... aggiungi qui tutte le altre funzioni da usare in main.js
 };
