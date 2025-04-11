@@ -617,3 +617,34 @@ choiceLines.forEach(choice => {
   console.error("Fetch failed:", error);
 }
 }
+
+async function startGame() {
+  const initialScenario = await getRandomScenario();
+  const storyDiv = document.getElementById("story");
+  storyDiv.innerHTML = "";
+  
+  const initialMsg = document.createElement("p");
+  initialMsg.className = "narration";
+  initialMsg.textContent = initialScenario;
+  storyDiv.appendChild(initialMsg);
+
+  await sendToGPT(initialScenario, "initial");
+}
+
+async function getRandomScenario() {
+  const response = await fetch("scenarios.txt");
+  const scenariosText = await response.text();
+  const scenarios = scenariosText.split("\n").filter(Boolean);
+  return scenarios[Math.floor(Math.random() * scenarios.length)];
+}
+
+window.onload = function () {
+  populateCharacterDropdown();
+  document.getElementById("userInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendToGPT(this.value, "dialogue");
+      this.value = "";
+    }
+  });
+};
