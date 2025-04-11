@@ -525,15 +525,287 @@ if (isRandom) {
       return;
     }
     
-    
-const reply = data.choices[0].message.content.trim();
-console.log("GPT reply:", reply);
-const lines = reply.split("\n").filter(line => line.trim() !== "");
+    const reply = data.choices[0].message.content.trim();
+    console.log("GPT reply:", reply);
+    const lines = reply.split("\n").filter(line => line.trim() !== "");
+    // Aggiungi scelte come bottoni (dopo risposta GPT)
+const choicesDiv = document.getElementById("choices");
+const choiceLines = reply
+  .split("\n")
+  .filter(line => line.trim().startsWith("["));
 
-// --- Personaggi presenti/remoti e gestione sidebar definitiva ---
+choicesDiv.innerHTML = "";
+
+choiceLines.forEach(choice => {
+  const choiceText = choice.replace(/[\[\]]/g, "");
+  const btn = document.createElement("button");
+  btn.className = "choice-btn";
+  btn.textContent = choiceText;
+  btn.onclick = () => {
+    if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+      triggerExorcismEvent();
+    }
+    sendToGPT(choiceText, "narration");
+  };
+  choicesDiv.appendChild(btn);
+});
+  
+  lines.forEach(line => {
+    const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
+    const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
+  
+if (presentMatch) {
+  const name = presentMatch[1].trim();
+  const existing = characters.find(c => c.name === name);
+
+  const wasAlreadyPresent = existing && existing.status === "present";
+
+  if (existing) {
+    existing.status = "present"; // ✅ aggiorna lo stato a "present"
+  } else {
+    characters.push({ name, status: "present" }); // 👈 aggiunge il personaggio se non esiste
+  }
+
+  if (!selectedCharacters.includes(name)) {
+    selectedCharacters.push(name); // 👈 serve per farlo parlare
+  }
+
+  newCharacters.add(name); // 👈 utile per aggiornare la sidebar
+
+  if (!wasAlreadyPresent) {
+    const msg = document.createElement("p");
+    msg.className = "narration";
+    msg.textContent = `${name} has arrived.`;
+    storyDiv.appendChild(msg);
+
+    triggerSounds("character_arrived"); // 🔊 suono arrivo
+  }
+
+  if (pendingArrival.has(name)) {
+    pendingArrival.delete(name);
+  }
+    refreshSidebar();
+}
+  
+    if (remoteMatch) {
+      const name = remoteMatch[1].trim();
+      if (!characterExists(name)) {
+        characters.push({ name, status: "remote" });
+      }
+      if (!selectedCharacters.includes(name)) {
+        selectedCharacters.push(name);
+      }
+      newCharacters.add(name);
+    }
+  });
+  
+  for (const line of lines) {
+    const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
+    if (arrivalMatch) {
+      const name = arrivalMatch[1].trim();
+      console.log(`🕒 ${name} marked as pending arrival`);
+      pendingArrival.add(name);
+    }
+    const leaveMatch = line.match(/^#LEAVE:\s*(.+)$/);
+    if (leaveMatch) {
+      const name = leaveMatch[1].trim();
+      removeCharacter(name);
+      continue; // 👈 importante per evitare che venga processata come normale riga di testo
+    }
+    if (line.startsWith("#LEAVE:")) {
+      const name = line.replace("#LEAVE:", "").trim();
+      removeCharacter(name); // Funzione che aggiungeremo tra poco
+      continue; // Passa alla prossima riga
+    }
+if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+  const name = line.split(":")[0].trim();
+      // Non elaborare personaggi non ancora presenti
+  const isKnownCharacter = characters.some(c => c.name === name);
+  const isNarrator = name === "Narrator";
+  const isPlayer = name === player.name;
+
+  if (!isKnownCharacter && !isNarrator && !isPlayer) {
+    return; // 🔒 ignoriamo la battuta se non è un personaggio entrato nella scena
+  }
+
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure", "thing",
+    "entity", "monster", "spirit", "demon", "ghost",
+    "voice", "presence", "apparition", "evil", "darkness",
+    "phantom", "force", "being"
+  ];
+if (blockedNames.includes(name.toLowerCase())) return; // 👈 Ignora del tutto
+
+
+  if (blockedNames.includes(name.toLowerCase())) {
+    continue; // 👈 NON return!
+  }
+
+if (
+  name.toLowerCase() !== player.name.toLowerCase() &&
+  name !== "Narrator" &&
+  !characterExists(name) &&
+  !newCharacters.has(name) &&
+  !selectedCharacters.includes(name) &&
+  !blockedNames.includes(name.toLowerCase()) // AGGIUNGI QUESTO
+) {
+  characters.push({ name, status: "remote" });
+  selectedCharacters.push(name);
+  newCharacters.add(name);
+}
+
+  const p = document.createElement("p");
+  p.className = `character-color-${name}`;
+  p.textContent = line;
+  storyDiv.appendChild(p);
+  triggerSounds(line);
+} else {
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = line;
+      storyDiv.appendChild(p);
+      triggerSounds(line);
+    }
+  }
+  
+      // Detect characters mentioned in narration
+      const allCharacterNames = allAvailableCharacters.concat(
+          characters.map(c => c.name).filter(name => !allAvailableCharacters.includes(name))
+      );
+       
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure",
+    "thing", "entity", "monster", "spirit",
+    "demon", "ghost", "voice", "presence"
+  ];
+  
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    alert("Something went wrong: " + err.message);
+  }
+  if (newCharacters.size > 0) {
+    refreshSidebar();
+  }
+  }
+  
+  function triggerRandomEvent() {
+    sendToGPT("random", "narration", true);
+  }
+  
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+  
+  function toggleMusic() {
+    const bgm = document.getElementById("background-music");
+    if (bgm) {
+      if (bgm.paused) {
+        bgm.volume = 0.3;
+        bgm.play();
+      } else {
+        bgm.pause();
+      }
+    }
+  }
+  
+  function triggerExorcismEvent() {
+    const overlay = document.getElementById('exorcism-overlay');
+    const ghost = document.getElementById('ghost');
+    const chant = document.getElementById('chant');
+  
+    overlay.classList.remove('hidden');
+    ghost.style.opacity = '1';
+    ghost.style.transform = 'translateY(0)';
+    chant.textContent = '"Exorcizamus te, omnis immundus spiritus..."';
+    chant.style.opacity = '1';
+  
+    setTimeout(() => {
+      ghost.style.opacity = '0';
+      ghost.style.transform = 'translateY(-150px)';
+    }, 500);
+  
+    setTimeout(() => {
+      chant.textContent = '"Spiritus expulsus est!"';
+    }, 3500);
+  
+    setTimeout(() => {
+      overlay.classList.add('hidden');
+    }, 5500);
+  }
+  
+  async function dismissCharacter(name) {
+    const storyDiv = document.getElementById("story");
+  
+    const recentStory = Array.from(storyDiv.querySelectorAll("p"))
+      .slice(-6)
+      .map(p => p.textContent)
+      .join("\n");
+  
+    const prompt = `
+  You are writing the next line in a Supernatural role-playing game.
+  
+  The character "${name}" is currently present in the scene.
+  
+  The player wants to dismiss this character in a way that fits the current context.
+  
+  Here is the recent story:
+  
+  ${recentStory}
+  
+  Write a short and in-character response where "${name}" leaves the scene, including any explanation or reason they might give.
+  
+  If it makes sense, end with:
+  #LEAVE: ${name}
+  
+  Rules:
+  - Keep the tone consistent with the story.
+  - If "${name}" is supernatural (e.g., ghost, angel), describe how they leave (e.g., vanishing, flying off).
+  - If "${name}" has no reason to stay, it's okay to leave silently or respectfully.
+  - Only use #LEAVE if they are really gone.
+  `;
+  
+    try {
+      const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+  
+      const data = await response.json();
+      const reply = data.choices[0].message.content.trim();
+      const lines = reply.split("\n").filter(line => line.trim() !== "");
+//MEETTILO QUI
+
+        // Patch for Option 3: remote → "on the way" → present
+// Apply to your existing `script.js`, inside the `sendToGPT` function
+
 lines.forEach(line => {
   const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
   const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
+
+  if (remoteMatch) {
+    const name = remoteMatch[1].trim();
+    const existing = characters.find(c => c.name === name);
+
+    if (!existing) {
+      characters.push({ name, status: "remote" });
+    } else {
+      existing.status = "remote";
+    }
+
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
+
+    newCharacters.add(name);
+
+    const msg = document.createElement("p");
+    msg.className = "narration";
+    msg.textContent = `${name} is now on the line.`;
+    storyDiv.appendChild(msg);
+  }
 
   if (presentMatch) {
     const name = presentMatch[1].trim();
@@ -552,99 +824,120 @@ lines.forEach(line => {
 
     newCharacters.add(name);
 
-    if (!wasAlreadyPresent) {
+    // Check if they were marked as pending
+    if (pendingArrival.has(name)) {
+      pendingArrival.delete(name);
+      const msg = document.createElement("p");
+      msg.className = "narration";
+      msg.textContent = `${name} has arrived.`;
+      storyDiv.appendChild(msg);
+      triggerSounds("character_arrived");
+    } else if (!wasAlreadyPresent) {
       const msg = document.createElement("p");
       msg.className = "narration";
       msg.textContent = `${name} has arrived.`;
       storyDiv.appendChild(msg);
       triggerSounds("character_arrived");
     }
-
-    if (pendingArrival.has(name)) {
-      pendingArrival.delete(name);
-    }
-
-    refreshSidebar();
-  }
-
-  if (remoteMatch) {
-    const name = remoteMatch[1].trim();
-    const existing = characters.find(c => c.name === name);
-
-    if (!existing) {
-      characters.push({ name, status: "remote" });
-      newCharacters.add(name);
-      selectedCharacters.push(name);
-
-      const msg = document.createElement("p");
-      msg.className = "narration";
-      msg.textContent = `${name} is now on the line.`;
-      storyDiv.appendChild(msg);
-    } else {
-      existing.status = "remote";
-    }
-
     refreshSidebar();
   }
 
   const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
   if (arrivalMatch) {
     const name = arrivalMatch[1].trim();
+    console.log(`🕒 ${name} marked as pending arrival`);
     pendingArrival.add(name);
   }
 });
 
-// --- Bottoni per le scelte (pulito) ---
-const choicesDiv = document.getElementById("choices");
-const choiceLines = reply
-  .split("\n")
-  .filter(line => line.trim().startsWith("["));
-
-choicesDiv.innerHTML = "";
-
-choiceLines.forEach(choice => {
-  const choiceText = choice.replace(/[\[\]]/g, "");
-  const btn = document.createElement("button");
-  btn.className = "choice-btn";
-  btn.textContent = choiceText;
-  btn.onclick = () => {
-    document.getElementById("userInput").value = choiceText;
-    sendToGPT(choiceText);
-  };
-  choicesDiv.appendChild(btn);
-});
-} catch (error) {
-  console.error("Fetch failed:", error);
-}
-}
-
-async function startGame() {
-  const initialScenario = await getRandomScenario();
-  const storyDiv = document.getElementById("story");
-  storyDiv.innerHTML = "";
+      
+        const filteredLines = lines.filter(line =>
+          !line.startsWith("#CURRENT SITUATION:") &&
+          !line.startsWith("The player narrates an action:") &&
+          !line.startsWith('"') &&
+          !/^#PRESENT:|^#REMOTE:/i.test(line)
+        );
+          let lastLine = "";
   
-  const initialMsg = document.createElement("p");
-  initialMsg.className = "narration";
-  initialMsg.textContent = initialScenario;
-  storyDiv.appendChild(initialMsg);
-
-  await sendToGPT(initialScenario, "initial");
-}
-
-async function getRandomScenario() {
-  const response = await fetch("scenarios.txt");
-  const scenariosText = await response.text();
-  const scenarios = scenariosText.split("\n").filter(Boolean);
-  return scenarios[Math.floor(Math.random() * scenarios.length)];
-}
-
-window.onload = function () {
-  populateCharacterDropdown();
-  document.getElementById("userInput").addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendToGPT(this.value, "dialogue");
-      this.value = "";
+  for (const line of filteredLines) {
+    if (line === lastLine) continue; // ❌ salta i duplicati esatti
+    lastLine = line;
+  
+    const colonIndex = line.indexOf(":");
+    const name = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
+  
+    if (name.toLowerCase() === player.name.toLowerCase()) continue;
+  
+    const p = document.createElement("p");
+    if (/^[A-Z][a-z]+:/.test(line)) {
+      p.className = `character-color-${name}`;
+      p.textContent = line;
+    } else {
+      p.classList.add("narration");
+      p.textContent = line;
     }
+    triggerSounds(line);
+    storyDiv.appendChild(p);
+  }
+  
+      lines.forEach(line => {
+        const p = document.createElement("p");
+        const colonIndex = line.indexOf(":");
+        const who = colonIndex !== -1 ? line.slice(0, colonIndex).trim() : "";
+  
+        if (/^#LEAVE:/i.test(line)) {
+          const toRemove = line.replace("#LEAVE:", "").trim();
+          removeCharacter(toRemove);
+          return;
+        }
+  
+        if (/^[A-Z][a-z]+:/.test(line)) {
+          p.className = `character-color-${who}`;
+          p.textContent = line;
+        } else {
+          p.classList.add("narration");
+          p.textContent = line;
+        }
+  
+        storyDiv.appendChild(p);
+      });
+      refreshSidebar();
+    } catch (err) {
+      console.error("Failed to dismiss character:", err);
+      alert("Failed to dismiss character: " + err.message);
+    }
+  }
+    
+window.addEventListener("DOMContentLoaded", async () => {
+    loadDropdown();
+    setupActions();
+    await loadCharacterLore();
+  
+    document.addEventListener("click", () => {
+      const bgm = document.getElementById("background-music");
+      if (bgm && bgm.paused) {
+        bgm.volume = 0.3;
+        bgm.play().catch(err => console.warn("Audio play blocked:", err));
+      }
+
+      if (arrivalAudio) {
+        arrivalAudio.play().then(() => {
+        arrivalAudio.pause();
+        arrivalAudio.currentTime = 0;
+    }).catch(err => console.warn("Arrival sound blocked:", err));
+  }
+    }, { once: true });
+  
+    const narrationInput = document.getElementById("narrationInput");
+    const dialogueInput = document.getElementById("dialogueInput");
+    [narrationInput, dialogueInput].forEach(input => {
+      input.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          const type = input === narrationInput ? "narration" : "dialogue";
+          sendToGPT(input.value, type);
+          input.value = "";
+        }
+      });
+    });
   });
-};
+  window.startGame = startGame;
