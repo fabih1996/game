@@ -795,6 +795,78 @@ if (
       const reply = data.choices[0].message.content.trim();
       const lines = reply.split("\n").filter(line => line.trim() !== "");
 //MEETTILO QUI
+
+        // Patch for Option 3: remote → "on the way" → present
+// Apply to your existing `script.js`, inside the `sendToGPT` function
+
+lines.forEach(line => {
+  const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
+  const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
+
+  if (remoteMatch) {
+    const name = remoteMatch[1].trim();
+    const existing = characters.find(c => c.name === name);
+
+    if (!existing) {
+      characters.push({ name, status: "remote" });
+    } else {
+      existing.status = "remote";
+    }
+
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
+
+    newCharacters.add(name);
+
+    const msg = document.createElement("p");
+    msg.className = "narration";
+    msg.textContent = `${name} is now on the line.`;
+    storyDiv.appendChild(msg);
+  }
+
+  if (presentMatch) {
+    const name = presentMatch[1].trim();
+    const existing = characters.find(c => c.name === name);
+    const wasAlreadyPresent = existing && existing.status === "present";
+
+    if (existing) {
+      existing.status = "present";
+    } else {
+      characters.push({ name, status: "present" });
+    }
+
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
+
+    newCharacters.add(name);
+
+    // Check if they were marked as pending
+    if (pendingArrival.has(name)) {
+      pendingArrival.delete(name);
+      const msg = document.createElement("p");
+      msg.className = "narration";
+      msg.textContent = `${name} has arrived.`;
+      storyDiv.appendChild(msg);
+      triggerSounds("character_arrived");
+    } else if (!wasAlreadyPresent) {
+      const msg = document.createElement("p");
+      msg.className = "narration";
+      msg.textContent = `${name} has arrived.`;
+      storyDiv.appendChild(msg);
+      triggerSounds("character_arrived");
+    }
+  }
+
+  const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
+  if (arrivalMatch) {
+    const name = arrivalMatch[1].trim();
+    console.log(`🕒 ${name} marked as pending arrival`);
+    pendingArrival.add(name);
+  }
+});
+
       
         const filteredLines = lines.filter(line =>
           !line.startsWith("#CURRENT SITUATION:") &&
