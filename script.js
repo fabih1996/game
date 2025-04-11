@@ -436,7 +436,7 @@ if (isRandom) {
   #REMOTE: CharacterName
   
   These tags must appear on a separate line, outside of narration or dialogue.
-  
+  ⚠️ DO NOT invent new tags like #RETREAT or #JOIN. Use ONLY these: #PRESENT, #REMOTE, #LEAVE.
   IMPORTANT BEHAVIOUR RULES:
   
   - If the player mentions a character (e.g. "I'll call Dean"), that character must NOT respond unless:
@@ -770,12 +770,45 @@ if (
         // Patch for Option 3: remote → "on the way" → present
 // Apply to your existing `script.js`, inside the `sendToGPT` function
 
-lines.forEach(line => {
-  const presentMatch = line.match(/^#PRESENT:\s*(.+)$/);
-  const remoteMatch = line.match(/^#REMOTE:\s*(.+)$/);
+const validTags = ["#PRESENT:", "#REMOTE:", "#LEAVE:"];
 
-  if (remoteMatch) {
-    const name = remoteMatch[1].trim();
+lines.forEach(line => {
+  const trimmedLine = line.trim();
+  if (!trimmedLine) return;
+
+  // 👇 GESTIONE TAG RICONOSCIUTI
+  if (trimmedLine.startsWith("#PRESENT:")) {
+    const name = trimmedLine.replace("#PRESENT:", "").trim();
+    const existing = characters.find(c => c.name === name);
+    const wasAlreadyPresent = existing && existing.status === "present";
+
+    if (existing) {
+      existing.status = "present";
+    } else {
+      characters.push({ name, status: "present" });
+    }
+
+    if (!selectedCharacters.includes(name)) {
+      selectedCharacters.push(name);
+    }
+
+    newCharacters.add(name);
+
+    if (!wasAlreadyPresent) {
+      const msg = document.createElement("p");
+      msg.className = "narration";
+      msg.textContent = `${name} has arrived.`;
+      storyDiv.appendChild(msg);
+      triggerSounds("character_arrived");
+    }
+
+    if (pendingArrival.has(name)) pendingArrival.delete(name);
+    refreshSidebar();
+    return;
+  }
+
+  if (trimmedLine.startsWith("#REMOTE:")) {
+    const name = trimmedLine.replace("#REMOTE:", "").trim();
     const existing = characters.find(c => c.name === name);
 
     if (!existing) {
@@ -794,49 +827,60 @@ lines.forEach(line => {
     msg.className = "narration";
     msg.textContent = `${name} is now on the line.`;
     storyDiv.appendChild(msg);
-  }
-
-  if (presentMatch) {
-    const name = presentMatch[1].trim();
-    const existing = characters.find(c => c.name === name);
-    const wasAlreadyPresent = existing && existing.status === "present";
-
-    if (existing) {
-      existing.status = "present";
-    } else {
-      characters.push({ name, status: "present" });
-    }
-
-    if (!selectedCharacters.includes(name)) {
-      selectedCharacters.push(name);
-    }
-
-    newCharacters.add(name);
-
-    // Check if they were marked as pending
-    if (pendingArrival.has(name)) {
-      pendingArrival.delete(name);
-      const msg = document.createElement("p");
-      msg.className = "narration";
-      msg.textContent = `${name} has arrived.`;
-      storyDiv.appendChild(msg);
-      triggerSounds("character_arrived");
-    } else if (!wasAlreadyPresent) {
-      const msg = document.createElement("p");
-      msg.className = "narration";
-      msg.textContent = `${name} has arrived.`;
-      storyDiv.appendChild(msg);
-      triggerSounds("character_arrived");
-    }
     refreshSidebar();
+    return;
   }
 
-  const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
-  if (arrivalMatch) {
-    const name = arrivalMatch[1].trim();
-    console.log(`🕒 ${name} marked as pending arrival`);
-    pendingArrival.add(name);
+  if (trimmedLine.startsWith("#LEAVE:")) {
+    const name = trimmedLine.replace("#LEAVE:", "").trim();
+    removeCharacter(name);
+    return;
   }
+
+  // 👇 IGNORA ALTRI TAG NON RICONOSCIUTI
+  if (trimmedLine.startsWith("#")) {
+    console.warn("⚠️ Ignored unknown tag:", trimmedLine);
+    return;
+  }
+
+  // 👇 GESTIONE DIALOGHI / NARRAZIONE
+  const colonIndex = trimmedLine.indexOf(":");
+  const name = colonIndex !== -1 ? trimmedLine.slice(0, colonIndex).trim() : "";
+
+  const isDialogue = /^[A-Z][a-zA-Z\s'-]+:/.test(trimmedLine);
+  const isNarrator = name === "Narrator";
+  const isPlayer = name === player.name;
+
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure", "thing",
+    "entity", "monster", "spirit", "demon", "ghost",
+    "voice", "presence", "apparition", "evil", "darkness",
+    "phantom", "force", "being"
+  ];
+
+  if (!isNarrator && !isPlayer && blockedNames.includes(name.toLowerCase())) return;
+
+  if (
+    isDialogue &&
+    !characterExists(name) &&
+    !newCharacters.has(name) &&
+    !selectedCharacters.includes(name)
+  ) {
+    characters.push({ name, status: "remote" });
+    selectedCharacters.push(name);
+    newCharacters.add(name);
+  }
+
+  const p = document.createElement("p");
+  if (isDialogue) {
+    p.className = `character-color-${name}`;
+    p.textContent = trimmedLine;
+  } else {
+    p.classList.add("narration");
+    p.textContent = trimmedLine;
+  }
+  storyDiv.appendChild(p);
+  triggerSounds(trimmedLine);
 });
 
       
