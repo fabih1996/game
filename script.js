@@ -417,8 +417,12 @@ const reply = replyRaw.trim();
   }
   storyDiv.appendChild(playerMsg);
   
-  let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
-  prompt += `The main character is named ${player.name}. Avoid calling them Dean or Sam. Use their name when characters speak to them.\n\n`;
+let prompt = `# INSTRUCTION:
+Never use the player's name ("${player.name}") in narration.
+Only use it in direct speech from other characters.
+Narration must be neutral — avoid naming the player or describing them externally.
+
+# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
  
 if (isRandom) {
     prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
