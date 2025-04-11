@@ -418,12 +418,14 @@ const reply = replyRaw.trim();
   storyDiv.appendChild(playerMsg);
   
 let prompt = `# INSTRUCTION:
-Never use the player's name ("${player.name}") in narration.
-Only use it in direct speech from other characters.
-Narration must be neutral — avoid naming the player or describing them externally.
+- Never use the player's name ("${player.name}") in narration.
+- Do NOT introduce new characters into the scene unless explicitly tagged with #PRESENT or #REMOTE.
+- Characters not in the present or remote list must NOT speak or act.
+- You may only include characters in narration if they are passively mentioned.
+- Never allow a character to respond unless already in the scene.
+- When in doubt, narrate the player’s perception — never confirm unseen characters as real.
 
 # Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
- 
 if (isRandom) {
     prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
 } else if (type === "narration") {
@@ -645,9 +647,16 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   const isNarrator = name === "Narrator";
   const isPlayer = name === player.name;
 
-  if (!isKnownCharacter && !isNarrator && !isPlayer) {
-    return; // 🔒 ignoriamo la battuta se non è un personaggio entrato nella scena
-  }
+if (
+  !isKnownCharacter &&
+  !isNarrator &&
+  !isPlayer &&
+  !newCharacters.has(name) &&
+  !selectedCharacters.includes(name)
+) {
+  console.warn("❌ Ignored unauthorized character:", name);
+  return; // ✅ BLOCCA dialoghi da personaggi non aggiunti correttamente
+}
 
   const blockedNames = [
     "creature", "lurker", "shadow", "figure", "thing",
