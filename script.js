@@ -659,17 +659,18 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
     continue; // 👈 NON return!
   }
 
-  if (
-    name.toLowerCase() !== player.name.toLowerCase() &&
-    name !== "Narrator" &&
-    !characterExists(name) &&
-    !newCharacters.has(name) &&
-    !selectedCharacters.includes(name)
-  ) {
-    characters.push({ name, status: "remote" });
-    selectedCharacters.push(name);
-    newCharacters.add(name);
-  }
+if (
+  name.toLowerCase() !== player.name.toLowerCase() &&
+  name !== "Narrator" &&
+  !characterExists(name) &&
+  !newCharacters.has(name) &&
+  !selectedCharacters.includes(name) &&
+  !blockedNames.includes(name.toLowerCase()) // AGGIUNGI QUESTO
+) {
+  characters.push({ name, status: "remote" });
+  selectedCharacters.push(name);
+  newCharacters.add(name);
+}
 
   const p = document.createElement("p");
   p.className = `character-color-${name}`;
