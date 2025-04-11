@@ -70,7 +70,34 @@ body {
   left: 0;
 }
 
-#charList li {
+/* Lista dei personaggi presenti */
+#charListPresent {
+  padding-left: 0;
+  margin-top: 10px;
+  list-style: none;
+}
+
+/* Se vuoi mantenere qualche stile per la lista remote, puoi anche commentarla o rimuoverla */
+/*
+#charListRemote {
+  padding-left: 0;
+  margin-top: 10px;
+  list-style: none;
+}
+
+#charListRemote li {
+  display: inline-block;
+  margin: 6px;
+}
+
+#charListRemote li::before {
+  content: "📞 ";
+  font-size: 12px;
+  color: #aaa;
+}
+*/
+
+#charListPresent li {
   display: inline-block;
   margin: 6px;
   cursor: pointer;
@@ -139,6 +166,7 @@ body {
   color: white;
   cursor: pointer;
 }
+
 .choice-btn:hover {
   background: #666;
 }
@@ -164,6 +192,7 @@ body {
   padding: 10px;
   cursor: pointer;
 }
+
 .action-btn:hover {
   background: #555;
 }
@@ -179,6 +208,7 @@ body {
   width: 100%;
   margin-top: 10px;
 }
+
 #rollDice:hover {
   background: #666;
 }
@@ -303,25 +333,13 @@ body {
   background-color: #555;
 }
 
-#charListPresent,
-#charListRemote {
-  padding-left: 0;
-  margin-top: 10px;
-  list-style: none;
-}
-
-#charListRemote li,
+/* Liste dei personaggi */
 #charListPresent li {
   display: inline-block;
   margin: 6px;
 }
 
-#charListRemote li::before {
-  content: "📞 ";
-  font-size: 12px;
-  color: #aaa;
-}
-
+/* Stili dei titoli nella sidebar */
 #sidebar h3, #sidebar h4 {
   margin-bottom: 4px;
   border-bottom: 1px solid #444;
