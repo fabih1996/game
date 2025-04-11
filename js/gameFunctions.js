@@ -689,6 +689,24 @@ function triggerExorcismEvent() {
     overlay.classList.add('hidden');
   }, 5500);
 }
+// FUNZIONE DI INIZIO GIOCO
+//---------//
+  function startGame() {
+    const selection = document.getElementById("playerSelect").value;
+    if (selection === "custom") {
+      const name = document.getElementById("playerName").value.trim();
+      if (name) player.name = name;
+      player.isCustom = true;
+    } else if (selection !== "") {
+      player.name = selection;
+      player.isCustom = false;
+    }
+    characterColors["User"] = "#3399ff";
+    document.getElementById("user-character-select").style.display = "none";
+    document.getElementById("game-interface").style.display = "block";
+    refreshSidebar();
+    loadIntro();
+  }
 
 // Esempio di export (ES6 Modules)
 export {
