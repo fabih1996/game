@@ -495,6 +495,30 @@ function triggerSounds(text) {
 }
 
 /**
+ * Verifica se una linea di testo è contestualmente appropriata rispetto al contesto corrente.
+ * @param {string} line - La linea di testo da verificare.
+ * @param {string} context - Il contesto corrente (tipicamente, le ultime linee della storia).
+ * @returns {boolean} - true se la linea è appropriata, false altrimenti.
+ */
+function isContextuallyAppropriate(line, context) {
+  const lowerLine = line.toLowerCase();
+  const lowerContext = context.toLowerCase();
+  
+  // Esempio: se il contesto contiene 'forest', 'woods' o 'outdoors',
+  // scarta le linee che contengono termini tipici degli ambienti interni.
+  if (/forest|woods|outdoors/.test(lowerContext)) {
+    if (/room|inside|hall|building/.test(lowerLine)) {
+      console.warn("Skipping line due to context mismatch:", line);
+      return false;
+    }
+  }
+  
+  // Puoi aggiungere ulteriori regole se necessario.
+  return true;
+}
+
+
+/**
  * Schedula l'arrivo di un personaggio modificando il suo stato a "present"
  * dopo un certo ritardo (in millisecondi).
  */
@@ -658,7 +682,7 @@ function toggleMusic() {
   }
 }
 
-function triggerExorcismEvent() {
+function triggerExorcismEvent() {x
   const overlay = document.getElementById('exorcism-overlay');
   const ghost = document.getElementById('ghost');
   const chant = document.getElementById('chant');
