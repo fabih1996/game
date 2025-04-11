@@ -423,7 +423,11 @@ const reply = replyRaw.trim();
 if (isRandom) {
     prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
 } else if (type === "narration") {
-  prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the **consequences** of the action — do **not repeat** what the player just did. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
+  prompt += `The player narrates an action:\n"${input}"\n\nWrite a short third-person continuation describing what happens **after** the action. 
+Do not describe the player’s thoughts, feelings, or repeat what the player did. 
+Do not use first-person narration. Keep it in third person. 
+Do not use "${player.name}:" — just describe what happens. 
+Keep the response concise and vivid. End with 2–3 realistic next options like:\n[Check the door]\n[Look under the bed]\n[Call someone]`;
 } else {
     prompt += `The player (${player.name}) says:\n"${input}"\n\nCharacters involved: ${speakerNames}\n\nContinue the story naturally and logically. Characters must respond as they would in the series, based on the character lore. Keep lines brief, reactive, and in-character. Avoid redundancy. Let the narrator add connecting context only when needed.
   
