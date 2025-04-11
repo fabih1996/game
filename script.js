@@ -609,8 +609,10 @@ if (presentMatch) {
       refreshSidebar();
     }
   });
-  
+  let lastPrintedLine = "";
   for (const line of lines) {
+    if (line === lastPrintedLine) continue; // ✅ Salta se è identico al precedente
+    lastPrintedLine = line;
     const arrivalMatch = line.match(/([A-Z][a-z]+) (is on his way|is coming|will arrive soon|will be joining us|is heading here)/i);
     if (arrivalMatch) {
       const name = arrivalMatch[1].trim();
