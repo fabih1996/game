@@ -18,7 +18,9 @@
     <ul id="charListRemote"></ul>
 
     <h4>Add Character</h4>
-    <select id="charDropdown"><option value="">-- Select character --</option></select>
+    <select id="charDropdown">
+      <option value="">-- Select character --</option>
+    </select>
     <button onclick="addSelectedCharacter()">Add</button>
 
     <div id="customCharFields" style="display: none;">
@@ -89,14 +91,15 @@
     <audio id="sound-arrival" src="sounds/arrival.mp3" preload="auto"></audio>
   </div>
 
-  <!-- JavaScript -->
-  <script type="module" src="script.js"></script>
-
   <!-- Exorcism Overlay -->
   <div id="exorcism-overlay" class="hidden">
     <div id="pentagram">⛧</div>
     <div id="ghost">👻</div>
     <div id="chant"></div>
   </div>
+
+  <!-- JavaScript -->
+  <!-- Il file main.js importa internamente le funzioni da gameFunctions.js -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
