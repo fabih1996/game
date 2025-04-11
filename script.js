@@ -654,6 +654,8 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
     "voice", "presence", "apparition", "evil", "darkness",
     "phantom", "force", "being"
   ];
+if (blockedNames.includes(name.toLowerCase())) return; // 👈 Ignora del tutto
+
 
   if (blockedNames.includes(name.toLowerCase())) {
     continue; // 👈 NON return!
@@ -864,6 +866,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         bgm.volume = 0.3;
         bgm.play().catch(err => console.warn("Audio play blocked:", err));
       }
+
+      if (arrivalAudio) {
+        arrivalAudio.play().then(() => {
+        arrivalAudio.pause();
+        arrivalAudio.currentTime = 0;
+    }).catch(err => console.warn("Arrival sound blocked:", err));
+  }
     }, { once: true });
   
     const narrationInput = document.getElementById("narrationInput");
