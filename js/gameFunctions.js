@@ -11,6 +11,11 @@ let pendingArrival = new Set();
 const newCharacters = new Set();
 let characterKnowledge = "";
 
+//costruiamo la variabile player
+let player;
+function setPlayer(p) {
+  player = p;
+}
 // Impostazioni predefinite per azioni e intros
 const quickActions = [
   "Let's go to the Impala",
@@ -721,6 +726,7 @@ export {
   addSelectedCharacter,
   addCustomCharacter,
   sendToGPT,
-  dismissCharacter
+  dismissCharacter,
+  setPlayer
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
 };
