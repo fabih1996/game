@@ -279,18 +279,6 @@ function removeCharacter(name) {
     });
   });
   
-    const narrationInput = document.getElementById("narrationInput");
-    const dialogueInput = document.getElementById("dialogueInput");
-    [narrationInput, dialogueInput].forEach(input => {
-      input.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-          const type = input === narrationInput ? "narration" : "dialogue";
-          sendToGPT(input.value, type);
-          input.value = "";
-        }
-      });
-    });
-  
   function triggerSounds(text) {
     const lowerText = text.toLowerCase();
     const triggers = [
@@ -927,17 +915,5 @@ window.addEventListener("DOMContentLoaded", async () => {
     }).catch(err => console.warn("Arrival sound blocked:", err));
   }
     }, { once: true });
-  
-    const narrationInput = document.getElementById("narrationInput");
-    const dialogueInput = document.getElementById("dialogueInput");
-    [narrationInput, dialogueInput].forEach(input => {
-      input.addEventListener("keydown", e => {
-        if (e.key === "Enter") {
-          const type = input === narrationInput ? "narration" : "dialogue";
-          sendToGPT(input.value, type);
-          input.value = "";
-        }
-      });
-    });
   });
   window.startGame = startGame;
