@@ -907,7 +907,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         bgm.volume = 0.3;
         bgm.play().catch(err => console.warn("Audio play blocked:", err));
       }
-
+      const arrivalAudio = document.getElementById("sound-arrival");
       if (arrivalAudio) {
         arrivalAudio.play().then(() => {
         arrivalAudio.pause();
