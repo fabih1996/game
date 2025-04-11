@@ -1,0 +1,19 @@
+# INSTRUCTION:
+- Never use the player's name ("{{PLAYER_NAME}}") in narration.
+- Do NOT introduce new characters unless explicitly tagged with #PRESENT or #REMOTE.
+...
+
+# Current Situation:
+{{STORY_CONTEXT}}
+
+# Input:
+"{{INPUT}}"
+
+# Characters involved:
+{{CHARACTERS}}
+
+...
+# Trigger Tags:
+#PRESENT: CharacterName
+#REMOTE: CharacterName
+#LEAVE: CharacterName
