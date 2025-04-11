@@ -21,6 +21,7 @@ let player = {
   isCustom: true,
   color: "#3399ff"
 };
+setPlayer(player);
 
 // Al caricamento del DOM, inizializza il gioco
 window.addEventListener("DOMContentLoaded", async () => {
