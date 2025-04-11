@@ -422,8 +422,9 @@ const reply = replyRaw.trim();
   storyDiv.appendChild(playerMsg);
   
   let prompt = `# Supernatural Character Lore:\n${characterKnowledge}\n\n# Current Situation:\n${storyLines}\n\n`;
-  
-  if (isRandom) {
+  prompt += `The main character is named ${player.name}. Avoid calling them Dean or Sam. Use their name when characters speak to them.\n\n`;
+ 
+if (isRandom) {
     prompt += `The player triggers a sudden supernatural event. Continue the story in a suspenseful and logical way. Make sure the event fits the context. Include short narration and only logical character reactions. End with 2–3 meaningful and situation-appropriate player options.`;
 } else if (type === "narration") {
   prompt += `The player narrates an action:\n"${input}"\n\nRespond with a short, clear continuation of the scene, describing the **consequences** of the action — do **not repeat** what the player just did. Keep narration concise but vivid. Maintain flow from the last story context. Then give 2–3 realistic next actions in this format:\n[Look around the room]\n[Ask a question]\n[Get your weapon]`;
