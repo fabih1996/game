@@ -162,6 +162,33 @@ function refreshSidebar() {
 }
 
 /**
+* Add custom character function
+*/
+
+  function addCustomCharacter() {
+    const name = document.getElementById("customCharName").value.trim();
+    const status = document.getElementById("customCharStatus").value;
+  
+    if (!name || characterExists(name)) return;
+  
+    addCharacter(name, status);
+    allAvailableCharacters.push(name);
+  
+    if (status === "present") {
+      selectedCharacters.push(name); // Present means selectable
+    }
+  
+    refreshSidebar();
+    loadDropdown();
+  
+    document.getElementById("customCharName").value = "";
+    document.getElementById("customCharDesc").value = "";
+    document.getElementById("customCharStatus").value = "present";
+    document.getElementById("customCharFields").style.display = "none";
+  }
+
+
+/**
  * Popola il dropdown per la scelta dei personaggi.
  */
 function loadDropdown() {
