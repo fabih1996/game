@@ -6,7 +6,7 @@ let characters = [
 let selectedCharacters = ["Narrator"];
 
 let pendingArrival = new Set();
-
+const newCharacters = new Set();
 let player = {
     name: "User",
     isCustom: true,
@@ -377,7 +377,7 @@ const reply = replyRaw.trim();
   }
   
   async function sendToGPT(message, type = "dialogue", isRandom = false) {
-    const newCharacters = new Set();
+    newCharacters.clear();
     const input = message.trim();
     if (!input) return;
     // 🔒 Assicura che il Narrator sia sempre presente
