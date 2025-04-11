@@ -11,7 +11,8 @@ import {
   addSelectedCharacter,
   addCustomCharacter,
   sendToGPT,
-  dismissCharacter
+  dismissCharacter,
+  setPlayer
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
 } from './gameFunctions.js';
 
