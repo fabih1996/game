@@ -584,34 +584,7 @@ if (presentMatch) {
   if (pendingArrival.has(name)) {
     pendingArrival.delete(name);
   }
-}
-    // ✅ Se il personaggio era in pendingArrival, lo rimuoviamo
-if (presentMatch) {
-  const name = presentMatch[1].trim();
-  const existing = characters.find(c => c.name === name);
-
-  if (existing) {
-    existing.status = "present";
-  } else {
-    characters.push({ name, status: "present" });
-  }
-
-  if (!selectedCharacters.includes(name)) {
-    selectedCharacters.push(name);
-  }
-
-  newCharacters.add(name);
-
-  // 👇 Se era in arrivo, lo rimuoviamo e mostriamo un messaggio
-  if (pendingArrival.has(name)) {
-    pendingArrival.delete(name);
-    const msg = document.createElement("p");
-    msg.className = "narration";
-    msg.textContent = `${name} has arrived.`;
-    storyDiv.appendChild(msg);
-
-    triggerSounds("character_arrived");
-  }
+    refreshSidebar();
 }
   
     if (remoteMatch) {
