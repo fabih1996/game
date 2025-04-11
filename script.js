@@ -523,7 +523,21 @@ if (isRandom) {
     
     const reply = data.choices[0].message.content.trim();
     console.log("GPT reply:", reply);
-    const lines = reply.split("\n").filter(line => line.trim() !== "");
+    //const lines = reply.split("\n").filter(line => line.trim() !== "");
+    // ✅ TIENI SOLO la versione più robusta che include il filtro sui tag validi (se non esiste ancora, sostituiscila così):
+    const validTags = ["#PRESENT:", "#REMOTE:", "#LEAVE:"];
+    const lines = reply
+      .split("\n")
+      .map(line => line.trim())
+      .filter(line => {
+        if (!line) return false;
+        if (line.startsWith("#") && !validTags.some(tag => line.startsWith(tag))) {
+          console.warn("⚠️ Ignored unknown tag:", line);
+          return false;
+        }
+        return true;
+      });
+       
     // Aggiungi scelte come bottoni (dopo risposta GPT)
 const choicesDiv = document.getElementById("choices");
 const choiceLines = reply
