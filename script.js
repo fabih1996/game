@@ -97,7 +97,7 @@ let player = {
   
       const img = document.createElement("img");
       img.classList.add("char-icon");
-      const sanitizedName = characterImageNames[name] || name.toLowerCase().replace(/\s+/g, "");
+      const sanitizedName = knownNames[name] || name.toLowerCase().replace(/\s+/g, "");
   
       let imgSrc;
       if (characterImages[name]) {
