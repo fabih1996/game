@@ -584,6 +584,7 @@ if (presentMatch) {
         selectedCharacters.push(name);
       }
       newCharacters.add(name);
+      refreshSidebar();
     }
   });
   
