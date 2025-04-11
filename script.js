@@ -97,20 +97,28 @@ let player = {
   
       const img = document.createElement("img");
       img.classList.add("char-icon");
-      const sanitizedName = knownNames[name] || name.toLowerCase().replace(/\s+/g, "");
-  
-      let imgSrc;
-      if (characterImages[name]) {
-        imgSrc = characterImages[name];
-      } else {
-        if (knownNames.includes(name)) {
-          imgSrc = `images/${sanitizedName}.png`;
-        } else {
-          const rand = Math.floor(Math.random() * 4) + 1;
-          imgSrc = `images/ghost${rand}.png`;
-        }
-        characterImages[name] = imgSrc;
-      }
+let displayName = name;
+const matchedName = knownNames.find(known => name.toLowerCase().includes(known.toLowerCase()));
+if (matchedName) {
+  displayName = matchedName;
+}
+
+let imgSrc;
+if (characterImages[name]) {
+  imgSrc = characterImages[name];
+} else {
+  if (matchedName) {
+    imgSrc = `images/${matchedName.toLowerCase()}.png`;
+  } else {
+    const rand = Math.floor(Math.random() * 4) + 1;
+    imgSrc = `images/ghost${rand}.png`;
+  }
+  characterImages[name] = imgSrc;
+}
+
+img.src = imgSrc;
+img.alt = name;
+img.style.color = characterColors[matchedName || name] || characterColors["default"];
   
       img.src = imgSrc;
       img.alt = name;
