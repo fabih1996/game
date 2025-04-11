@@ -187,6 +187,18 @@ function refreshSidebar() {
     document.getElementById("customCharFields").style.display = "none";
   }
 
+/**
+ * Aggiungi i personaggi
+ */
+  function addSelectedCharacter() {
+    const dropdown = document.getElementById("charDropdown");
+    const name = dropdown.value;
+    if (name && name !== "Other..." && !characters.includes(name)) {
+      addCharacter(name, "present");
+      refreshSidebar();
+      dropdown.value = "";
+    }
+  }
 
 /**
  * Popola il dropdown per la scelta dei personaggi.
