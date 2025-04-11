@@ -651,4 +651,19 @@ function triggerExorcismEvent() {
   }, 5500);
 }
 
-// Se usi moduli ES6 puoi esportare le funzioni, altrimenti assicurati che questo file venga caricato PRIMA di main.js
+// Esempio di export (ES6 Modules)
+export {
+  loadDropdown,
+  setupActions,
+  loadCharacterLore,
+  refreshSidebar,
+  triggerRandomEvent,
+  toggleSidebar,
+  toggleMusic,
+  startGame,
+  addSelectedCharacter,
+  addCustomCharacter,
+  sendToGPT,
+  dismissCharacter
+  // ... aggiungi qui tutte le altre funzioni da usare in main.js
+};
