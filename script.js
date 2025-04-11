@@ -560,28 +560,26 @@ if (presentMatch) {
   const wasAlreadyPresent = existing && existing.status === "present";
 
   if (existing) {
-    existing.status = "present"; // aggiorna stato
+    existing.status = "present"; // ✅ aggiorna lo stato a "present"
   } else {
-    characters.push({ name, status: "present" });
+    characters.push({ name, status: "present" }); // 👈 aggiunge il personaggio se non esiste
   }
 
   if (!selectedCharacters.includes(name)) {
-    selectedCharacters.push(name);
+    selectedCharacters.push(name); // 👈 serve per farlo parlare
   }
 
-  newCharacters.add(name);
+  newCharacters.add(name); // 👈 utile per aggiornare la sidebar
 
-  // ✅ Mostra la notifica solo se NON era già presente
   if (!wasAlreadyPresent) {
     const msg = document.createElement("p");
     msg.className = "narration";
     msg.textContent = `${name} has arrived.`;
     storyDiv.appendChild(msg);
 
-    triggerSounds("character_arrived");
+    triggerSounds("character_arrived"); // 🔊 suono arrivo
   }
 
-  // ✅ Rimuoviamo da pending se necessario
   if (pendingArrival.has(name)) {
     pendingArrival.delete(name);
   }
