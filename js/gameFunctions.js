@@ -489,6 +489,7 @@ function triggerSounds(text) {
     { id: 'sound-demon', patterns: [/demon/, /growl/, /possess/, /evil/, /dark\s+presence/, /hellhound/] },
     { id: 'sound-whisper', patterns: [/whisper/, /ghost/, /murmur/, /breath/, /chill/, /spirit/] },
     { id: 'sound-impala', patterns: [/impala/, /car/, /engine/, /rev/, /roar/] },
+    { id: 'sound-arrival', patterns: [/phone/, /call/, /dial/, /voicemail/] },
   ];
   
   for (const { id, patterns } of triggers) {
@@ -513,6 +514,27 @@ function triggerSounds(text) {
       arrivalAudio.play();
     }
   }
+}
+
+/**
+ * Schedula l'arrivo di un personaggio modificando il suo stato a "present"
+ * dopo un certo ritardo (in millisecondi).
+ */
+function scheduleArrival(characterName, delay) {
+  setTimeout(() => {
+    const char = characters.find(c => c.name === characterName);
+    if (char && char.status !== "present") {
+      char.status = "present";
+      refreshSidebar();
+      const storyDiv = document.getElementById("story");
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = `${characterName} has arrived.`;
+      storyDiv.appendChild(p);
+      // Riproduci il suono specifico per l'arrivo
+      triggerSounds("character_arrived");
+    }
+  }, delay);
 }
 
 /**
@@ -727,6 +749,7 @@ export {
   addCustomCharacter,
   sendToGPT,
   dismissCharacter,
-  setPlayer
+  setPlayer,
+  scheduleArrival
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
 };
