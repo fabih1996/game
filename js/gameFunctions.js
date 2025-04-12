@@ -395,6 +395,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
         sendToGPT(choiceText, "narration");
       };
       choicesDiv.appendChild(btn);
+      console.log("Button added:", btn.textContent);
     });
 
     
