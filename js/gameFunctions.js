@@ -428,31 +428,24 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       }
       
       // Gestione del dialogo o narrazione
-      if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
-        const name = line.split(":")[0].trim();
-        const blockedNames = ["creature", "lurker", "shadow", "figure", "thing", "entity", "monster", "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil", "darkness", "phantom", "force", "being"];
-        if (blockedNames.includes(name.toLowerCase())) return;
-        if (name.toLowerCase() !== player.name.toLowerCase() &&
-            name !== "Narrator" &&
-            !characterExists(name) &&
-            !newCharacters.has(name) &&
-            !selectedCharacters.includes(name)) {
-          characters.push({ name, status: "present" });
-          selectedCharacters.push(name);
-          newCharacters.add(name);
-        }
-        const p = document.createElement("p");
-        p.className = `character-color-${name}`;
-        p.textContent = line;
-        storyDiv.appendChild(p);
-        triggerSounds(line);
-      } else {
-        const p = document.createElement("p");
-        p.classList.add("narration");
-        p.textContent = line;
-        storyDiv.appendChild(p);
-        triggerSounds(line);
-      }
+if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+  const name = line.split(":")[0].trim();
+  const blockedNames = [
+    "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
+    "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
+    "darkness", "phantom", "force", "being"
+  ];
+  if (blockedNames.includes(name.toLowerCase())) return;
+
+  // Permetti solo il dialogo se il personaggio è già noto come presente
+  if (!characterExists(name) && !newCharacters.has(name)) return;
+
+  const p = document.createElement("p");
+  p.className = `character-color-${name}`;
+  p.textContent = line;
+  storyDiv.appendChild(p);
+  triggerSounds(line);
+}
     });
     
     if (newCharacters.size > 0) refreshSidebar();
