@@ -303,9 +303,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const storyDiv = document.getElementById("story");
   const speakerNames = characters
     .filter(c => selectedCharacters.includes(c.name) && c.status === "present")
-    .map(c => c.name)
-    .filter(name => name !== player.name)
-    .join(" and ");
+    .map(c => c.name);
+  
+  if (!speakerNames.includes(player.name)) {
+    speakerNames.push(player.name); // Assicuriamoci che il player ci sia sempre
+  }
+  
+  const charactersInvolved = speakerNames.join(" and ");
     
   const storyLines = Array.from(storyDiv.querySelectorAll("p"))
     .slice(-6)
