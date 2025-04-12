@@ -374,10 +374,9 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     
     const validTags = ["#PRESENT:", "#LEAVE:"];
     const lines = reply.split("\n")
-    console.log("Lines being processed into story:", lines);
       .map(line => line.trim())
       .filter(line => line && (line[0] !== "#" || validTags.some(tag => line.startsWith(tag))));
-    
+      console.log("Lines being processed into story:", lines);
     // Aggiungi le scelte (bottoni)
     const choicesDiv = document.getElementById("choices");
     const choiceLines = reply.split("\n").filter(line => line.trim().startsWith("["));
