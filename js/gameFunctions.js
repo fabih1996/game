@@ -451,7 +451,13 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   triggerSounds(line);
 }
     });
-    if (lines.length === 0) {
+    const visibleLines = lines.filter(line =>
+      line.startsWith("#PRESENT:") ||
+      line.startsWith("#LEAVE:") ||
+      /^[A-Z][a-zA-Z\s'-]+:/.test(line)
+    );
+    
+    if (visibleLines.length === 0) {
       const p = document.createElement("p");
       p.classList.add("narration");
       p.textContent = reply;
