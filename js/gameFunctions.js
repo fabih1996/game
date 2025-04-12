@@ -462,7 +462,15 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   if (shouldShowReply) {
     const p = document.createElement("p");
     p.classList.add("narration");
-    p.textContent = reply;
+  
+    // Mostra solo la parte testuale, escludendo righe che iniziano con [
+    const narrativeOnly = reply
+      .split("\n")
+      .filter(line => !line.trim().startsWith("["))
+      .join(" ")
+      .trim();
+  
+    p.textContent = narrativeOnly;
     storyDiv.appendChild(p);
   }
     if (newCharacters.size > 0) refreshSidebar();
