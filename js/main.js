@@ -13,7 +13,8 @@ import {
   sendToGPT,
   dismissCharacter,
   setPlayer,
-  scheduleArrival
+  scheduleArrivalm,
+  triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
 } from './gameFunctions.js';
 
