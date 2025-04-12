@@ -443,7 +443,12 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   if (blockedNames.includes(name.toLowerCase())) return;
 
   // Permetti solo il dialogo se il personaggio è già noto come presente
-  if (!characterExists(name) && !newCharacters.has(name)) return;
+  if (!characterExists(name) && !newCharacters.has(name)) {
+  characters.push({ name, status: "present" });
+  selectedCharacters.push(name);
+  newCharacters.add(name);
+  refreshSidebar();
+}
 
   const p = document.createElement("p");
   p.className = `character-color-${name}`;
