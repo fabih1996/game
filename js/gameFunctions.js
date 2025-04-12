@@ -292,14 +292,6 @@ function setupActions() {
  */
 async function sendToGPT(message, type = "dialogue", isRandom = false) {
    console.log("✅ sendToGPT attivata");
-
-  const storyDiv = document.getElementById("story");
-  console.log("🧱 storyDiv:", storyDiv);
-
-  const testP = document.createElement("p");
-  testP.className = "narration";
-  testP.textContent = "🧪 DEBUG: Questa è una stampa forzata di test";
-  storyDiv.appendChild(testP);
   newCharacters.clear();
   const input = message.trim();
   if (!input) return;
