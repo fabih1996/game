@@ -465,19 +465,18 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   );
   
   if (shouldShowReply) {
-const narrativeOnly = reply
-  .split("\n")
-  .filter(line => {
-    const trimmed = line.trim();
-    return trimmed && !trimmed.startsWith("[") && !trimmed.startsWith("Options:");
-  })
-  .join(" ")
-  .trim();
+const lines = reply.split("\n").map(line => line.trim());
 
-if (narrativeOnly) {
+const narrativeLines = lines.filter(line =>
+  line &&
+  !line.startsWith("[") &&
+  !line.toLowerCase().startsWith("options:")
+);
+
+if (narrativeLines.length > 0) {
   const p = document.createElement("p");
   p.classList.add("narration");
-  p.textContent = narrativeOnly;
+  p.textContent = narrativeLines.join(" ");
   storyDiv.appendChild(p);
 }
   }
