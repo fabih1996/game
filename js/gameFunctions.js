@@ -467,11 +467,20 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   if (shouldShowReply) {
 const lines = reply.split("\n").map(line => line.trim());
 
-const narrativeLines = lines.filter(line =>
-  line &&
-  !line.startsWith("[") &&
-  !line.toLowerCase().startsWith("options:")
-);
+const narrativeLines = [];
+for (const line of lines) {
+  if (
+    line.startsWith("#PRESENT:") ||
+    line.startsWith("#LEAVE:") ||
+    line.startsWith("[") ||
+    line.toLowerCase().startsWith("options:")
+  ) {
+    break; // smettiamo di aggiungere testo appena arrivano tag o opzioni
+  }
+  if (line.trim() !== "") {
+    narrativeLines.push(line);
+  }
+}
 
 if (narrativeLines.length > 0) {
   const p = document.createElement("p");
