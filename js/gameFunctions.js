@@ -451,18 +451,19 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   triggerSounds(line);
 }
     });
-    const visibleLines = lines.filter(line =>
-      line.startsWith("#PRESENT:") ||
-      line.startsWith("#LEAVE:") ||
-      /^[A-Z][a-zA-Z\s'-]+:/.test(line)
-    );
-    
-    if (visibleLines.length === 0) {
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = reply;
-      document.getElementById("story").appendChild(p);
-    }
+  const alreadyShown = lines.some(line =>
+    line.startsWith("#PRESENT:") ||
+    line.startsWith("#LEAVE:") ||
+    /^[A-Z][a-zA-Z\s'-]+:/.test(line) ||
+    line === reply
+  );
+  
+  if (!alreadyShown) {
+    const p = document.createElement("p");
+    p.classList.add("narration");
+    p.textContent = reply;
+    storyDiv.appendChild(p);
+  }
     if (newCharacters.size > 0) refreshSidebar();
     
   } catch (err) {
