@@ -402,9 +402,9 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     
     // Gestisci i tag presenti; qui non usiamo più tag REMOTE
     lines.forEach(line => {
-        if (!isContextuallyAppropriate(line, storyLines)) {
-          return; // Salta la linea se non è appropriata
-        }
+      //  if (!isContextuallyAppropriate(line, storyLines)) {
+      //    return; // Salta la linea se non è appropriata
+      //  }
   
       if (/^#PRESENT:\s*(.+)$/.test(line)) {
         const name = line.replace("#PRESENT:", "").trim();
