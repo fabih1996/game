@@ -465,18 +465,21 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   );
   
   if (shouldShowReply) {
-    const p = document.createElement("p");
-    p.classList.add("narration");
-  
-    // Mostra solo la parte testuale, escludendo righe che iniziano con [
-    const narrativeOnly = reply
-      .split("\n")
-      .filter(line => !line.trim().startsWith("["))
-      .join(" ")
-      .trim();
-  
-    p.textContent = narrativeOnly;
-    storyDiv.appendChild(p);
+const narrativeOnly = reply
+  .split("\n")
+  .filter(line => {
+    const trimmed = line.trim();
+    return trimmed && !trimmed.startsWith("[") && !trimmed.startsWith("Options:");
+  })
+  .join(" ")
+  .trim();
+
+if (narrativeOnly) {
+  const p = document.createElement("p");
+  p.classList.add("narration");
+  p.textContent = narrativeOnly;
+  storyDiv.appendChild(p);
+}
   }
     if (newCharacters.size > 0) refreshSidebar();
     
