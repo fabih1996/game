@@ -335,7 +335,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   prompt = prompt.replace("{{PLAYER_NAME}}", player.name)
                  .replace("{{STORY_CONTEXT}}", storyLines)
                  .replace("{{INPUT}}", input)
-                 .replace("{{CHARACTERS}}", speakerNames);
+                 .replace("{{CHARACTERS}}", charactersInvolved);
   
   if (isRandom) {
     prompt += "\nThe player triggers a sudden supernatural event...";
