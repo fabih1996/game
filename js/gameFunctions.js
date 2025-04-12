@@ -462,13 +462,14 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
 }
     });
 // Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
-  const shouldShowReply = !lines.some(line =>
-    line.startsWith("#PRESENT:") ||
-    line.startsWith("#LEAVE:") ||
-    /^[A-Z][a-zA-Z\s'-]+:/.test(line)
-  );
+const hasValidContent = lines.some(line =>
+  line.startsWith("#PRESENT:") ||
+  line.startsWith("#LEAVE:") ||
+  /^[A-Z][a-zA-Z\s'-]+:/.test(line) ||
+  line.trim().length > 0
+);
   
-  if (shouldShowReply) {
+  if (!hasValidContent) {
 const lines = reply.split("\n").map(line => line.trim());
 
 const narrativeLines = [];
