@@ -493,6 +493,13 @@ if (narrativeLines.length > 0) {
   p.textContent = narrativeLines.join(" ");
   storyDiv.appendChild(p);
 }
+// Se nessuna linea valida è stata trovata ma c'è comunque una risposta, stampala grezza
+if (!hasValidContent && reply) {
+  const fallback = document.createElement("p");
+  fallback.className = "narration";
+  fallback.textContent = reply;
+  storyDiv.appendChild(fallback);
+}
   }
     if (newCharacters.size > 0) refreshSidebar();
     
