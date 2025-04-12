@@ -451,14 +451,14 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   triggerSounds(line);
 }
     });
-  const alreadyShown = lines.some(line =>
+// Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
+  const shouldShowReply = !lines.some(line =>
     line.startsWith("#PRESENT:") ||
     line.startsWith("#LEAVE:") ||
-    /^[A-Z][a-zA-Z\s'-]+:/.test(line) ||
-    line === reply
+    /^[A-Z][a-zA-Z\s'-]+:/.test(line)
   );
   
-  if (!alreadyShown) {
+  if (shouldShowReply) {
     const p = document.createElement("p");
     p.classList.add("narration");
     p.textContent = reply;
