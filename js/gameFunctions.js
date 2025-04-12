@@ -778,6 +778,7 @@ export {
   addCustomCharacter,
   sendToGPT,
   dismissCharacter,
-  scheduleArrival,
-  triggerExorcismEvent
+  scheduleArrival
+  //,
+  //triggerExorcismEvent
 };
