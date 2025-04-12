@@ -435,6 +435,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       // Gestione del dialogo o narrazione
 if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   const name = line.split(":")[0].trim();
+
   const blockedNames = [
     "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
     "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
@@ -442,13 +443,16 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   ];
   if (blockedNames.includes(name.toLowerCase())) return;
 
-  // Permetti solo il dialogo se il personaggio è già noto come presente
-  if (!characterExists(name) && !newCharacters.has(name)) {
-  characters.push({ name, status: "present" });
-  selectedCharacters.push(name);
-  newCharacters.add(name);
-  refreshSidebar();
-}
+  // ✅ Solo se è un personaggio noto o aggiunto esplicitamente
+  const isKnown = allAvailableCharacters.includes(name) || characterExists(name) || newCharacters.has(name);
+  if (!isKnown) return;
+
+  if (!characterExists(name)) {
+    characters.push({ name, status: "present" });
+    selectedCharacters.push(name);
+    newCharacters.add(name);
+    refreshSidebar();
+  }
 
   const p = document.createElement("p");
   p.className = `character-color-${name}`;
