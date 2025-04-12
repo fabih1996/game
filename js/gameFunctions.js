@@ -380,6 +380,8 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     // Aggiungi le scelte (bottoni)
     const choicesDiv = document.getElementById("choices");
     const choiceLines = reply.split("\n").filter(line => line.trim().startsWith("["));
+    console.log("Raw GPT reply:\n", reply);
+    console.log("Choices detected:\n", choiceLines);
     choicesDiv.innerHTML = "";
     choiceLines.forEach(choice => {
       const choiceText = choice.replace(/[\[\]]/g, "");
@@ -394,6 +396,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       };
       choicesDiv.appendChild(btn);
     });
+
     
     // Gestisci i tag presenti; qui non usiamo più tag REMOTE
     lines.forEach(line => {
