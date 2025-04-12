@@ -1,9 +1,9 @@
 /* gameFunctions.js */
-
-// ---------------------------
-// Variabili globali di gioco
-// ---------------------------
-let characters = [
+ 
+ // ---------------------------
+ // Variabili globali di gioco
+ // ---------------------------
+ let characters = [
   { name: "Narrator", status: "present" }  // status: "present" (ora non usiamo "remote")
 ];
 let selectedCharacters = ["Narrator"];
@@ -102,21 +102,21 @@ function refreshSidebar() {
   const presentList = document.getElementById("charListPresent");
   // In questa versione non utilizziamo la sezione "remote" (rimuoviamo quella lista)
   presentList.innerHTML = "";
-  
+
   const knownNames = Object.keys(characterColors);
   characters.forEach(({ name, status }) => {
     // Trattiamo tutti i personaggi come "present"
     const li = document.createElement("li");
     const wrapper = document.createElement("div");
     wrapper.style.position = "relative";
-    
+
     // Generazione immagine del personaggio
     const img = document.createElement("img");
     img.classList.add("char-icon");
     let displayName = name;
     const matchedName = knownNames.find(known => name.toLowerCase().includes(known.toLowerCase()));
     if (matchedName) { displayName = matchedName; }
-    
+
     let imgSrc;
     if (characterImages[name]) {
       imgSrc = characterImages[name];
@@ -132,10 +132,10 @@ function refreshSidebar() {
     img.src = imgSrc;
     img.alt = name;
     img.style.color = characterColors[matchedName || name] || characterColors["default"];
-    
+
     if (selectedCharacters.includes(name)) { img.classList.add("selected"); }
     img.setAttribute("data-name", name);
-    
+
     // Bottone per rimuovere (dismiss) il personaggio
     const dismissBtn = document.createElement("button");
     dismissBtn.textContent = "Dismiss";
@@ -145,7 +145,7 @@ function refreshSidebar() {
     dismissBtn.style.right = "0";
     dismissBtn.style.display = "none";
     dismissBtn.onclick = () => dismissCharacter(name);
-    
+
     // Gestione del click sull'immagine per selezionare/deselezionare
     img.onclick = () => {
       if (selectedCharacters.includes(name)) {
@@ -157,7 +157,7 @@ function refreshSidebar() {
       }
       refreshSidebar();
     };
-    
+
     wrapper.appendChild(img);
     wrapper.appendChild(dismissBtn);
     li.appendChild(wrapper);
@@ -171,19 +171,19 @@ function refreshSidebar() {
 function addCustomCharacter() {
   const name = document.getElementById("customCharName").value.trim();
   const status = document.getElementById("customCharStatus").value;
-  
+
   if (!name || characterExists(name)) return;
-  
+
   addCharacter(name, status);
   allAvailableCharacters.push(name);
-  
+
   if (status === "present") {
     selectedCharacters.push(name);
   }
-  
+
   refreshSidebar();
   loadDropdown();
-  
+
   document.getElementById("customCharName").value = "";
   document.getElementById("customCharDesc").value = "";
   document.getElementById("customCharStatus").value = "present";
@@ -215,7 +215,7 @@ function loadDropdown() {
     opt.textContent = name;
     dropdown.appendChild(opt);
   });
-  
+
   // Gestione selezione giocatore personalizzato
   const playerSelect = document.getElementById("playerSelect");
   if (playerSelect) {
@@ -225,7 +225,7 @@ function loadDropdown() {
       fields.style.display = val === "custom" ? "block" : "none";
     };
   }
-  
+
   dropdown.onchange = () => {
     const val = dropdown.value;
     document.getElementById("customCharFields").style.display = val === "Other..." ? "block" : "none";
@@ -261,7 +261,7 @@ function removeCharacter(name) {
   characters = characters.filter(c => c.name.toLowerCase() !== loweredName);
   selectedCharacters = selectedCharacters.filter(n => n.toLowerCase() !== loweredName);
   newCharacters.delete(name);
-  
+
   // Rimuove l’icona dalla sidebar
   const icon = document.querySelector(`.char-icon[data-name="${name}"]`);
   if (icon) icon.remove();
@@ -295,7 +295,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   newCharacters.clear();
   const input = message.trim();
   if (!input) return;
-  
+
   // Assicurati che il Narrator sia sempre presente
   if (!characterExists("Narrator")) {
     characters.push({ name: "Narrator", status: "present" });
@@ -305,18 +305,18 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const speakerNames = characters
     .filter(c => selectedCharacters.includes(c.name) && c.status === "present")
     .map(c => c.name);
-  
+
   if (!speakerNames.includes(player.name)) {
     speakerNames.push(player.name); // Assicuriamoci che il player ci sia sempre
   }
-  
+
   const charactersInvolved = speakerNames.join(" and ");
-    
+
   const storyLines = Array.from(storyDiv.querySelectorAll("p"))
     .slice(-6)
     .map(p => p.textContent)
     .join("\n");
-  
+
   document.getElementById("choices").innerHTML = "";
   triggerSounds(input);
 
@@ -330,14 +330,14 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     playerMsg.textContent = input;
   }
   storyDiv.appendChild(playerMsg);
-  
+
   // COSTRUISCI IL PROMPT: caricalo da un file di testo e sostituisci i placeholder
   let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
   prompt = prompt.replace("{{PLAYER_NAME}}", player.name)
                  .replace("{{STORY_CONTEXT}}", storyLines)
                  .replace("{{INPUT}}", input)
                  .replace("{{CHARACTERS}}", charactersInvolved);
-  
+
   if (isRandom) {
     prompt += "\nThe player triggers a sudden supernatural event...";
   } else if (type === "narration") {
@@ -345,20 +345,20 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else {
     prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character.`;
   }
-  
+
   // Aggiungi eventuali tag richiesti alla fine del prompt
   prompt += `
 # Trigger Tags:
 ...
 `;
-  
+
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
     });
-    
+
     const data = await response.json();
     if (!data ||
         !data.choices ||
@@ -369,10 +369,10 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       console.error("Invalid GPT response:", data);
       return;
     }
-    
+
     const reply = data.choices[0].message.content.trim();
     console.log("GPT reply:", reply);
-    
+
     const validTags = ["#PRESENT:", "#LEAVE:"];
     const lines = reply.split("\n")
       .map(line => line.trim())
@@ -399,13 +399,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       console.log("Button added:", btn.textContent);
     });
 
-    
+
     // Gestisci i tag presenti; qui non usiamo più tag REMOTE
     lines.forEach(line => {
       //  if (!isContextuallyAppropriate(line, storyLines)) {
       //    return; // Salta la linea se non è appropriata
       //  }
-  
+
       if (/^#PRESENT:\s*(.+)$/.test(line)) {
         const name = line.replace("#PRESENT:", "").trim();
         const existing = characters.find(c => c.name === name);
@@ -431,11 +431,10 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
         removeCharacter(name);
         return;
       }
-      
+
       // Gestione del dialogo o narrazione
 if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   const name = line.split(":")[0].trim();
-
   const blockedNames = [
     "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
     "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
@@ -443,16 +442,13 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   ];
   if (blockedNames.includes(name.toLowerCase())) return;
 
-  // ✅ Solo se è un personaggio noto o aggiunto esplicitamente
-  const isKnown = allAvailableCharacters.includes(name) || characterExists(name) || newCharacters.has(name);
-  if (!isKnown) return;
-
-  if (!characterExists(name)) {
-    characters.push({ name, status: "present" });
-    selectedCharacters.push(name);
-    newCharacters.add(name);
-    refreshSidebar();
-  }
+  // Permetti solo il dialogo se il personaggio è già noto come presente
+  if (!characterExists(name) && !newCharacters.has(name)) {
+  characters.push({ name, status: "present" });
+  selectedCharacters.push(name);
+  newCharacters.add(name);
+  refreshSidebar();
+}
 
   const p = document.createElement("p");
   p.className = `character-color-${name}`;
@@ -462,46 +458,28 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
 }
     });
 // Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
-const hasValidContent = lines.some(line =>
-  line.startsWith("#PRESENT:") ||
-  line.startsWith("#LEAVE:") ||
-  /^[A-Z][a-zA-Z\s'-]+:/.test(line)
-);
-  
-  if (!hasValidContent) {
-const lines = reply.split("\n").map(line => line.trim());
-
-const narrativeLines = [];
-for (const line of lines) {
-  if (
+  const shouldShowReply = !lines.some(line =>
     line.startsWith("#PRESENT:") ||
     line.startsWith("#LEAVE:") ||
-    line.startsWith("[") ||
-    line.toLowerCase().startsWith("options:")
-  ) {
-    break; // smettiamo di aggiungere testo appena arrivano tag o opzioni
-  }
-  if (line.trim() !== "") {
-    narrativeLines.push(line);
-  }
-}
+    /^[A-Z][a-zA-Z\s'-]+:/.test(line)
+  );
 
-if (narrativeLines.length > 0) {
-  const p = document.createElement("p");
-  p.classList.add("narration");
-  p.textContent = narrativeLines.join(" ");
-  storyDiv.appendChild(p);
-}
-// Se nessuna linea valida è stata trovata ma c'è comunque una risposta, stampala grezza
-if (!hasValidContent && reply) {
-  const fallback = document.createElement("p");
-  fallback.className = "narration";
-  fallback.textContent = reply;
-  storyDiv.appendChild(fallback);
-}
+  if (shouldShowReply) {
+    const p = document.createElement("p");
+    p.classList.add("narration");
+
+    // Mostra solo la parte testuale, escludendo righe che iniziano con [
+    const narrativeOnly = reply
+      .split("\n")
+      .filter(line => !line.trim().startsWith("["))
+      .join(" ")
+      .trim();
+
+    p.textContent = narrativeOnly;
+    storyDiv.appendChild(p);
   }
     if (newCharacters.size > 0) refreshSidebar();
-    
+
   } catch (err) {
     console.error("Fetch failed:", err);
     alert("Something went wrong: " + err.message);
@@ -522,7 +500,7 @@ function triggerSounds(text) {
     { id: 'sound-impala', patterns: [/impala/, /car/, /engine/, /rev/, /roar/] },
     { id: 'sound-arrival', patterns: [/phone/, /call/, /dial/, /voicemail/] },
   ];
-  
+
   for (const { id, patterns } of triggers) {
     if (patterns.some(regex => regex.test(lowerText))) {
       const audio = document.getElementById(id);
@@ -535,7 +513,7 @@ function triggerSounds(text) {
       break;
     }
   }
-  
+
   if (text === "character_arrived") {
     const arrivalAudio = document.getElementById("sound-arrival");
     if (arrivalAudio) {
@@ -556,7 +534,7 @@ function triggerSounds(text) {
 function isContextuallyAppropriate(line, context) {
   const lowerLine = line.toLowerCase();
   const lowerContext = context.toLowerCase();
-  
+
   // Esempio: se il contesto contiene 'forest', 'woods' o 'outdoors',
   // scarta le linee che contengono termini tipici degli ambienti interni.
   if (/forest|woods|outdoors/.test(lowerContext)) {
@@ -565,7 +543,7 @@ function isContextuallyAppropriate(line, context) {
       return false;
     }
   }
-  
+
   // Puoi aggiungere ulteriori regole se necessario.
   return true;
 }
@@ -608,7 +586,7 @@ You're helping moderate a roleplaying game.
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
     });
-  
+
     const data = await response.json();
     const replyRaw = data.choices[0].message.content;
     if (!replyRaw || replyRaw.trim() === "") {
@@ -633,7 +611,7 @@ async function dismissCharacter(name) {
     .slice(-6)
     .map(p => p.textContent)
     .join("\n");
-  
+
   const prompt = `
 You are writing the next line in a Supernatural role-playing game.
 The character "${name}" is currently present.
@@ -647,11 +625,11 @@ The player wants to dismiss this character in a way that fits the context.
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
     });
-  
+
     const data = await response.json();
     const reply = data.choices[0].message.content.trim();
     const lines = reply.split("\n").filter(line => line.trim() !== "");
-    
+
     lines.forEach(line => {
       const trimmedLine = line.trim();
       if (trimmedLine.startsWith("#PRESENT:")) {
@@ -678,7 +656,7 @@ The player wants to dismiss this character in a way that fits the context.
         removeCharacter(name);
         return;
       }
-      
+
       if (/^[A-Z][a-zA-Z\s'-]+:/.test(trimmedLine)) {
         const name = trimmedLine.split(":")[0].trim();
         const blockedNames = ["creature", "lurker", "shadow", "figure", "thing", "entity", "monster", "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil", "darkness", "phantom", "force", "being"];
@@ -739,22 +717,22 @@ function triggerExorcismEvent() {
   const overlay = document.getElementById('exorcism-overlay');
   const ghost = document.getElementById('ghost');
   const chant = document.getElementById('chant');
-  
+
   overlay.classList.remove('hidden');
   ghost.style.opacity = '1';
   ghost.style.transform = 'translateY(0)';
   chant.textContent = '"Exorcizamus te, omnis immundus spiritus..."';
   chant.style.opacity = '1';
-  
+
   setTimeout(() => {
     ghost.style.opacity = '0';
     ghost.style.transform = 'translateY(-150px)';
   }, 500);
-  
+
   setTimeout(() => {
     chant.textContent = '"Spiritus expulsus est!"';
   }, 3500);
-  
+
   setTimeout(() => {
     overlay.classList.add('hidden');
   }, 5500);
@@ -798,6 +776,4 @@ export {
   sendToGPT,
   dismissCharacter,
   scheduleArrival
-  //,
-  //triggerExorcismEvent
 };
