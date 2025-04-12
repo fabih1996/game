@@ -33,6 +33,11 @@ Note: Other supernatural entities (e.g., ghosts, apparitions, disembodied voices
 # CHARACTERS INVOLVED:
 {{CHARACTERS}}
 
+# PLAYER IDENTITY:
+The player is "{{PLAYER_NAME}}" and must never be confused with any other character.
+Even if the player’s name is the same as a canon character (e.g., Dean), treat them as a separate person.
+When a character named "{{PLAYER_NAME}}" speaks, it always refers to the player unless otherwise tagged.
+
 ---
 
 [Now, generate your response based on the type of input.]
