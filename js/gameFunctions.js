@@ -700,7 +700,7 @@ function toggleMusic() {
   }
 }
 
-function triggerExorcismEvent() {x
+function triggerExorcismEvent() {
   const overlay = document.getElementById('exorcism-overlay');
   const ghost = document.getElementById('ghost');
   const chant = document.getElementById('chant');
