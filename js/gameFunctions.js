@@ -465,8 +465,7 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
 const hasValidContent = lines.some(line =>
   line.startsWith("#PRESENT:") ||
   line.startsWith("#LEAVE:") ||
-  /^[A-Z][a-zA-Z\s'-]+:/.test(line) ||
-  line.trim().length > 0
+  /^[A-Z][a-zA-Z\s'-]+:/.test(line)
 );
   
   if (!hasValidContent) {
