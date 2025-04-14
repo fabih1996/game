@@ -468,7 +468,8 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     });
 
     // Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
-    const shouldShowReply = !lines.some(line =>
+   /* 
+   const shouldShowReply = !lines.some(line =>
       line.startsWith("#PRESENT:") ||
       line.startsWith("#LEAVE:") ||
       /^[A-Z][a-zA-Z\s'-]+:/.test(line)
@@ -489,6 +490,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       p.textContent = narrativeOnly;
       storyDiv.appendChild(p);
     }
+    */
     if (newCharacters.size > 0) refreshSidebar();
 
   } catch (err) {
