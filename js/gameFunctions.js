@@ -291,12 +291,12 @@ function setupActions() {
  * Invia un messaggio a GPT, costruendo un prompt basato sul contesto.
  */
 async function sendToGPT(message, type = "dialogue", isRandom = false) {
-   console.log("✅ sendToGPT attivata");
+  console.log("✅ sendToGPT attivata");
   newCharacters.clear();
   const input = message.trim();
   if (!input) return;
 
-  // Assicurati che il Narrator sia sempre presente
+  // Assicuriamoci che il Narrator sia sempre presente
   if (!characterExists("Narrator")) {
     characters.push({ name: "Narrator", status: "present" });
   }
@@ -343,7 +343,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else if (type === "narration") {
     prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next in third person.`;
   } else {
-  prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character. When a character responds, do not repeat the player's action; only provide the character's reaction or dialogue.`;
+    prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character. When a character responds, do not repeat the player's action; only provide the character's reaction or dialogue.`;
   }
 
   // Aggiungi eventuali tag richiesti alla fine del prompt
@@ -376,7 +376,9 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     const validTags = ["#PRESENT:", "#LEAVE:"];
     const lines = reply.split("\n")
       .map(line => line.trim())
-      .filter(line => line && line !== "Options:" && (line[0] !== "#" || validTags.some(tag => line.startsWith(tag))));      console.log("Lines being processed into story:", lines);
+      .filter(line => line && line !== "Options:" && (line[0] !== "#" || validTags.some(tag => line.startsWith(tag))));
+    console.log("Lines being processed into story:", lines);
+
     // Aggiungi le scelte (bottoni)
     const choicesDiv = document.getElementById("choices");
     const choiceLines = reply.split("\n").filter(line => line.trim().startsWith("["));
@@ -398,19 +400,18 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       console.log("Button added:", btn.textContent);
     });
 
-
-    // Gestisci i tag presenti; qui non usiamo più tag REMOTE
+    // Processa ogni linea del reply
     lines.forEach(line => {
-      //  if (!isContextuallyAppropriate(line, storyLines)) {
-      //    return; // Salta la linea se non è appropriata
-      //  }
-
       if (/^#PRESENT:\s*(.+)$/.test(line)) {
+        // Gestione tag #PRESENT
         const name = line.replace("#PRESENT:", "").trim();
         const existing = characters.find(c => c.name === name);
         const wasAlreadyPresent = existing && existing.status === "present";
-        if (existing) { existing.status = "present"; }
-        else { characters.push({ name, status: "present" }); }
+        if (existing) {
+          existing.status = "present";
+        } else {
+          characters.push({ name, status: "present" });
+        }
         if (!selectedCharacters.includes(name)) {
           selectedCharacters.push(name);
         }
@@ -424,85 +425,70 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
         }
         if (pendingArrival.has(name)) pendingArrival.delete(name);
         refreshSidebar();
-      }
-      if (/^#LEAVE:\s*(.+)$/.test(line)) {
+
+      } else if (/^#LEAVE:\s*(.+)$/.test(line)) {
+        // Gestione tag #LEAVE
         const name = line.replace("#LEAVE:", "").trim();
         removeCharacter(name);
-        return;
+
+      } else if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+        // Gestione del dialogo (es. "Sam: ...")
+        const name = line.split(":")[0].trim();
+        const blockedNames = [
+          "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
+          "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
+          "darkness", "phantom", "force", "being"
+        ];
+        if (blockedNames.includes(name.toLowerCase())) return;
+        if (!characterExists(name) && !newCharacters.has(name)) {
+          characters.push({ name, status: "present" });
+          selectedCharacters.push(name);
+          newCharacters.add(name);
+          refreshSidebar();
+        }
+        let dialogue = line.substring(line.indexOf(":") + 1).trim();
+        if (dialogue.startsWith(input)) {
+          dialogue = dialogue.substring(input.length).trim();
+          dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
+        }
+        const p = document.createElement("p");
+        p.className = `character-color-${name}`;
+        p.textContent = `${name}: "${dialogue}"`;
+        storyDiv.appendChild(p);
+        triggerSounds(line);
+
+      } else {
+        // Gestione della narrazione
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = line;
+        storyDiv.appendChild(p);
+        triggerSounds(line);
       }
+    });
 
-      // Gestione del dialogo o narrazione
-lines.forEach(line => {
-  // Se la riga corrisponde al pattern del dialogo (es. "Sam: ...")
-  if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
-    // Estrai il nome dal dialogo
-    const name = line.split(":")[0].trim();
-    const blockedNames = [
-      "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
-      "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
-      "darkness", "phantom", "force", "being"
-    ];
-    if (blockedNames.includes(name.toLowerCase())) return;
+    // Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
+    const shouldShowReply = !lines.some(line =>
+      line.startsWith("#PRESENT:") ||
+      line.startsWith("#LEAVE:") ||
+      /^[A-Z][a-zA-Z\s'-]+:/.test(line)
+    );
 
-    // Se il personaggio non esiste ancora, aggiungilo
-    if (!characterExists(name) && !newCharacters.has(name)) {
-      characters.push({ name, status: "present" });
-      selectedCharacters.push(name);
-      newCharacters.add(name);
-      refreshSidebar();
+    if (shouldShowReply) {
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      // Mostra solo la parte testuale, escludendo righe che iniziano con "[" o "Options:"
+      const narrativeOnly = reply
+        .split("\n")
+        .filter(line => {
+          const trimmed = line.trim();
+          return !trimmed.startsWith("[") && trimmed !== "Options:";
+        })
+        .join(" ")
+        .trim();
+      p.textContent = narrativeOnly;
+      storyDiv.appendChild(p);
     }
-
-    // Estrai il testo del dialogo (tutto ciò che viene dopo i due punti)
-    let dialogue = line.substring(line.indexOf(":") + 1).trim();
-
-    // Se il dialogo inizia esattamente con l'input del giocatore, rimuovi quella parte
-    if (dialogue.startsWith(input)) {
-      dialogue = dialogue.substring(input.length).trim();
-      // Rimuovi eventuali punteggiature o spazi superflui all'inizio
-      dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
-    }
-
-    // Crea l'elemento HTML per visualizzare il dialogo
-    const p = document.createElement("p");
-    p.className = `character-color-${name}`;
-    p.textContent = `${name}: "${dialogue}"`;
-    storyDiv.appendChild(p);
-    triggerSounds(line);
-
-  } else {
-    // Se la riga non è un dialogo, trattala come narrazione
-    const p = document.createElement("p");
-    p.classList.add("narration");
-    p.textContent = line;
-    storyDiv.appendChild(p);
-    triggerSounds(line);
-  }
-});
-// Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
-  const shouldShowReply = !lines.some(line =>
-    line.startsWith("#PRESENT:") ||
-    line.startsWith("#LEAVE:") ||
-    /^[A-Z][a-zA-Z\s'-]+:/.test(line)
-  );
-
-  if (shouldShowReply) {
-    const p = document.createElement("p");
-    p.classList.add("narration");
-
-    // Mostra solo la parte testuale, escludendo righe che iniziano con [
-    const narrativeOnly = reply
-      .split("\n")
-      .filter(line => {
-        const trimmed = line.trim();
-        // Escludiamo le righe che iniziano con "[" o che sono esattamente "Options:"
-        return !trimmed.startsWith("[") && trimmed !== "Options:";
-      })
-      .join(" ")
-      .trim();
-
-    p.textContent = narrativeOnly;
-    storyDiv.appendChild(p);
-  }
     if (newCharacters.size > 0) refreshSidebar();
 
   } catch (err) {
