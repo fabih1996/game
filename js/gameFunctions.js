@@ -343,7 +343,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else if (type === "narration") {
     prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next in third person.`;
   } else {
-    prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character.`;
+  prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character. When a character responds, do not repeat the player's action; only provide the character's reaction or dialogue.`;
   }
 
   // Aggiungi eventuali tag richiesti alla fine del prompt
@@ -433,6 +433,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
       // Gestione del dialogo o narrazione
 if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+  // Estrai il nome dal dialogo
   const name = line.split(":")[0].trim();
   const blockedNames = [
     "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
@@ -441,12 +442,30 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
   ];
   if (blockedNames.includes(name.toLowerCase())) return;
 
-  // Permetti solo il dialogo se il personaggio è già noto come presente
+  // Se il personaggio non esiste ancora, aggiungilo
   if (!characterExists(name) && !newCharacters.has(name)) {
-  characters.push({ name, status: "present" });
-  selectedCharacters.push(name);
-  newCharacters.add(name);
-  refreshSidebar();
+    characters.push({ name, status: "present" });
+    selectedCharacters.push(name);
+    newCharacters.add(name);
+    refreshSidebar();
+  }
+
+  // Estrai il testo del dialogo (tutto ciò che viene dopo i due punti)
+  let dialogue = line.substring(line.indexOf(":") + 1).trim();
+
+  // Se il dialogo inizia esattamente con l'input del giocatore, rimuovi quella parte
+  if (dialogue.startsWith(input)) {
+    dialogue = dialogue.substring(input.length).trim();
+    // Rimuovi eventuali punteggiature o spazi superflui all'inizio
+    dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
+  }
+
+  // Crea l'elemento HTML per visualizzare il dialogo
+  const p = document.createElement("p");
+  p.className = `character-color-${name}`;
+  p.textContent = `${name}: "${dialogue}"`;
+  storyDiv.appendChild(p);
+  triggerSounds(line);
 }
 
   const p = document.createElement("p");
@@ -470,7 +489,11 @@ if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
     // Mostra solo la parte testuale, escludendo righe che iniziano con [
     const narrativeOnly = reply
       .split("\n")
-      .filter(line => !line.trim().startsWith("["))
+      .filter(line => {
+        const trimmed = line.trim();
+        // Escludiamo le righe che iniziano con "[" o che sono esattamente "Options:"
+        return !trimmed.startsWith("[") && trimmed !== "Options:";
+      })
       .join(" ")
       .trim();
 
