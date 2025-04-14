@@ -432,49 +432,52 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
       }
 
       // Gestione del dialogo o narrazione
-if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
-  // Estrai il nome dal dialogo
-  const name = line.split(":")[0].trim();
-  const blockedNames = [
-    "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
-    "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
-    "darkness", "phantom", "force", "being"
-  ];
-  if (blockedNames.includes(name.toLowerCase())) return;
+lines.forEach(line => {
+  // Se la riga corrisponde al pattern del dialogo (es. "Sam: ...")
+  if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+    // Estrai il nome dal dialogo
+    const name = line.split(":")[0].trim();
+    const blockedNames = [
+      "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
+      "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
+      "darkness", "phantom", "force", "being"
+    ];
+    if (blockedNames.includes(name.toLowerCase())) return;
 
-  // Se il personaggio non esiste ancora, aggiungilo
-  if (!characterExists(name) && !newCharacters.has(name)) {
-    characters.push({ name, status: "present" });
-    selectedCharacters.push(name);
-    newCharacters.add(name);
-    refreshSidebar();
+    // Se il personaggio non esiste ancora, aggiungilo
+    if (!characterExists(name) && !newCharacters.has(name)) {
+      characters.push({ name, status: "present" });
+      selectedCharacters.push(name);
+      newCharacters.add(name);
+      refreshSidebar();
+    }
+
+    // Estrai il testo del dialogo (tutto ciò che viene dopo i due punti)
+    let dialogue = line.substring(line.indexOf(":") + 1).trim();
+
+    // Se il dialogo inizia esattamente con l'input del giocatore, rimuovi quella parte
+    if (dialogue.startsWith(input)) {
+      dialogue = dialogue.substring(input.length).trim();
+      // Rimuovi eventuali punteggiature o spazi superflui all'inizio
+      dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
+    }
+
+    // Crea l'elemento HTML per visualizzare il dialogo
+    const p = document.createElement("p");
+    p.className = `character-color-${name}`;
+    p.textContent = `${name}: "${dialogue}"`;
+    storyDiv.appendChild(p);
+    triggerSounds(line);
+
+  } else {
+    // Se la riga non è un dialogo, trattala come narrazione
+    const p = document.createElement("p");
+    p.classList.add("narration");
+    p.textContent = line;
+    storyDiv.appendChild(p);
+    triggerSounds(line);
   }
-
-  // Estrai il testo del dialogo (tutto ciò che viene dopo i due punti)
-  let dialogue = line.substring(line.indexOf(":") + 1).trim();
-
-  // Se il dialogo inizia esattamente con l'input del giocatore, rimuovi quella parte
-  if (dialogue.startsWith(input)) {
-    dialogue = dialogue.substring(input.length).trim();
-    // Rimuovi eventuali punteggiature o spazi superflui all'inizio
-    dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
-  }
-
-  // Crea l'elemento HTML per visualizzare il dialogo
-  const p = document.createElement("p");
-  p.className = `character-color-${name}`;
-  p.textContent = `${name}: "${dialogue}"`;
-  storyDiv.appendChild(p);
-  triggerSounds(line);
-}
-
-  const p = document.createElement("p");
-  p.className = `character-color-${name}`;
-  p.textContent = line;
-  storyDiv.appendChild(p);
-  triggerSounds(line);
-}
-    });
+});
 // Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
   const shouldShowReply = !lines.some(line =>
     line.startsWith("#PRESENT:") ||
