@@ -635,33 +635,64 @@ function scheduleArrival(characterName, delay) {
  * Invia una richiesta per stabilire se un personaggio deve essere aggiunto come presente.
  * (Funzione per eventuali controlli, se necessario.)
  */
-async function askCharacterArbiter(name, recentStory) {
+async function askCharacterArbiter(reply, recentStory) {
   const arbiterPrompt = `
-You’re the moderator for a Supernatural role‑playing game.
-Here’s what’s been happening:
+You’re a moderator for a Supernatural role‑playing game.
+Given the previous context and the AI’s new reply, output only the presence tags to inject:
+  - #PRESENT: <Name> for NPCs (Dean, Sam, Castiel, Crowley, Bobby, Ruby, Jo, Ellen).
+  - #PRESENT: <EntityType> for supernatural entities (e.g., Ghost, Shadow) only when clearly justified.
+Return nothing else.
+
+### CONTEXT:
 ${recentStory}
 
-Someone just mentioned “${name}.”  
-Question: Should ${name}, a known NPC, actually be present on stage now, or was this just a passing reference?
-Reply with exactly “yes‑present” or “no‑present.”
-  `;
+### REPLY:
+${reply}
+
+### EXAMPLES:
+
+#### EXAMPLE 1
+**CONTEXT:** "You wake up trapped in a crypt. You hear a distant growl."
+**REPLY:** "Suddenly, Dean storms through the mossy archway, sword drawn."
+**OUTPUT:**
+```
+#PRESENT: Dean
+```
+
+#### EXAMPLE 2
+**CONTEXT:** "You stand in a moonlit clearing, the trees silent."
+**REPLY:** "A pale mist coils at your feet, then rises into a skeletal figure that lets out a hollow wail."
+**OUTPUT:**
+```
+#PRESENT: Ghost
+```
+
+#### EXAMPLE 3
+**CONTEXT:** "You’re in the bunker, safe—for now."
+**REPLY:** "You pickup the phone and dial Sam’s number."
+**OUTPUT:**
+*(nothing)*
+`;
+
   try {
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "gpt-4",
-        messages: [
-          { role: "user", content: arbiterPrompt }
-        ]
+        messages: [{ role: "user", content: arbiterPrompt }]
       })
     });
     const json = await res.json();
-    const text = json.choices[0].message.content.trim().toLowerCase();
-    return text.includes("yes‑present") ? "present" : null;
+    // Extract all lines that start with `#PRESENT:`
+    const tags = json.choices[0].message.content
+      .split("\n")
+      .filter(line => line.trim().startsWith("#PRESENT:"))
+      .map(line => line.trim());
+    return tags;
   } catch (err) {
     console.error("Arbiter error:", err);
-    return null;
+    return [];
   }
 }
 
