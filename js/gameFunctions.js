@@ -643,35 +643,24 @@ Given the previous context and the AI’s new reply, output only the presence ta
   - #PRESENT: <EntityType> for supernatural entities (e.g., Ghost, Shadow) only when clearly justified.
 Return nothing else.
 
-### CONTEXT:
+CONTEXT:
 ${recentStory}
 
-### REPLY:
+REPLY:
 ${reply}
 
-### EXAMPLES:
+Examples:
+CONTEXT: You wake up trapped in a crypt. You hear a distant growl.
+REPLY: Suddenly, Dean storms through the mossy archway, sword drawn.
+OUTPUT: #PRESENT: Dean
 
-#### EXAMPLE 1
-**CONTEXT:** "You wake up trapped in a crypt. You hear a distant growl."
-**REPLY:** "Suddenly, Dean storms through the mossy archway, sword drawn."
-**OUTPUT:**
-```
-#PRESENT: Dean
-```
+CONTEXT: You stand in a moonlit clearing, the trees silent.
+REPLY: A pale mist coils at your feet, then rises into a skeletal figure that lets out a hollow wail.
+OUTPUT: #PRESENT: Ghost
 
-#### EXAMPLE 2
-**CONTEXT:** "You stand in a moonlit clearing, the trees silent."
-**REPLY:** "A pale mist coils at your feet, then rises into a skeletal figure that lets out a hollow wail."
-**OUTPUT:**
-```
-#PRESENT: Ghost
-```
-
-#### EXAMPLE 3
-**CONTEXT:** "You’re in the bunker, safe—for now."
-**REPLY:** "You pickup the phone and dial Sam’s number."
-**OUTPUT:**
-*(nothing)*
+CONTEXT: You’re in the bunker, safe—for now.
+REPLY: You pick up the phone and dial Sam’s number.
+OUTPUT: (none)
 `;
 
   try {
@@ -686,6 +675,20 @@ ${reply}
     const json = await res.json();
     // Extract all lines that start with `#PRESENT:`
     const tags = json.choices[0].message.content
+      .split("
+")
+      .filter(line => line.trim().startsWith("#PRESENT:"))
+      .map(line => line.trim());
+    return tags;
+  } catch (err) {
+    console.error("Arbiter error:", err);
+    return [];
+  }
+}
+    });
+    const json = await res.json();
+    // Extract all lines that start with `#PRESENT:`
+    const tags = json.choices[0].message.content
       .split("\n")
       .filter(line => line.trim().startsWith("#PRESENT:"))
       .map(line => line.trim());
@@ -695,6 +698,7 @@ ${reply}
     return [];
   }
 }
+
 
 /**
  * Gestisce l'uscita di un personaggio dalla scena (dismiss).
