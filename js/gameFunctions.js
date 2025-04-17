@@ -371,6 +371,19 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     }
 
     const reply = data.choices[0].message.content.trim();
+   // ── AUTO‑ADD NPCs WHEN MENTIONED ───────────────────────────────────
+   const allowedNPCs = ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"];
+   allowedNPCs.forEach(name => {
+     // if the reply mentions the NPC and they're not already present...
+     if (new RegExp(`\\b${name}\\b`).test(reply) && !characterExists(name)) {
+       characters.push({ name, status: "present" });
+       selectedCharacters.push(name);
+       newCharacters.add(name);
+     }
+   });
+   if (newCharacters.size > 0) refreshSidebar();
+   // ─────────────────────────────────────────────────────────────────
+   
     console.log("GPT reply:", reply);
 
     const validTags = ["#PRESENT:", "#LEAVE:"];
