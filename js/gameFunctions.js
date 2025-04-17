@@ -29,18 +29,7 @@ const quickActions = [
   "I punch the demon",
   "I hide behind the bed"
 ];
-const randomIntros = [
-  "You find yourself standing in a circle of salt. Something moves outside.",
-  "A phone rings at 3:33 AM. No one is on the line.",
-  "There's a message carved into your motel mirror.",
-  "You hear Latin chanting in the woods behind your house.",
-  "Your laptop opens by itself. A page about exorcisms appears.",
-  "A cold hand touches your shoulder. No one's there.",
-  "You wake up handcuffed in the backseat of the Impala.",
-  "Someone left a sealed envelope on your pillow.",
-  "Dean Winchester is missing. Sam calls you for help.",
-  "You open your eyes in a church with broken stained glass."
-];
+
 const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
 ];
@@ -80,14 +69,69 @@ async function loadCharacterLore() {
 /**
  * Carica una introduzione casuale e la visualizza nell'area della storia.
  */
-function loadIntro() {
-  const intro = randomIntros[Math.floor(Math.random() * randomIntros.length)];
+async function loadIntro() {
+  // 1) Pull in the full prompt template
+  let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
+  // 2) Fill in the bits we know (no prior story, empty INPUT, no CHARACTERS yet)
+  prompt = prompt
+    .replace("{{CHARACTER_LORE}}", characterKnowledge)
+    .replace("{{STORY_CONTEXT}}", "")
+    .replace("{{INPUT}}", "")
+    .replace("{{CHARACTERS}}", "");
+
+  // 3) Ask GPT-4 for a Random Event / opening scene
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  const data = await res.json();
+  const reply = data.choices[0].message.content.trim();
+
+  // 4) Parse any #PRESENT: tags so we know who shows up
+  const presentNames = Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
+                            .map(m => m[1]);
+  presentNames.forEach(name => {
+    if (!characterExists(name)) {
+      characters.push({ name, status: "present" });
+      selectedCharacters.push(name);
+      newCharacters.add(name);
+    }
+  });
+
+  // 5) Fallback scan—if GPT forgot to tag “Bobby” but the text says “Bobby calls you…”
+  const narrativeLines = reply
+    .split("\n")
+    .filter(l => !l.startsWith("#PRESENT:") && !l.startsWith("["));
+  narrativeLines.forEach(line => {
+    ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(npc => {
+      const re = new RegExp(`\\b${npc}\\b`, "i");
+      if (re.test(line) && !characterExists(npc)) {
+        characters.push({ name: npc, status: "present" });
+        selectedCharacters.push(npc);
+        newCharacters.add(npc);
+      }
+    });
+  });
+
+  // 6) Render everything into the story div
   const storyDiv = document.getElementById("story");
-  const p = document.createElement("p");
-  p.classList.add("narration");
-  p.textContent = intro;
-  storyDiv.appendChild(p);
-  triggerSounds(intro);
+  storyDiv.innerHTML = "";         // clear any old intro
+  narrativeLines.forEach(txt => {
+    const p = document.createElement("p");
+    p.classList.add("narration");
+    p.textContent = txt;
+    storyDiv.appendChild(p);
+  });
+
+  // 7) Refresh the sidebar so you see all newCharacters
+  if (newCharacters.size > 0) refreshSidebar();
+
+  // 8) And (optional) set up those first bracketed choices as buttons
+  //    (re‑use your existing choice‑parsing logic from sendToGPT)
 }
 
 // ------------------------------------------
