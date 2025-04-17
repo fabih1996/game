@@ -365,10 +365,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
-    });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    model: "gpt-3.5-turbo",
+    messages: [{ role: "user", content: prompt }]
+  })
+});
 
     const data = await response.json();
     if (!data ||
@@ -646,9 +649,15 @@ Reply with exactly “yes‑present” or “no‑present.”
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages:[{ role:"user", content: arbiterPrompt }]})
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          { role: "user", content: arbiterPrompt }
+        ]
+      })
     });
-    const text = (await res.json()).choices[0].message.content.trim().toLowerCase();
+    const json = await res.json();
+    const text = json.choices[0].message.content.trim().toLowerCase();
     return text.includes("yes‑present") ? "present" : null;
   } catch (err) {
     console.error("Arbiter error:", err);
