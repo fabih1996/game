@@ -370,18 +370,21 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     }
 
     const reply = data.choices[0].message.content.trim();
-   // ── AUTO‑ADD NPCs WHEN MENTIONED ───────────────────────────────────
-   const allowedNPCs = ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"];
-   allowedNPCs.forEach(name => {
-     // if the reply mentions the NPC and they're not already present...
-     if (new RegExp(`\\b${name}\\b`).test(reply) && !characterExists(name)) {
-       characters.push({ name, status: "present" });
-       selectedCharacters.push(name);
-       newCharacters.add(name);
-     }
-   });
-   if (newCharacters.size > 0) refreshSidebar();
-   // ─────────────────────────────────────────────────────────────────
+    // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
+    // We'll only auto-add when GPT actually formats a dialogue line ("Dean: …").
+    const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
+    let match;
+    while ((match = dialogueSpeakerRegex.exec(reply)) !== null) {
+      const name = match[1];
+      if (["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].includes(name)
+          && !characterExists(name)) {
+        characters.push({ name, status: "present" });
+        selectedCharacters.push(name);
+        newCharacters.add(name);
+      }
+    }
+    if (newCharacters.size > 0) refreshSidebar();
+    // ─────────────────────────────────────────────────────────────────────────────
    
     console.log("GPT reply:", reply);
 
