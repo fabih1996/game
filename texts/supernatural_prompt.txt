@@ -76,6 +76,7 @@ The player is "{{PLAYER_NAME}}" and must never be confused with any other charac
 
 # BEHAVIOR RULES:
 - Output exactly: narrative or dialogue lines (as specified), trigger tags, and bracketed choice lines—nothing else.
-
-
+- Never output plain phrases like "CharacterName has arrived." Always use the tag `#PRESENT: CharacterName` to introduce NPC arrivals.
+- Do not narrate the player’s arrival or generic entities; only NPCs via `#PRESENT:`.
+- Ensure no additional text appears after the final choice.
 
