@@ -102,8 +102,20 @@ function refreshSidebar() {
   // In questa versione non utilizziamo la sezione "remote" (rimuoviamo quella lista)
   presentList.innerHTML = "";
 
-  const knownNames = Object.keys(characterColors);
-  characters.forEach(({ name, status }) => {
+ // const knownNames = Object.keys(characterColors);
+ // characters.forEach(({ name, status }) => {
+ const knownNames = Object.keys(characterColors);
+// Only list truly known NPCs or the player—skip any generic “ghost” entries
+  characters
+    .filter(({ name }) =>
+      // is one of our defined NPCs?
+      knownNames.some(known =>
+        name.toLowerCase().includes(known.toLowerCase())
+      )
+      // OR is the player
+      || name === player.name
+    )
+    .forEach(({ name, status }) => {
     // Trattiamo tutti i personaggi come "present"
     const li = document.createElement("li");
     const wrapper = document.createElement("div");
