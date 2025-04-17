@@ -384,18 +384,24 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     const reply = data.choices[0].message.content.trim();
     // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
     // We'll only auto-add when GPT actually formats a dialogue line ("Dean: …").
-    const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
-    let match;
-    while ((match = dialogueSpeakerRegex.exec(reply)) !== null) {
-      const name = match[1];
-      if (["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].includes(name)
-          && !characterExists(name)) {
-        characters.push({ name, status: "present" });
-        selectedCharacters.push(name);
-        newCharacters.add(name);
-      }
-    }
-    if (newCharacters.size > 0) refreshSidebar();
+   // After you get `reply` but before pushing newCharacters:
+   const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
+   let match;
+   while ((match = dialogueSpeakerRegex.exec(reply)) !== null) {
+     const cand = match[1];
+     if (["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].includes(cand)
+         && !characterExists(cand)) {
+       // Ask the arbiter if this really means “cand” is entering the scene
+       const recent = storyLines;  // the last 6 lines you already captured
+       const decision = await askCharacterArbiter(cand, recent);
+       if (decision === "present") {
+         characters.push({ name: cand, status: "present" });
+         selectedCharacters.push(cand);
+         newCharacters.add(cand);
+       }
+     }
+   }
+   if (newCharacters.size > 0) refreshSidebar();
     // ─────────────────────────────────────────────────────────────────────────────
    
     console.log("GPT reply:", reply);
@@ -626,31 +632,27 @@ function scheduleArrival(characterName, delay) {
  * Invia una richiesta per stabilire se un personaggio deve essere aggiunto come presente.
  * (Funzione per eventuali controlli, se necessario.)
  */
-async function askCharacterArbiter(name, line, context) {
-  const prompt = `
-You're helping moderate a roleplaying game.
-...
-(Completa il prompt come da tua logica.)
-`;
+async function askCharacterArbiter(name, recentStory) {
+  const arbiterPrompt = `
+You’re the moderator for a Supernatural role‑playing game.
+Here’s what’s been happening:
+${recentStory}
+
+Someone just mentioned “${name}.”  
+Question: Should ${name}, a known NPC, actually be present on stage now, or was this just a passing reference?
+Reply with exactly “yes‑present” or “no‑present.”
+  `;
   try {
-    const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+      body: JSON.stringify({ messages:[{ role:"user", content: arbiterPrompt }]})
     });
-
-    const data = await response.json();
-    const replyRaw = data.choices[0].message.content;
-    if (!replyRaw || replyRaw.trim() === "") {
-      alert("GPT returned an empty response.");
-      console.error("GPT reply was empty:", data);
-      return;
-    }
-    const reply = replyRaw.trim();
-    if (reply.includes("yes-present")) return "present";
-    return null;
+    const text = (await res.json()).choices[0].message.content.trim().toLowerCase();
+    return text.includes("yes‑present") ? "present" : null;
   } catch (err) {
-    console.error("Error asking arbiter:", err);
+    console.error("Arbiter error:", err);
+    return null;
   }
 }
 
