@@ -1,4 +1,3 @@
-/* gameFunctions.js */
  
  // ---------------------------
  // Variabili globali di gioco
@@ -393,25 +392,37 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     console.log("Lines being processed into story:", lines);
 
     // Aggiungi le scelte (bottoni)
-    const choicesDiv = document.getElementById("choices");
-    const choiceLines = reply.split("\n").filter(line => line.trim().startsWith("["));
-    console.log("Raw GPT reply:\n", reply);
-    console.log("Choices detected:\n", choiceLines);
-    choicesDiv.innerHTML = "";
-    choiceLines.forEach(choice => {
-      const choiceText = choice.replace(/[\[\]]/g, "");
-      const btn = document.createElement("button");
-      btn.className = "choice-btn";
-      btn.textContent = choiceText;
-      btn.onclick = () => {
-        if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-          triggerExorcismEvent();
-        }
-        sendToGPT(choiceText, "narration");
-      };
-      choicesDiv.appendChild(btn);
-      console.log("Button added:", btn.textContent);
-    });
+   const choicesDiv = document.getElementById("choices");
+   const choiceLines = [];
+   reply.split("\n").forEach(raw => {
+     const t = raw.trim();
+     if (t.startsWith("[")) {
+       // già tra parentesi, es: [Guarda sotto il letto]
+       choiceLines.push(t);
+     } else if (/^[-–—]\s+/.test(t)) {
+       // lista con trattino, es: - Guarda sotto il letto
+       choiceLines.push(`[${ t.replace(/^[-–—]\s+/, "") }]`);
+     } else if (/^\d+\.\s+/.test(t)) {
+       // lista numerata, es: 1. Guarda sotto il letto
+       choiceLines.push(`[${ t.replace(/^\d+\.\s+/, "") }]`);
+     }
+   });
+   choicesDiv.innerHTML = "";
+   choiceLines.forEach(bracketed => {
+     // togli i [...] per il testo vero del bottone
+     const choiceText = bracketed.replace(/^\[|\]$/g, "");
+     const btn = document.createElement("button");
+     btn.className = "choice-btn";
+     btn.textContent = choiceText;
+     btn.onclick = () => {
+       // mantieni la tua logica di exorcism se serve
+       if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
+         triggerExorcismEvent();
+       }
+       sendToGPT(choiceText, "narration");
+     };
+     choicesDiv.appendChild(btn);
+   });
 
     // Processa ogni linea del reply
     lines.forEach(line => {
