@@ -638,9 +638,11 @@ function scheduleArrival(characterName, delay) {
 async function askCharacterArbiter(reply, recentStory) {
   const arbiterPrompt = `
 You’re a moderator for a Supernatural role‑playing game.
-Given the previous context and the AI’s new reply, output only the presence tags to inject:
-  - #PRESENT: <Name> for NPCs (Dean, Sam, Castiel, Crowley, Bobby, Ruby, Jo, Ellen).
-  - #PRESENT: <EntityType> for supernatural entities (e.g., Ghost, Shadow) only when clearly justified.
+Given the previous context and the AI’s new reply, output ONLY the presence tags:
+
+  • #PRESENT: <Name>   for NPCs (Dean, Sam, Castiel, Crowley, Bobby, Ruby, Jo, Ellen)
+  • #PRESENT: <Entity> for supernatural entities (Ghost, Shadow) only when they truly appear
+
 Return nothing else.
 
 CONTEXT:
@@ -649,18 +651,20 @@ ${recentStory}
 REPLY:
 ${reply}
 
-Examples:
-CONTEXT: You wake up trapped in a crypt. You hear a distant growl.
-REPLY: Suddenly, Dean storms through the mossy archway, sword drawn.
+EXAMPLE 1:
+CONTEXT: You wake in a crypt, hear a growl.
+REPLY: Suddenly, Dean storms in.
 OUTPUT: #PRESENT: Dean
 
-CONTEXT: You stand in a moonlit clearing, the trees silent.
-REPLY: A pale mist coils at your feet, then rises into a skeletal figure that lets out a hollow wail.
+EXAMPLE 2:
+CONTEXT: You stand in a clearing, trees silent.
+REPLY: A pale mist forms into a skeletal figure.
 OUTPUT: #PRESENT: Ghost
 
-CONTEXT: You’re in the bunker, safe—for now.
-REPLY: You pick up the phone and dial Sam’s number.
-OUTPUT: (none)
+EXAMPLE 3:
+CONTEXT: You’re safe in the bunker.
+REPLY: You dial Sam’s number.
+OUTPUT: 
 `;
 
   try {
@@ -673,26 +677,10 @@ OUTPUT: (none)
       })
     });
     const json = await res.json();
-    // Extract all lines that start with `#PRESENT:`
-    const tags = json.choices[0].message.content
-      .split("
-")
-      .filter(line => line.trim().startsWith("#PRESENT:"))
-      .map(line => line.trim());
-    return tags;
-  } catch (err) {
-    console.error("Arbiter error:", err);
-    return [];
-  }
-}
-    });
-    const json = await res.json();
-    // Extract all lines that start with `#PRESENT:`
-    const tags = json.choices[0].message.content
+    return json.choices[0].message.content
       .split("\n")
-      .filter(line => line.trim().startsWith("#PRESENT:"))
+      .filter(line => line.startsWith("#PRESENT:"))
       .map(line => line.trim());
-    return tags;
   } catch (err) {
     console.error("Arbiter error:", err);
     return [];
