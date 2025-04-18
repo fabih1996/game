@@ -14,14 +14,10 @@
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
-    
-      <h4>Remotely Contacted</h4>
-      <ul id="charListRemote"></ul>
-    <!-- La sezione dei "Remote" è stata rimossa per semplificare la gestione -->
-    <!--
+
     <h4>Remotely Contacted</h4>
     <ul id="charListRemote"></ul>
-    -->
+
     <h4>Add Character</h4>
     <select id="charDropdown">
       <option value="">-- Select character --</option>
@@ -33,7 +29,6 @@
       <textarea id="customCharDesc" placeholder="Character description"></textarea>
       <select id="customCharStatus">
         <option value="present">Present</option>
-        <!-- L'opzione 'Remote Contact' è stata rimossa in quanto non più necessaria -->
       </select>
       <button onclick="addCustomCharacter()">Add Character</button>
     </div>
@@ -42,6 +37,9 @@
     <button id="rollDice" onclick="triggerRandomEvent()">🎲 Roll the Dice</button>
 
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
+
+    <!-- Phone button in sidebar -->
+    <button id="phone-button" class="game-button">📱 Phone</button>
   </div>
 
   <!-- Main container -->
@@ -98,7 +96,9 @@
 
   <!-- Exorcism Overlay -->
   <div id="exorcism-overlay" class="hidden">
-    … esorcismo …
+    <div id="pentagram">⛧</div>
+    <div id="ghost">👻</div>
+    <div id="chant"></div>
   </div>
 
   <!-- Phone Overlay -->
