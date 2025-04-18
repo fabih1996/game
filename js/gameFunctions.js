@@ -123,18 +123,24 @@ export async function loadIntro() {
           newCharacters.add(name);
         }
       });
-
-    // 4) Render della narrazione (escludendo tag e scelte)
+    // 4) Render della narrazione (ripulita da vuoti, separatori e tag)
     const storyDiv = document.getElementById("story");
     storyDiv.innerHTML = "";
-    reply.split("\n").forEach(line => {
-      if (!line.startsWith("#PRESENT:") && !line.startsWith("[")) {
+    reply
+      .split("\n")                // spezza in righe
+      .map(l => l.trim())         // togli spazi
+      .filter(line =>
+        line &&                    // non vuota
+        !line.startsWith("#PRESENT:") &&
+        !line.startsWith("[") &&
+        !/^[-–—]{3,}$/.test(line)  // non '---' o simili
+      )
+      .forEach(line => {
         const p = document.createElement("p");
         p.classList.add("narration");
-        p.textContent = line.trim();
+        p.textContent = line;
         storyDiv.appendChild(p);
-      }
-    });
+      });
 
     // 5) Se ci sono nuovi personaggi, aggiorna subito la sidebar
     if (newCharacters.size) refreshSidebar();
@@ -433,39 +439,32 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     }
   });
 
-  // 6b) Append lines
-  lines.forEach(line => {
-    if (/^#PRESENT:\s*(.+)$/.test(line)) {
-      const name = line.replace(/^#PRESENT:\s*/, "").trim();
-      const existing = characters.find(c => c.name === name);
-      if (existing) existing.status = "present";
-      else characters.push({ name, status: "present" });
-      if (!selectedCharacters.includes(name)) selectedCharacters.push(name);
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = `${name} has arrived.`;
-      storyDiv.appendChild(p);
-      pendingArrival.delete(name);
-      refreshSidebar();
-
-    } else if (/^#LEAVE:\s*(.+)$/.test(line)) {
-      removeCharacter(line.replace(/^#LEAVE:\s*/, "").trim());
-
-    } else if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
-      const [name, ...rest] = line.split(":");
-      let dlg = rest.join(":").trim().replace(/^"+|"+$/g, "");
-      const p = document.createElement("p");
-      p.className = `character-color-${name}`;
-      p.textContent = `${name}: "${dlg}"`;
-      storyDiv.appendChild(p);
-
-    } else {
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = line;
-      storyDiv.appendChild(p);
-    }
-  });
+  // 6b) Append narrazione pulita e dialoghi
+  lines
+    .map(l => l.trim())
+    .filter(line =>
+      line &&                       // non vuota
+      !line.startsWith("[") &&      // non scelta
+      !/^[-–—]{3,}$/.test(line) &&   // non separatore
+      !/^#/.test(line)              // non tag (#PRESENT,/LEAVE)
+    )
+    .forEach(line => {
+      if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+        // dialogo
+        const [name, ...rest] = line.split(":");
+        const text = rest.join(":").trim().replace(/^"+|"+$/g, "");
+        const p = document.createElement("p");
+        p.className = `character-color-${name}`;
+        p.textContent = `${name}: "${text}"`;
+        storyDiv.appendChild(p);
+      } else {
+        // narrazione
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = line;
+        storyDiv.appendChild(p);
+      }
+    });
 
   if (newCharacters.size) refreshSidebar();
 }
