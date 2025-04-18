@@ -13,7 +13,8 @@ import {
   sendToGPT,
   dismissCharacter,
   setPlayer,
-  scheduleArrival
+  scheduleArrival,
+  travelTimes
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
@@ -168,3 +169,4 @@ window.startGame = startGame;
   window.triggerRandomEvent   = triggerRandomEvent;
   window.toggleMusic          = toggleMusic;
   window.toggleSidebar        = toggleSidebar;
+  window.scheduleArrival = scheduleArrival;
