@@ -1,5 +1,6 @@
 /* main.js */
 import {
+  characters,
   loadDropdown,
   setupActions,
   loadCharacterLore,
