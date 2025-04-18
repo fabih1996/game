@@ -505,15 +505,29 @@ export function isContextuallyAppropriate(line, context) {
 }
 
 export function scheduleArrival(characterName, delay) {
-  arrivalETA[characterName]    = Date.now() + delay;
+  // 1) Imposta subito lo stato a "pending" e mostralo in sidebar
+  const char = characters.find(c => c.name === characterName);
+  if (char && char.status !== "present") {
+    char.status = "pending";
+    pendingArrival.add(characterName);
+    refreshSidebar();
+  }
+
+  // 2) Registra ETA e durata per il ring
+  arrivalETA[characterName]      = Date.now() + delay;
   arrivalDuration[characterName] = delay;
+
+  // 3) Dopo il delay, rendilo "present"
   setTimeout(() => {
-    const char = characters.find(c => c.name === characterName);
-    if (char && char.status !== "present") {
-      char.status = "present";
+    const c = characters.find(c => c.name === characterName);
+    if (c && c.status !== "present") {
+      c.status = "present";
+      pendingArrival.delete(characterName);
       delete arrivalETA[characterName];
       delete arrivalDuration[characterName];
       refreshSidebar();
+
+      // Aggiungi la linea in chat
       const storyDiv = document.getElementById("story");
       const p = document.createElement("p");
       p.classList.add("narration");
