@@ -48,6 +48,10 @@ const travelTimes = {
   Ellen: 45000
 };
 
+// ETA (timestamp) per ogni NPC in viaggio, usato dal timer grafico
+const arrivalETA = {};        // { Dean: 1682345678901, ... }
+const arrivalDuration = {};   // durata in ms usata per calcolare la % completata
+
 const characterColors = {
   "Dean": "#FFD700",
   "Sam": "#00BFFF",
