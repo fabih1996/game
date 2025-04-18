@@ -213,7 +213,7 @@ export function refreshSidebar() {
   const presentList = document.getElementById("charListPresent");
   presentList.innerHTML = "";
   characters
-    .filter(c => c.status !== "remote")
+    .filter(c => c.status !== "remote" && c.name !== "Narrator")
     .filter(({ name }) =>
       Object.keys(characterColors).some(kn => name.toLowerCase().includes(kn.toLowerCase())) ||
       name === player.name
