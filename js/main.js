@@ -114,6 +114,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // 4) Invia messaggio/call
   // 4) Invia messaggio/call (GPT4 decide con #PRESENT:)
 phoneSendBtn.onclick = async () => {
+  console.log("📱 click Send—currentCallee:", currentCallee);
   const txt = phoneInput.value.trim();
   if (!txt || !currentCallee) return;
 
@@ -138,6 +139,7 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
     body: JSON.stringify({ model: "gpt-4", messages: msgs })
   });
   const data  = await res.json();
+  console.log("Risposta GPT4:", data);
   const reply = data.choices[0].message.content.trim();
 
   // 4) Parsifica il tag #PRESENT:
