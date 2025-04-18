@@ -115,17 +115,20 @@ phoneSendBtn.onclick = async () => {
   const txt = phoneInput.value.trim();
   if (!txt || !currentCallee) return;
 
-  // 1) Mostra subito il messaggio dell’utente
+  // 1) Stampa un log per debug
+  console.log("📱 Send clicked; reply incoming for", currentCallee);
+
+  // 2) Mostra subito il messaggio dell’utente
   appendMessage("You", txt);
   convoHistory.push({ role: "user", content: txt });
 
-  // 2) Sempre in chiamata: istruzioni per il modello
+  // 3) Prompt univoco: siamo sempre in chiamata
   const systemMsg = `You are ${currentCallee}, speaking via phone call in character.
 After your next line, if you intend to come help the player, append on its own line:
 #PRESENT: ${currentCallee}
 Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
 
-  // 3) Prepara e manda la request a GPT‑4
+  // 4) Prepara e invia la request
   const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
   const res  = await fetch("https://supernatural-api.vercel.app/api/chat", {
     method: "POST",
@@ -136,19 +139,23 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
   const reply = data.choices[0].message.content.trim();
   console.log("Reply string:", reply);
 
-  // 4) Estrai il tag e “pulisci” il testo
+  // 5) Estrai tag e testo pulito
   const lines  = reply.split("\n").map(l => l.trim());
-  const hasTag = lines.includes(`#PRESENT: ${currentCallee}`);
-  const clean  = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
+  const hasTag = lines.some(l => l.includes(`#PRESENT: ${currentCallee}`));
+  const clean  = lines
+    .map(l => l.replace(`#PRESENT: ${currentCallee}`, "").trim())
+    .filter(l => l)
+    .join("\n");
 
-  // 5) Mostra la risposta
+  // 6) Append della risposta
   appendMessage(currentCallee, clean);
   convoHistory.push({ role: "assistant", content: clean });
   phoneInput.value = "";
 
-  // 6) Se vediamo il tag o “On my way”, schedula l’arrivo
+  // 7) Se vediamo il tag OPPURE la frase “on my way”, partiamo con l’arrivo
   const arrivalRegex = /\b(on my way|sto arrivando|in arrivo)\b/i;
   if (hasTag || arrivalRegex.test(reply)) {
+    console.log("🚗 Scheduling arrival for", currentCallee);
     const delay = travelTimes[currentCallee] ?? 30000;
     scheduleArrival(currentCallee, delay);
   }
