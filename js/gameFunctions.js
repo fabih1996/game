@@ -143,7 +143,7 @@ export async function loadIntro() {
       });
 
     // 5) Se ci sono nuovi personaggi, aggiorna subito la sidebar
-    if (newCharacters.size) refreshSidebar();
+    refreshSidebar();
 
     // 6) Crea i pulsanti delle prime 3 scelte
     const choicesDiv = document.getElementById("choices");
@@ -426,12 +426,13 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     )
     .forEach(line => {
       if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
-        // dialogo
         const [name, ...rest] = line.split(":");
-        const text = rest.join(":").trim().replace(/^"+|"+$/g, "");
         const p = document.createElement("p");
-        p.className = `character-color-${name}`;
-        p.textContent = `${name}: "${text}"`;
+        // Aggiunge la classe colore senza cancellare altre
+        p.classList.add(`character-color-${name}`);
+        // Fallback inline, nel caso il CSS non fosse ancora applicato
+        p.style.color = characterColors[name] || characterColors.default;
+        p.textContent = `${name}: "${rest.join(":").trim()}"`;
         storyDiv.appendChild(p);
       } else {
         // narrazione
