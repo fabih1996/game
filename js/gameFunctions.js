@@ -218,14 +218,21 @@ export function refreshSidebar() {
       img.alt = name;
       if (selectedCharacters.includes(name)) img.classList.add("selected");
 
-      // Click sull’icona per selezionare/deselezionare
-      img.onclick = () => {
-        if (selectedCharacters.includes(name))
-          selectedCharacters = selectedCharacters.filter(n => n !== name);
-        else
-          selectedCharacters.push(name);
-        refreshSidebar();
+      // intercetto il click sul wrapper per fare il dismiss
+      wrapper.onclick = (e) => {
+        dismissCharacter(name);
+        e.stopPropagation();
       };
+
+      // Click sull’icona per selezionare/deselezionare
+     img.onclick = (e) => {
+      e.stopPropagation();          // ← impedisce al click di “risalire” al wrapper
+      if (selectedCharacters.includes(name))
+        selectedCharacters = selectedCharacters.filter(n => n !== name);
+      else
+        selectedCharacters.push(name);
+      refreshSidebar();
+    };
 
       wrapper.appendChild(img);
       li.appendChild(wrapper);
