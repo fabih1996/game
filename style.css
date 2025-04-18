@@ -370,8 +370,8 @@ body {
   height: calc(100% + 8px);
   border-radius: 50%;
   background:
-    conic-gradient(#00bfff var(--prog, 0%),     /* colore anello */
-                   #444        0);
+    conic-gradient(var(--ring-color, #00bfff) var(--prog, 0%),
+                   #444                          0);
   transition: background 0.2s linear;
 }
 .char-wrapper.pending img { opacity: 0.5; }     /* già usato prima */
