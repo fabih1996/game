@@ -82,4 +82,3 @@ window.startGame = startGame;
   window.triggerRandomEvent   = triggerRandomEvent;
   window.toggleMusic          = toggleMusic;
   window.toggleSidebar        = toggleSidebar;
-});
