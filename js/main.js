@@ -73,6 +73,92 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     });
   });
+    // ─────────── PHONE DIALER ───────────
+  const phoneOverlay   = document.getElementById("phone-overlay");
+  const phoneClose     = document.getElementById("phone-close");
+  const contactList    = document.getElementById("phone-contact-list");
+  const phoneConvo     = document.getElementById("phone-conversation");
+  const messagesDiv    = document.getElementById("messages");
+  const phoneInput     = document.getElementById("phone-input");
+  const phoneSendBtn   = document.getElementById("phone-send");
+  const phoneHangupBtn = document.getElementById("phone-hangup");
+  let   currentCallee  = null;
+  let   convoHistory   = [];
+
+  // 1) Apri il dialer e popola i contatti
+  document.getElementById("phone-button").onclick = () => {
+    contactList.innerHTML = "";
+    ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(name => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      li.onclick = () => openConversation(name);
+      contactList.appendChild(li);
+    });
+    phoneOverlay.classList.remove("hidden");
+  };
+
+  // 2) Chiudi telefono (Close e Hangup)
+  phoneClose.onclick = resetPhone;
+  phoneHangupBtn.onclick = resetPhone;
+
+  // 3) Apri conversazione
+  function openConversation(name) {
+    currentCallee = name;
+    convoHistory = [];
+    messagesDiv.innerHTML = "";
+    phoneConvo.classList.remove("hidden");
+  }
+
+  // 4) Invia messaggio/call
+  phoneSendBtn.onclick = async () => {
+    const txt = phoneInput.value.trim();
+    if (!txt || !currentCallee) return;
+
+    appendMessage("You", txt);
+    convoHistory.push({ role: "user", content: txt });
+
+    // Sistema prompt per SMS o phone call
+    const mode = txt.startsWith("/call") ? "phone call" : "SMS";
+    const systemMsg = `You are ${currentCallee}, responding in a ${mode}.`;
+    const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
+
+    const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "gpt-4", messages: msgs })
+    });
+    const data  = await res.json();
+    const reply = data.choices[0].message.content.trim();
+
+    appendMessage(currentCallee, reply);
+    convoHistory.push({ role: "assistant", content: reply });
+    phoneInput.value = "";
+
+    // Se dice “on my way” o simili, schedula arrivo
+    if (/on my way|coming over|heading/i.test(reply)) {
+      scheduleArrival(currentCallee, travelTimes[currentCallee] || 30000);
+    }
+  };
+
+  // 5) Helper per appendere messaggi
+  function appendMessage(who, text) {
+    const d = document.createElement("div");
+    d.className = who === "You" ? "msg-you" : "msg-them";
+    d.textContent = `${who}: ${text}`;
+    messagesDiv.appendChild(d);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  // 6) Reset telefono
+  function resetPhone() {
+    phoneOverlay.classList.add("hidden");
+    phoneConvo.classList.add("hidden");
+    messagesDiv.innerHTML = "";
+    phoneInput.value = "";
+    currentCallee = null;
+    convoHistory = [];
+  }
+  // ───────────────────────────────────────
 });
 
 window.startGame = startGame;
