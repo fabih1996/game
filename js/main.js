@@ -111,44 +111,48 @@ window.addEventListener("DOMContentLoaded", async () => {
     phoneConvo.classList.remove("hidden");
   }
 
-  phoneSendBtn.onclick = async () => {
-    const txt = phoneInput.value.trim();
-    if (!txt || !currentCallee) return;
-  
-    // 1) Mostra subito il messaggio dell'utente
-    appendMessage("You", txt);
-    convoHistory.push({ role: "user", content: txt });
-  
-    // 2) Qui siamo sempre in chiamata
-    const systemMsg = `You are ${currentCallee}, speaking via phone call in character.
-    After your next line, if you intend to come help the player, append on its own line:
-    #PRESENT: ${currentCallee}
-    Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
-  
-     // 3) Prepara i messaggi per GPT‑4
-     const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
-     const res  = await fetch(/* … */);
-     const data = await res.json();
-     const reply = data.choices[0].message.content.trim();
-     console.log("Reply string:", reply);
+phoneSendBtn.onclick = async () => {
+  const txt = phoneInput.value.trim();
+  if (!txt || !currentCallee) return;
 
-     // 5) Parsifica eventuale tag #PRESENT:
-     const lines  = reply.split("\n").map(l => l.trim());
-     const hasTag = lines.includes(`#PRESENT: ${currentCallee}`);
-     const clean  = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
+  // 1) Mostra subito il messaggio dell’utente
+  appendMessage("You", txt);
+  convoHistory.push({ role: "user", content: txt });
 
-     // 6) Mostra la risposta
-     appendMessage(currentCallee, clean);
-     convoHistory.push({ role: "assistant", content: clean });
-     phoneInput.value = "";
+  // 2) Sempre in chiamata: istruzioni per il modello
+  const systemMsg = `You are ${currentCallee}, speaking via phone call in character.
+After your next line, if you intend to come help the player, append on its own line:
+#PRESENT: ${currentCallee}
+Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
 
-    // 7) Se c'è il tag o la frase “On my way”, avvia l'arrivo
-    const arrivalRegex = /\b(on my way|sto arrivando|in arrivo)\b/i;
-    if (hasTag || arrivalRegex.test(reply)) {
-      const delay = travelTimes[currentCallee] ?? 30000;
-      scheduleArrival(currentCallee, delay);
-    }
-  };
+  // 3) Prepara e manda la request a GPT‑4
+  const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
+  const res  = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gpt-4", messages: msgs })
+  });
+  const data  = await res.json();
+  const reply = data.choices[0].message.content.trim();
+  console.log("Reply string:", reply);
+
+  // 4) Estrai il tag e “pulisci” il testo
+  const lines  = reply.split("\n").map(l => l.trim());
+  const hasTag = lines.includes(`#PRESENT: ${currentCallee}`);
+  const clean  = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
+
+  // 5) Mostra la risposta
+  appendMessage(currentCallee, clean);
+  convoHistory.push({ role: "assistant", content: clean });
+  phoneInput.value = "";
+
+  // 6) Se vediamo il tag o “On my way”, schedula l’arrivo
+  const arrivalRegex = /\b(on my way|sto arrivando|in arrivo)\b/i;
+  if (hasTag || arrivalRegex.test(reply)) {
+    const delay = travelTimes[currentCallee] ?? 30000;
+    scheduleArrival(currentCallee, delay);
+  }
+};
 
   // 5) Helper per appendere messaggi
   function appendMessage(who, text) {
