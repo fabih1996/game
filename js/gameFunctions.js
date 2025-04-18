@@ -110,9 +110,12 @@ async function loadCharacterLore() {
 /**
  * Carica una introduzione casuale e la visualizza nell'area della storia.
  */
+/**
+ * Load a random opening scene and display it.
+ */
 async function loadIntro() {
   try {
-    // 1. leggi il prompt template
+    // 1. read prompt template
     let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
     prompt = prompt
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
@@ -120,7 +123,7 @@ async function loadIntro() {
       .replace("{{INPUT}}", "")
       .replace("{{CHARACTERS}}", "");
 
-    // 2. chiama l’endpoint remoto
+    // 2. call remote endpoint
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -129,27 +132,73 @@ async function loadIntro() {
         messages: [{ role: "user", content: prompt }]
       })
     });
-
-    // 3. verifica lo status
     if (!res.ok) throw new Error(`API returned ${res.status}`);
 
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
 
-    // … (tutto il codice esistente che analizza `reply`)
-    // dalla riga “// 4) Parse any #PRESENT: …” in poi rimane identico
+    /* ---------- ORIGINAL PARSING / RENDERING ---------- */
+
+    // 3) read any #PRESENT: tags
+    const presentNames = Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
+                              .map(m => m[1]);
+    presentNames.forEach(name => {
+      if (!characterExists(name)) {
+        characters.push({ name, status: "present" });
+        selectedCharacters.push(name);
+        newCharacters.add(name);
+      }
+    });
+
+    // 4) fallback scan for known NPC names inside plain text
+    const narrativeLines = reply
+      .split("\n")
+      .filter(l => !l.startsWith("#PRESENT:") && !l.startsWith("["));
+    narrativeLines.forEach(line => {
+      ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(npc => {
+        const re = new RegExp(`\\b${npc}\\b`, "i");
+        if (re.test(line) && !characterExists(npc)) {
+          characters.push({ name: npc, status: "present" });
+          selectedCharacters.push(npc);
+          newCharacters.add(npc);
+        }
+      });
+    });
+
+    // 5) render story text
+    const storyDiv = document.getElementById("story");
+    storyDiv.innerHTML = "";
+    narrativeLines.forEach(txt => {
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = txt;
+      storyDiv.appendChild(p);
+    });
+
+    // 6) refresh sidebar to show new NPCs
+    if (newCharacters.size > 0) refreshSidebar();
+
+    // 7) first bracketed choices (if any)
+    const choicesDiv  = document.getElementById("choices");
+    const firstChoices = reply.split("\n").filter(l => l.trim().startsWith("["));
+    choicesDiv.innerHTML = "";
+    firstChoices.forEach(bracketed => {
+      const choiceText = bracketed.replace(/^\[|\]$/g, "");
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = choiceText;
+      btn.onclick = () => sendToGPT(choiceText, "narration");
+      choicesDiv.appendChild(btn);
+    });
+
+    /* ---------- END ORIGINAL BLOCK ---------- */
 
   } catch (err) {
     console.error("Intro fetch failed:", err);
-
-    // Fallback minimal: mostra un testo locale e permetti comunque di giocare
     const storyDiv = document.getElementById("story");
-    storyDiv.innerHTML = `
-      <p class="narration">The bunker is quiet… maybe too quiet. Something tells you today won’t be ordinary.</p>
-    `;
+    storyDiv.innerHTML =
+      `<p class="narration">The bunker is quiet… maybe too quiet. Something tells you today won’t be ordinary.</p>`;
     refreshSidebar();
-
-    // opzionale: avvisa l’utente
     alert("⚠️ Unable to reach the AI server. Check your connection or try again later.");
   }
 }
