@@ -145,16 +145,13 @@ export async function loadIntro() {
     // 5) Se ci sono nuovi personaggi, aggiorna subito la sidebar
     if (newCharacters.size) refreshSidebar();
 
-    // 6) Crea i pulsanti delle prime scelte
+    // 6) Crea i pulsanti delle prime 3 scelte
     const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
-    // 6) Crea i pulsanti delle prime 3 scelte
     const buttons = reply
       .split("\n")
       .filter(l => l.trim().startsWith("["))
       .slice(0, 3);      // prendi solo i primi 3
-    const choicesDiv = document.getElementById("choices");
-    choicesDiv.innerHTML = "";
     buttons.forEach(br => {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
