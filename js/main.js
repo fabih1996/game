@@ -112,51 +112,49 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // 4) Invia messaggio/call
   // 4) Invia messaggio/call (GPT4 decide con #PRESENT:)
-  phoneSendBtn.onclick = async () => {
-    const txt = phoneInput.value.trim();
-    if (!txt || !currentCallee) return;
+phoneSendBtn.onclick = async () => {
+  const txt = phoneInput.value.trim();
+  if (!txt || !currentCallee) return;
 
-    // Mostra il tuo messaggio
-    appendMessage("You", txt);
-    convoHistory.push({ role: "user", content: txt });
+  // 1) Mostra il messaggio dell'utente
+  appendMessage("You", txt);
+  convoHistory.push({ role: "user", content: txt });
 
-    // System-prompt che chiede a GPT4 il tag #PRESENT: se intende venire
-    const mode = txt.startsWith("/call") ? "phone call" : "SMS";
-    const systemMsg = `You are ${currentCallee}, speaking via ${mode} in character.
-    If after your next line you intend to come help the player,
-    append exactly on its own line at the end:
-    
-    #PRESENT: ${currentCallee}
-    
-    Otherwise do not output that tag.
-    Only output your dialogue lines and that tag—nothing else.`;
-    const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
+  // 2) System‑prompt che chiede a GPT4 di appendere #PRESENT: se intende venire
+  const mode = txt.startsWith("/call") ? "phone call" : "SMS";
+  const systemMsg = `You are ${currentCallee}, speaking via ${mode} in character.
+After your next line, if you intend to come help the player, append on its own line:
 
-    // Chiamata a GPT‑4
-    const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: "gpt-4", messages: msgs })
-    });
-    const data  = await res.json();
-    const reply = data.choices[0].message.content.trim();
+#PRESENT: ${currentCallee}
 
-    // Parsifica il tag #PRESENT: e ripulisci la risposta
-    const lines     = reply.split("\n").map(l => l.trim());
-    const hasTag    = lines.includes(`#PRESENT: ${currentCallee}`);
-    const cleanText = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
+Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
+  const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
 
-    // Mostra la risposta “pulita”
-    appendMessage(currentCallee, cleanText);
-    convoHistory.push({ role: "assistant", content: cleanText });
-    phoneInput.value = "";
+  // 3) Chiamata a GPT‑4
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gpt-4", messages: msgs })
+  });
+  const data  = await res.json();
+  const reply = data.choices[0].message.content.trim();
 
-    // Se GPT4 ha mandato il tag, schedula l’arrivo
-    if (hasTag) {
-      const delay = travelTimes[currentCallee] ?? 30000;
-      scheduleArrival(currentCallee, delay);
-    }
-  };
+  // 4) Parsifica il tag #PRESENT:
+  const lines     = reply.split("\n").map(l => l.trim());
+  const hasTag    = lines.includes(`#PRESENT: ${currentCallee}`);
+  const cleanText = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
+
+  // 5) Mostra la risposta di GPT senza il tag
+  appendMessage(currentCallee, cleanText);
+  convoHistory.push({ role: "assistant", content: cleanText });
+  phoneInput.value = "";
+
+  // 6) Se GPT ha emesso il tag, schedula l’arrivo
+  if (hasTag) {
+    const delay = travelTimes[currentCallee] ?? 30000;
+    scheduleArrival(currentCallee, delay);
+  }
+};
 
   // 5) Helper per appendere messaggi
   function appendMessage(who, text) {
