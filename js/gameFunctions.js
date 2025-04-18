@@ -38,7 +38,7 @@ const arrivalNPCs = allAvailableCharacters.filter(n => n !== "Other...");
 // ---------------------------
 // Tempi di viaggio e messaggi
 // ---------------------------
-const travelTimes = {
+export const travelTimes = {
   Dean:    30000,
   Sam:     40000,
   Castiel: 5000,
