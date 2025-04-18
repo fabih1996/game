@@ -148,19 +148,20 @@ export async function loadIntro() {
     // 6) Crea i pulsanti delle prime scelte
     const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
+    // 6) Crea i pulsanti delle prime 3 scelte
     const buttons = reply
       .split("\n")
       .filter(l => l.trim().startsWith("["))
       .slice(0, 3);      // prendi solo i primi 3
+    const choicesDiv = document.getElementById("choices");
+    choicesDiv.innerHTML = "";
     buttons.forEach(br => {
-      /* crea i bottoni */
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = br.replace(/^\[|\]$/g, "");
+      btn.onclick = () => sendToGPT(btn.textContent, "narration");
+      choicesDiv.appendChild(btn);
     });
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.textContent = br.replace(/^\[|\]$/g, "");
-        btn.onclick = () => sendToGPT(btn.textContent, "narration");
-        choicesDiv.appendChild(btn);
-      });
 
     // 7) Auto‑aggiungi come “present” chi appare in dialogo
     reply.split("\n").forEach(line => {
