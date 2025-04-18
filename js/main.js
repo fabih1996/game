@@ -35,6 +35,15 @@ window.addEventListener("DOMContentLoaded", async () => {
   setupActions();
   // Carica il lore dei personaggi da file esterno
   await loadCharacterLore();
+
+   // Mostra/nascondi il form “Create custom character”
+  const playerSelect = document.getElementById("playerSelect");
+  if (playerSelect) {
+  playerSelect.addEventListener("change", e => {
+  const fields = document.getElementById("customPlayerFields");
+  fields.style.display = e.target.value === "custom" ? "block" : "none";
+  });
+  }
   
   // Abilita l'audio al primo click dell'utente
   document.addEventListener("click", () => {
