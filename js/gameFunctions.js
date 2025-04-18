@@ -184,7 +184,10 @@ function refreshSidebar() {
    const li      = document.createElement("li");
    const wrapper = document.createElement("div");
    wrapper.className = "char-wrapper";          // nuovo wrapper standard
-
+   wrapper.style.setProperty(
+  "--ring-color",
+  characterColors[matchedName || name] || characterColors.default
+  );
    if (status === "pending") wrapper.classList.add("pending");
 
     // Generazione immagine del personaggio
