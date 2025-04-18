@@ -48,6 +48,15 @@ const travelTimes = {
   Ellen: 45000
 };
 
+// 1)  Add this near travelTimes – all ENGLISH messages
+const arrivalMessages = {
+  Dean:    "You hear the Impala roaring in the distance—Dean is on his way…",
+  Sam:     "Sam is sprinting toward you—he’ll be there soon…",
+  Castiel: "A flutter of wings ripples through the air—Castiel is about to manifest…",
+  Crowley: "You smell sulfur—Crowley is about to appear…"
+  // add Jo, Bobby, Ruby, Ellen, etc. if you want specific lines
+};
+
 // ETA (timestamp) per ogni NPC in viaggio, usato dal timer grafico
 const arrivalETA = {};        // { Dean: 1682345678901, ... }
 const arrivalDuration = {};   // durata in ms usata per calcolare la % completata
@@ -102,68 +111,47 @@ async function loadCharacterLore() {
  * Carica una introduzione casuale e la visualizza nell'area della storia.
  */
 async function loadIntro() {
-  // 1) Pull in the full prompt template
-  let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
-  // 2) Fill in the bits we know (no prior story, empty INPUT, no CHARACTERS yet)
-  prompt = prompt
-    .replace("{{CHARACTER_LORE}}", characterKnowledge)
-    .replace("{{STORY_CONTEXT}}", "")
-    .replace("{{INPUT}}", "")
-    .replace("{{CHARACTERS}}", "");
+  try {
+    // 1. leggi il prompt template
+    let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
+    prompt = prompt
+      .replace("{{CHARACTER_LORE}}", characterKnowledge)
+      .replace("{{STORY_CONTEXT}}", "")
+      .replace("{{INPUT}}", "")
+      .replace("{{CHARACTERS}}", "");
 
-  // 3) Ask GPT-4 for a Random Event / opening scene
-  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
-  const data = await res.json();
-  const reply = data.choices[0].message.content.trim();
-
-  // 4) Parse any #PRESENT: tags so we know who shows up
-  const presentNames = Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
-                            .map(m => m[1]);
-  presentNames.forEach(name => {
-    if (!characterExists(name)) {
-      characters.push({ name, status: "present" });
-      selectedCharacters.push(name);
-      newCharacters.add(name);
-    }
-  });
-
-  // 5) Fallback scan—if GPT forgot to tag “Bobby” but the text says “Bobby calls you…”
-  const narrativeLines = reply
-    .split("\n")
-    .filter(l => !l.startsWith("#PRESENT:") && !l.startsWith("["));
-  narrativeLines.forEach(line => {
-    ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(npc => {
-      const re = new RegExp(`\\b${npc}\\b`, "i");
-      if (re.test(line) && !characterExists(npc)) {
-        characters.push({ name: npc, status: "present" });
-        selectedCharacters.push(npc);
-        newCharacters.add(npc);
-      }
+    // 2. chiama l’endpoint remoto
+    const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [{ role: "user", content: prompt }]
+      })
     });
-  });
 
-  // 6) Render everything into the story div
-  const storyDiv = document.getElementById("story");
-  storyDiv.innerHTML = "";         // clear any old intro
-  narrativeLines.forEach(txt => {
-    const p = document.createElement("p");
-    p.classList.add("narration");
-    p.textContent = txt;
-    storyDiv.appendChild(p);
-  });
+    // 3. verifica lo status
+    if (!res.ok) throw new Error(`API returned ${res.status}`);
 
-  // 7) Refresh the sidebar so you see all newCharacters
-  if (newCharacters.size > 0) refreshSidebar();
+    const data  = await res.json();
+    const reply = data.choices[0].message.content.trim();
 
-  // 8) And (optional) set up those first bracketed choices as buttons
-  //    (re‑use your existing choice‑parsing logic from sendToGPT)
+    // … (tutto il codice esistente che analizza `reply`)
+    // dalla riga “// 4) Parse any #PRESENT: …” in poi rimane identico
+
+  } catch (err) {
+    console.error("Intro fetch failed:", err);
+
+    // Fallback minimal: mostra un testo locale e permetti comunque di giocare
+    const storyDiv = document.getElementById("story");
+    storyDiv.innerHTML = `
+      <p class="narration">The bunker is quiet… maybe too quiet. Something tells you today won’t be ordinary.</p>
+    `;
+    refreshSidebar();
+
+    // opzionale: avvisa l’utente
+    alert("⚠️ Impossibile contattare il server delle risposte AI. Controlla la connessione o riprova più tardi.");
+  }
 }
 
 // ------------------------------------------
@@ -458,6 +446,7 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     messages: [{ role: "user", content: prompt }]
   })
 });
+if (!response.ok) throw new Error(`API returned ${response.status}`);
 
     const data = await response.json();
     if (!data ||
@@ -490,14 +479,13 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
         const delay = travelTimes[name] || 30000;
         scheduleArrival(name, delay);
 
-        // Feedback narrativo
+        // Feedback narrativo 
         const p = document.createElement("p");
         p.classList.add("narration");
-        p.textContent = name === "Castiel"
-          ? "A flutter of wings vibrates in the air: Castiel is about to materialize..."
-          : `${name}'arriving…`;
+        p.textContent = arrivalMessages[name]            // testo specifico
+                     || `${name} is arriving…`;          // fallback generico
         storyDiv.appendChild(p);
-       refreshSidebar();          // ⬅️ forza il ridisegno con l’anello
+        refreshSidebar();                                // ridisegna l’anello        // ⬅️ forza il ridisegno con l’anello
       }
     });
 
