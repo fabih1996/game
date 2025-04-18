@@ -494,9 +494,10 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
         const p = document.createElement("p");
         p.classList.add("narration");
         p.textContent = name === "Castiel"
-          ? "Un fruscio d’ali vibra nell’aria: Castiel sta per materializzarsi…"
-          : `${name} è in arrivo…`;
+          ? "A flutter of wings vibrates in the air: Castiel is about to materialize..."
+          : `${name}'arriving…`;
         storyDiv.appendChild(p);
+       refreshSidebar();          // ⬅️ forza il ridisegno con l’anello
       }
     });
 
@@ -616,10 +617,22 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
           dialogue = dialogue.substring(input.length).trim();
           dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
         }
-        const p = document.createElement("p");
-        p.className = `character-color-${name}`;
-        p.textContent = `${name}: "${dialogue}"`;
-        storyDiv.appendChild(p);
+        const lastNode = storyDiv.lastElementChild;
+        if (
+          lastNode &&                                 // esiste un nodo precedente
+          lastNode.classList.contains(`character-color-${name}`) &&  // stesso personaggio
+          lastNode.textContent.startsWith(`${name}:`)                // e stessa intestazione
+        ) {
+          // rimuovi l'ultimo apice e accoda la nuova frase
+          lastNode.textContent =
+            lastNode.textContent.replace(/"$/, "") + " " +
+            dialogue.replace(/^"|"$/g, "") + "\"";
+        } else {
+          const p = document.createElement("p");
+          p.className = `character-color-${name}`;
+          p.textContent = `${name}: "${dialogue}"`;
+          storyDiv.appendChild(p);
+        }
         triggerSounds(line);
 
       } else {
