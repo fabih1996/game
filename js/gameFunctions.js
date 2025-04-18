@@ -211,6 +211,17 @@ async function loadIntro() {
  * Aggiorna la sidebar dei personaggi (presenti) in base allo stato.
  */
 function refreshSidebar() {
+  // ➊ Lista dei remoti
+  const remoteList = document.getElementById("charListRemote");
+  remoteList.innerHTML = "";            // svuota ogni volta
+  characters
+    .filter(c => c.status === "remote") // prendi solo i remoti
+    .forEach(c => {
+      const li = document.createElement("li");
+      li.textContent = c.name;
+      li.style.opacity = 0.6;           // leggermente “spento”
+      remoteList.appendChild(li);
+    });
   const presentList = document.getElementById("charListPresent");
   // In questa versione non utilizziamo la sezione "remote" (rimuoviamo quella lista)
   presentList.innerHTML = "";
