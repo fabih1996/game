@@ -142,20 +142,14 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
 
   // 4) Parsifica il tag #PRESENT:
   const lines     = reply.split("\n").map(l => l.trim());
-  const hasTag    = lines.includes(`#PRESENT: ${currentCallee}`);
-  const cleanText = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
-
-  // 5) Mostra la risposta di GPT senza il tag
-  appendMessage(currentCallee, cleanText);
-  convoHistory.push({ role: "assistant", content: cleanText });
-  phoneInput.value = "";
-
-  // 6) Se GPT ha emesso il tag, schedula l’arrivo
-  if (
-    hasTag ||
-    /\bon my way\b/i.test(reply)    // catturo “On my way”
-  ) {
-    // Assicuro che l’NPC sia nel tuo array
+// 1) Controllo se il modello ha mandato il tag o una frase di arrivo
+  const hasTag = lines.includes(`#PRESENT: ${currentCallee}`);
+  const arrivalRegex = /\b(on my way|sto arrivando|arriving|in arrivo)\b/i;
+  const shouldArrive = hasTag || arrivalRegex.test(reply);
+  
+  // 2) Se devo far partire l’arrivo, registro l’NPC e lancio il timer
+  if (shouldArrive) {
+    // assicuro che l’NPC esista nell’array
     if (!characters.some(c => c.name === currentCallee)) {
       characters.push({ name: currentCallee, status: 'remote' });
     }
