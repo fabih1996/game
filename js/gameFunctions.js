@@ -482,7 +482,7 @@ export function isContextuallyAppropriate(line, context) {
 export function scheduleArrival(characterName, delay) {
   // 1) Imposta subito lo stato a "pending" e mostralo in sidebar
   const char = characters.find(c => c.name === characterName);
-  if (char && char.status !== "present") {
+  if (char) {
     char.status = "pending";
     pendingArrival.add(characterName);
     refreshSidebar();
