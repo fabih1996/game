@@ -76,3 +76,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 window.startGame = startGame;
+// expose these for the inline onclicks in index.html
+  window.addSelectedCharacter = addSelectedCharacter;
+  window.addCustomCharacter   = addCustomCharacter;
+  window.triggerRandomEvent   = triggerRandomEvent;
+  window.toggleMusic          = toggleMusic;
+  window.toggleSidebar        = toggleSidebar;
+});
