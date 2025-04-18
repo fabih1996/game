@@ -96,6 +96,7 @@ export async function loadCharacterLore() {
 
 export async function loadIntro() {
   try {
+    // 1) Carica il template del prompt
     let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
     prompt = prompt
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
@@ -103,6 +104,7 @@ export async function loadIntro() {
       .replace("{{INPUT}}", "")
       .replace("{{CHARACTERS}}", "");
 
+    // 2) Chiamata al server AI
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -111,7 +113,7 @@ export async function loadIntro() {
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
 
-    // #PRESENT parsing
+    // 3) Parsing di #PRESENT: per tag manuali
     Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
       .map(m => m[1])
       .forEach(name => {
@@ -122,7 +124,7 @@ export async function loadIntro() {
         }
       });
 
-    // Render narrazione
+    // 4) Render della narrazione (escludendo tag e scelte)
     const storyDiv = document.getElementById("story");
     storyDiv.innerHTML = "";
     reply.split("\n").forEach(line => {
@@ -134,9 +136,10 @@ export async function loadIntro() {
       }
     });
 
+    // 5) Se ci sono nuovi personaggi, aggiorna subito la sidebar
     if (newCharacters.size) refreshSidebar();
 
-    // Pulsanti prime scelte
+    // 6) Crea i pulsanti delle prime scelte
     const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
     reply.split("\n")
@@ -149,8 +152,28 @@ export async function loadIntro() {
         choicesDiv.appendChild(btn);
       });
 
+    // 7) Auto‑aggiungi come “present” chi appare in dialogo
+    reply.split("\n").forEach(line => {
+      const m = line.match(/^([A-Z][a-zA-Z]+):/);
+      if (m) {
+        const speaker = m[1];
+        if (
+          ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"]
+            .includes(speaker) &&
+          !characters.some(c => c.name === speaker)
+        ) {
+          characters.push({ name: speaker, status: "present" });
+          selectedCharacters.push(speaker);
+        }
+      }
+    });
+
+    // 8) Refresh finale della sidebar
+    if (newCharacters.size) refreshSidebar();
+
   } catch (err) {
     console.error(err);
+    // Fallback narrativo in caso di errore
     document.getElementById("story").innerHTML =
       `<p class="narration">The bunker is quiet… maybe too quiet.</p>`;
     refreshSidebar();
