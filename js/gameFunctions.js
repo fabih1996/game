@@ -190,40 +190,11 @@ export async function loadIntro() {
 // Sidebar & Interfaccia
 // ---------------------------
 export function refreshSidebar() {
-  // Remotely Contacted
-  const remoteList = document.getElementById("charListRemote");
-  if (remoteList) {
-    remoteList.innerHTML = "";
-   characters.filter(c => c.status === "remote")
-     .forEach(c => {
-       const li = document.createElement("li");
-       li.textContent = c.name;
-       li.style.opacity = 0.6;
-       li.style.cursor  = "pointer";
-       // Al click sposta da 'remote' a 'present'
-       li.onclick = () => {
-         // cambia lo status
-         characters.find(ch => ch.name === c.name).status = "present";
-         // aggiungilo ai selezionati
-         if (!selectedCharacters.includes(c.name)) {
-           selectedCharacters.push(c.name);
-         }
-         // refresh per mostrare l'icona nella lista principale
-         refreshSidebar();
-       };
-       remoteList.appendChild(li);
-     });
-  }
-
-  // Present & Pending
   const presentList = document.getElementById("charListPresent");
   presentList.innerHTML = "";
+
   characters
-    .filter(c => c.status !== "remote" && c.name !== "Narrator")
-    .filter(({ name }) =>
-      Object.keys(characterColors).some(kn => name.toLowerCase().includes(kn.toLowerCase())) ||
-      name === player.name
-    )
+    .filter(c => c.name !== "Narrator")   // non mostrare più il Narrator
     .forEach(({ name, status }) => {
       const li = document.createElement("li");
       const wrapper = document.createElement("div");
@@ -234,6 +205,7 @@ export function refreshSidebar() {
       );
       if (status === "pending") wrapper.classList.add("pending");
 
+      // Icona
       const img = document.createElement("img");
       img.classList.add("char-icon");
       img.dataset.name = name;
@@ -242,11 +214,13 @@ export function refreshSidebar() {
       img.alt = name;
       if (selectedCharacters.includes(name)) img.classList.add("selected");
 
+      // Dismiss
       const dismissBtn = document.createElement("button");
       dismissBtn.textContent = "Dismiss";
       dismissBtn.className = "dismiss-btn";
       dismissBtn.onclick = () => dismissCharacter(name);
 
+      // Click sull’icona per selezionare/deselezionare
       img.onclick = () => {
         if (selectedCharacters.includes(name))
           selectedCharacters = selectedCharacters.filter(n => n !== name);
