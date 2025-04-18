@@ -1,7 +1,7 @@
 // ---------------------------
 // Variabili globali di gioco
 // ---------------------------
-let characters = [
+export let characters = [
   { name: "Narrator", status: "present" }  // status: "present", "remote", "pending"
 ];
 let selectedCharacters = ["Narrator"];
