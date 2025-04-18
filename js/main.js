@@ -111,54 +111,56 @@ window.addEventListener("DOMContentLoaded", async () => {
     phoneConvo.classList.remove("hidden");
   }
 
-  // 4) Invia messaggio/call
-  // 4) Invia messaggio/call (GPT4 decide con #PRESENT:)
-phoneSendBtn.onclick = async () => {
-  console.log("📱 click Send—currentCallee:", currentCallee);
-  const txt = phoneInput.value.trim();
-  if (!txt || !currentCallee) return;
-
-  // 1) Mostra il messaggio dell'utente
-  appendMessage("You", txt);
-  convoHistory.push({ role: "user", content: txt });
-
-  // 2) System‑prompt che chiede a GPT4 di appendere #PRESENT: se intende venire
-  const mode = txt.startsWith("/call") ? "phone call" : "SMS";
-  const systemMsg = `You are ${currentCallee}, speaking via ${mode} in character.
-After your next line, if you intend to come help the player, append on its own line:
-
-#PRESENT: ${currentCallee}
-
-Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
-  const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
-
-  // 3) Chiamata a GPT‑4
-  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "gpt-4", messages: msgs })
-  });
-  const data  = await res.json();
-  console.log("Risposta GPT4:", data);
-  const reply = data.choices[0].message.content.trim();
-
-  // 4) Parsifica il tag #PRESENT:
-  const lines     = reply.split("\n").map(l => l.trim());
-// 1) Controllo se il modello ha mandato il tag o una frase di arrivo
-  const hasTag = lines.includes(`#PRESENT: ${currentCallee}`);
-  const arrivalRegex = /\b(on my way|sto arrivando|arriving|in arrivo)\b/i;
-  const shouldArrive = hasTag || arrivalRegex.test(reply);
+  phoneSendBtn.onclick = async () => {
+    const txt = phoneInput.value.trim();
+    if (!txt || !currentCallee) return;
   
-  // 2) Se devo far partire l’arrivo, registro l’NPC e lancio il timer
-  if (shouldArrive) {
-    // assicuro che l’NPC esista nell’array
-    if (!characters.some(c => c.name === currentCallee)) {
-      characters.push({ name: currentCallee, status: 'remote' });
+    // 1) Mostra subito il messaggio dell'utente
+    appendMessage("You", txt);
+    convoHistory.push({ role: "user", content: txt });
+  
+    // 2) Determina se è una chiamata vera (/call) o un SMS
+    const isCall = txt.startsWith("/call");
+    let systemMsg;
+    if (isCall) {
+      systemMsg = `You are ${currentCallee}, speaking via phone call in character.
+  After your next line, if you intend to come help the player, append on its own line:
+  #PRESENT: ${currentCallee}
+  Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
+    } else {
+      systemMsg = `You are ${currentCallee}, speaking via SMS in character.
+  Just reply to the message naturally. Do not append any #PRESENT: tag under any circumstance.`;
     }
-    const delay = travelTimes[currentCallee] ?? 30000;
-    scheduleArrival(currentCallee, delay);
-  }
-};
+  
+    // 3) Prepara i messaggi per GPT‑4
+    const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
+  
+    // 4) Chiamata a GPT‑4
+    const res  = await fetch("https://supernatural-api.vercel.app/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "gpt-4", messages: msgs })
+    });
+    const data  = await res.json();
+    const reply = data.choices[0].message.content.trim();
+    console.log("Reply string:", reply);
+  
+    // 5) Parsifica eventuale tag #PRESENT:
+    const lines  = reply.split("\n").map(l => l.trim());
+    const hasTag = lines.includes(`#PRESENT: ${currentCallee}`);
+    const clean  = lines.filter(l => l !== `#PRESENT: ${currentCallee}`).join("\n");
+  
+    // 6) Mostra la risposta
+    appendMessage(currentCallee, clean);
+    convoHistory.push({ role: "assistant", content: clean });
+    phoneInput.value = "";
+  
+    // 7) Se è una vera chiamata e c'è il tag, avvia l'arrivo
+    if (isCall && hasTag) {
+      const delay = travelTimes[currentCallee] ?? 30000;
+      scheduleArrival(currentCallee, delay);
+    }
+  };
 
   // 5) Helper per appendere messaggi
   function appendMessage(who, text) {
