@@ -1,9 +1,8 @@
- 
- // ---------------------------
- // Variabili globali di gioco
- // ---------------------------
- let characters = [
-  { name: "Narrator", status: "present" }  // status: "present" (ora non usiamo "remote")
+// ---------------------------
+// Variabili globali di gioco
+// ---------------------------
+let characters = [
+  { name: "Narrator", status: "present" }  // status: "present", "remote", "pending"
 ];
 let selectedCharacters = ["Narrator"];
 let pendingArrival = new Set();
@@ -12,11 +11,13 @@ let characterKnowledge = "";
 
 // Variabile player (verrà impostata tramite setPlayer da main.js)
 let player;
-function setPlayer(p) {
+export function setPlayer(p) {
   player = p;
 }
 
-// Impostazioni predefinite per azioni e intros
+// ---------------------------
+// Azioni rapide e NPC disponibili
+// ---------------------------
 const quickActions = [
   "Let's go to the Impala",
   "I pull out my gun",
@@ -29,39 +30,36 @@ const quickActions = [
   "I punch the demon",
   "I hide behind the bed"
 ];
-
 const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
 ];
-
 const arrivalNPCs = allAvailableCharacters.filter(n => n !== "Other...");
 
-// Tempo di viaggio (ms) per ciascun NPC  – regolali a piacere
+// ---------------------------
+// Tempi di viaggio e messaggi
+// ---------------------------
 const travelTimes = {
-  Dean: 30000,
-  Sam: 40000,
-  Castiel: 5000,   // teleport!
+  Dean:    30000,
+  Sam:     40000,
+  Castiel: 5000,
   Crowley: 7000,
-  Bobby: 45000,
-  Ruby: 35000,
-  Jo: 30000,
-  Ellen: 45000
+  Bobby:   45000,
+  Ruby:    35000,
+  Jo:      30000,
+  Ellen:   45000
 };
-
-// 1)  Add this near travelTimes – all ENGLISH messages
 const arrivalMessages = {
   Dean:    "You hear the Impala roaring in the distance—Dean is on his way…",
   Sam:     "Sam is sprinting toward you—he’ll be there soon…",
   Castiel: "A flutter of wings ripples through the air—Castiel is about to manifest…",
   Crowley: "You smell sulfur—Crowley is about to appear…"
-  // add Jo, Bobby, Ruby, Ellen, etc. if you want specific lines
 };
+const arrivalETA = {};
+const arrivalDuration = {};
 
-// ETA (timestamp) per ogni NPC in viaggio, usato dal timer grafico
-const arrivalETA = {};        // { Dean: 1682345678901, ... }
-const arrivalDuration = {};   // durata in ms usata per calcolare la % completata
-
-// --- Aggiorna l'anello di progresso ogni 1 s ---
+// ---------------------------
+// Anello di progresso
+// ---------------------------
 setInterval(() => {
   const now = Date.now();
   document.querySelectorAll(".char-wrapper.pending").forEach(wrap => {
@@ -70,52 +68,34 @@ setInterval(() => {
     const dur  = arrivalDuration[name] || 1;
     const pct  = Math.max(0, Math.min(100, 100 - ((eta - now) / dur) * 100));
     wrap.style.setProperty("--prog", pct + "%");
-    if (now >= eta) wrap.classList.remove("pending");  // sicurezza
+    if (now >= eta) wrap.classList.remove("pending");
   });
 }, 1000);
 
+// ---------------------------
+// Colori e immagini NPC
+// ---------------------------
 const characterColors = {
-  "Dean": "#FFD700",
-  "Sam": "#00BFFF",
-  "Castiel": "#7FFFD4",
-  "Crowley": "#FF4500",
-  "Bobby": "#90EE90",
-  "Ruby": "#FF69B4",
-  "Jo": "#FF8C00",
-  "Ellen": "#8A2BE2",
-  "Narrator": "#dddddd",
-  "User": "#3399ff",
-  "default": "#cccccc" // fallback
+  Dean: "#FFD700", Sam: "#00BFFF", Castiel: "#7FFFD4", Crowley: "#FF4500",
+  Bobby: "#90EE90", Ruby: "#FF69B4", Jo: "#FF8C00", Ellen: "#8A2BE2",
+  Narrator: "#dddddd", User: "#3399ff", default: "#cccccc"
 };
-const characterImages = {}; // Per memorizzare l’immagine associata ad ogni personaggio
+const characterImages = {};
 
-// ------------------------------
-// Funzioni di caricamento iniziale
-// ------------------------------
-
-/**
- * Carica il lore dei personaggi da un file esterno.
- */
-async function loadCharacterLore() {
+// ---------------------------
+// Caricamento iniziale
+// ---------------------------
+export async function loadCharacterLore() {
   try {
-    const response = await fetch("texts/supernatural_character_profiles.txt");
-    characterKnowledge = await response.text();
-    console.log("Character lore loaded.");
-  } catch (err) {
-    console.error("Failed to load character lore:", err);
+    const res = await fetch("texts/supernatural_character_profiles.txt");
+    characterKnowledge = await res.text();
+  } catch {
     characterKnowledge = "";
   }
 }
 
-/**
- * Carica una introduzione casuale e la visualizza nell'area della storia.
- */
-/**
- * Load a random opening scene and display it.
- */
-async function loadIntro() {
+export async function loadIntro() {
   try {
-    // 1. read prompt template
     let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
     prompt = prompt
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
@@ -123,230 +103,153 @@ async function loadIntro() {
       .replace("{{INPUT}}", "")
       .replace("{{CHARACTERS}}", "");
 
-    // 2. call remote endpoint
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gpt-4",
-        messages: [{ role: "user", content: prompt }]
-      })
+      body: JSON.stringify({ model: "gpt-4", messages: [{ role: "user", content: prompt }] })
     });
-    if (!res.ok) throw new Error(`API returned ${res.status}`);
-
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
 
-    /* ---------- ORIGINAL PARSING / RENDERING ---------- */
-
-    // 3) read any #PRESENT: tags
-    const presentNames = Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
-                              .map(m => m[1]);
-    presentNames.forEach(name => {
-      if (!characterExists(name)) {
-        characters.push({ name, status: "present" });
-        selectedCharacters.push(name);
-        newCharacters.add(name);
-      }
-    });
-
-    // 4) fallback scan for known NPC names inside plain text
-    const narrativeLines = reply
-      .split("\n")
-      .filter(l => !l.startsWith("#PRESENT:") && !l.startsWith("["));
-    narrativeLines.forEach(line => {
-      ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(npc => {
-        const re = new RegExp(`\\b${npc}\\b`, "i");
-        if (re.test(line) && !characterExists(npc)) {
-          characters.push({ name: npc, status: "present" });
-          selectedCharacters.push(npc);
-          newCharacters.add(npc);
+    // #PRESENT parsing
+    Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
+      .map(m => m[1])
+      .forEach(name => {
+        if (!characters.some(c => c.name === name)) {
+          characters.push({ name, status: "present" });
+          selectedCharacters.push(name);
+          newCharacters.add(name);
         }
       });
-    });
 
-    // 5) render story text
+    // Render narrazione
     const storyDiv = document.getElementById("story");
     storyDiv.innerHTML = "";
-    narrativeLines.forEach(txt => {
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = txt;
-      storyDiv.appendChild(p);
+    reply.split("\n").forEach(line => {
+      if (!line.startsWith("#PRESENT:") && !line.startsWith("[")) {
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = line.trim();
+        storyDiv.appendChild(p);
+      }
     });
 
-    // 6) refresh sidebar to show new NPCs
-    if (newCharacters.size > 0) refreshSidebar();
+    if (newCharacters.size) refreshSidebar();
 
-    // 7) first bracketed choices (if any)
-    const choicesDiv  = document.getElementById("choices");
-    const firstChoices = reply.split("\n").filter(l => l.trim().startsWith("["));
+    // Pulsanti prime scelte
+    const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
-    firstChoices.forEach(bracketed => {
-      const choiceText = bracketed.replace(/^\[|\]$/g, "");
-      const btn = document.createElement("button");
-      btn.className = "choice-btn";
-      btn.textContent = choiceText;
-      btn.onclick = () => sendToGPT(choiceText, "narration");
-      choicesDiv.appendChild(btn);
-    });
-
-    /* ---------- END ORIGINAL BLOCK ---------- */
+    reply.split("\n")
+      .filter(l => l.trim().startsWith("["))
+      .forEach(br => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.textContent = br.replace(/^\[|\]$/g, "");
+        btn.onclick = () => sendToGPT(btn.textContent, "narration");
+        choicesDiv.appendChild(btn);
+      });
 
   } catch (err) {
-    console.error("Intro fetch failed:", err);
-    const storyDiv = document.getElementById("story");
-    storyDiv.innerHTML =
-      `<p class="narration">The bunker is quiet… maybe too quiet. Something tells you today won’t be ordinary.</p>`;
+    console.error(err);
+    document.getElementById("story").innerHTML =
+      `<p class="narration">The bunker is quiet… maybe too quiet.</p>`;
     refreshSidebar();
-    alert("⚠️ Unable to reach the AI server. Check your connection or try again later.");
   }
 }
 
-// ------------------------------------------
-// Funzioni di gestione dell'interfaccia (Sidebar, Dropdown, ecc.)
-// ------------------------------------------
-
-/**
- * Aggiorna la sidebar dei personaggi (presenti) in base allo stato.
- */
-function refreshSidebar() {
-  // ➊ Lista dei remoti
+// ---------------------------
+// Sidebar & Interfaccia
+// ---------------------------
+export function refreshSidebar() {
+  // Remotely Contacted
   const remoteList = document.getElementById("charListRemote");
-  remoteList.innerHTML = "";            // svuota ogni volta
-  characters
-    .filter(c => c.status === "remote") // prendi solo i remoti
-    .forEach(c => {
-      const li = document.createElement("li");
-      li.textContent = c.name;
-      li.style.opacity = 0.6;           // leggermente “spento”
-      remoteList.appendChild(li);
-    });
-  const presentList = document.getElementById("charListPresent");
-  // In questa versione non utilizziamo la sezione "remote" (rimuoviamo quella lista)
-  presentList.innerHTML = "";
+  if (remoteList) {
+    remoteList.innerHTML = "";
+    characters.filter(c => c.status === "remote")
+      .forEach(c => {
+        const li = document.createElement("li");
+        li.textContent = c.name;
+        li.style.opacity = 0.6;
+        remoteList.appendChild(li);
+      });
+  }
 
- // const knownNames = Object.keys(characterColors);
- // characters.forEach(({ name, status }) => {
- const knownNames = Object.keys(characterColors);
-// Only list truly known NPCs or the player—skip any generic “ghost” entries
+  // Present & Pending
+  const presentList = document.getElementById("charListPresent");
+  presentList.innerHTML = "";
   characters
+    .filter(c => c.status !== "remote")
     .filter(({ name }) =>
-      // is one of our defined NPCs?
-      knownNames.some(known =>
-        name.toLowerCase().includes(known.toLowerCase())
-      )
-      // OR is the player
-      || name === player.name
+      Object.keys(characterColors).some(kn => name.toLowerCase().includes(kn.toLowerCase())) ||
+      name === player.name
     )
     .forEach(({ name, status }) => {
-    // Trattiamo tutti i personaggi come "present"
-   const li      = document.createElement("li");
-   const wrapper = document.createElement("div");
-   const matchedName = knownNames.find(known => name.toLowerCase().includes(known.toLowerCase()));
-   wrapper.className = "char-wrapper";          // nuovo wrapper standard
-   wrapper.style.setProperty(
-  "--ring-color",
-  characterColors[matchedName || name] || characterColors.default
-  );
-   if (status === "pending") wrapper.classList.add("pending");
+      const li = document.createElement("li");
+      const wrapper = document.createElement("div");
+      wrapper.className = "char-wrapper";
+      wrapper.style.setProperty(
+        "--ring-color",
+        characterColors[name] || characterColors.default
+      );
+      if (status === "pending") wrapper.classList.add("pending");
 
-    // Generazione immagine del personaggio
-    const img = document.createElement("img");
-    img.classList.add("char-icon");
-    let displayName = name;
-    if (matchedName) { displayName = matchedName; }
+      const img = document.createElement("img");
+      img.classList.add("char-icon");
+      img.dataset.name = name;
+      img.src = characterImages[name] ||
+                (characterImages[name] = `images/${name.toLowerCase()}.png`);
+      img.alt = name;
+      if (selectedCharacters.includes(name)) img.classList.add("selected");
 
-    let imgSrc;
-    if (characterImages[name]) {
-      imgSrc = characterImages[name];
-    } else {
-      if (matchedName) {
-        imgSrc = `images/${matchedName.toLowerCase()}.png`;
-      } else {
-        const rand = Math.floor(Math.random() * 4) + 1;
-        imgSrc = `images/ghost${rand}.png`;
-      }
-      characterImages[name] = imgSrc;
-    }
-    img.src = imgSrc;
-    img.alt = name;
-    img.style.color = characterColors[matchedName || name] || characterColors["default"];
+      const dismissBtn = document.createElement("button");
+      dismissBtn.textContent = "Dismiss";
+      dismissBtn.className = "dismiss-btn";
+      dismissBtn.onclick = () => dismissCharacter(name);
 
-    if (selectedCharacters.includes(name)) { img.classList.add("selected"); }
-    img.setAttribute("data-name", name);
+      img.onclick = () => {
+        if (selectedCharacters.includes(name))
+          selectedCharacters = selectedCharacters.filter(n => n !== name);
+        else
+          selectedCharacters.push(name);
+        refreshSidebar();
+      };
 
-    // Bottone per rimuovere (dismiss) il personaggio
-    const dismissBtn = document.createElement("button");
-    dismissBtn.textContent = "Dismiss";
-    dismissBtn.className = "dismiss-btn";
-    dismissBtn.style.position = "absolute";
-    dismissBtn.style.top = "0";
-    dismissBtn.style.right = "0";
-    dismissBtn.style.display = "none";
-    dismissBtn.onclick = () => dismissCharacter(name);
-
-    // Gestione del click sull'immagine per selezionare/deselezionare
-    img.onclick = () => {
-      if (selectedCharacters.includes(name)) {
-        selectedCharacters = selectedCharacters.filter(n => n !== name);
-        dismissBtn.style.display = "none";
-      } else {
-        selectedCharacters.push(name);
-        dismissBtn.style.display = "inline";
-      }
-      refreshSidebar();
-    };
-
-    wrapper.appendChild(img);
-    wrapper.appendChild(dismissBtn);
-    li.appendChild(wrapper);
-    presentList.appendChild(li);
-  });
+      wrapper.appendChild(img);
+      wrapper.appendChild(dismissBtn);
+      li.appendChild(wrapper);
+      presentList.appendChild(li);
+    });
 }
 
-/**
- * Aggiunge un personaggio personalizzato.
- */
-function addCustomCharacter() {
+// ---------------------------
+// Aggiungi/Rimuovi NPC
+// ---------------------------
+export function addCustomCharacter() {
   const name = document.getElementById("customCharName").value.trim();
   const status = document.getElementById("customCharStatus").value;
-
-  if (!name || characterExists(name)) return;
-
-  addCharacter(name, status);
-  allAvailableCharacters.push(name);
-
-  if (status === "present") {
-    selectedCharacters.push(name);
-  }
-
+  if (!name || characters.some(c => c.name === name)) return;
+  characters.push({ name, status });
+  if (status === "present") selectedCharacters.push(name);
   refreshSidebar();
   loadDropdown();
-
   document.getElementById("customCharName").value = "";
   document.getElementById("customCharDesc").value = "";
   document.getElementById("customCharStatus").value = "present";
   document.getElementById("customCharFields").style.display = "none";
 }
 
-/**
- * Aggiunge un personaggio dalla selezione.
- */
-function addSelectedCharacter() {
+export function addSelectedCharacter() {
   const dropdown = document.getElementById("charDropdown");
   const name = dropdown.value;
-  if (name && name !== "Other..." && !characterExists(name)) {
-    addCharacter(name, "present");
+  if (name && name !== "Other..." && !characters.some(c => c.name === name)) {
+    characters.push({ name, status: "present" });
+    selectedCharacters.push(name);
     refreshSidebar();
     dropdown.value = "";
   }
 }
 
-/**
- * Popola il dropdown per la scelta dei personaggi.
- */
-function loadDropdown() {
+export function loadDropdown() {
   const dropdown = document.getElementById("charDropdown");
   dropdown.innerHTML = `<option value="">-- Select character --</option>`;
   allAvailableCharacters.forEach(name => {
@@ -355,476 +258,218 @@ function loadDropdown() {
     opt.textContent = name;
     dropdown.appendChild(opt);
   });
-
-  // Gestione selezione giocatore personalizzato
-  const playerSelect = document.getElementById("playerSelect");
-  if (playerSelect) {
-    playerSelect.onchange = () => {
-      const val = playerSelect.value;
-      const fields = document.getElementById("customPlayerFields");
-      fields.style.display = val === "custom" ? "block" : "none";
-    };
-  }
-
   dropdown.onchange = () => {
-    const val = dropdown.value;
-    document.getElementById("customCharFields").style.display = val === "Other..." ? "block" : "none";
+    document.getElementById("customCharFields").style.display =
+      dropdown.value === "Other..." ? "block" : "none";
   };
 }
 
-// ------------------------------
-// Funzioni di gestione dei personaggi
-// ------------------------------
-
-/**
- * Verifica se un personaggio esiste già.
- */
+// ---------------------------
+// Helper NPC
+// ---------------------------
 function characterExists(name) {
   return characters.some(c => c.name === name);
 }
 
-/**
- * Aggiunge un personaggio alla lista, impostandolo come "present".
- */
-function addCharacter(name, status = "present") {
-  if (!characterExists(name)) {
-    characters.push({ name, status });
-    if (status === "present") selectedCharacters.push(name);
-  }
-}
-
-/**
- * Rimuove un personaggio dalla lista e aggiorna la sidebar.
- */
 function removeCharacter(name) {
-  const loweredName = name.toLowerCase();
-  characters = characters.filter(c => c.name.toLowerCase() !== loweredName);
-  selectedCharacters = selectedCharacters.filter(n => n.toLowerCase() !== loweredName);
+  characters = characters.filter(c => c.name !== name);
+  selectedCharacters = selectedCharacters.filter(n => n !== name);
   newCharacters.delete(name);
-
-  // Rimuove l’icona dalla sidebar
-  const icon = document.querySelector(`.char-icon[data-name="${name}"]`);
-  if (icon) icon.remove();
   refreshSidebar();
 }
 
-// --------------------------------------
-// Funzioni per gestire azioni e prompt a GPT
-// --------------------------------------
-
-/**
- * Imposta le azioni rapide nell'interfaccia.
- */
-function setupActions() {
+// ---------------------------
+// Azioni rapide
+// ---------------------------
+export function setupActions() {
   const container = document.getElementById("actions-container");
   container.innerHTML = "";
   quickActions.forEach(action => {
     const btn = document.createElement("button");
-    btn.textContent = action;
     btn.className = "action-btn";
+    btn.textContent = action;
     btn.onclick = () => sendToGPT(action, "narration");
     container.appendChild(btn);
   });
 }
 
-/**
- * Invia un messaggio a GPT, costruendo un prompt basato sul contesto.
- */
-async function sendToGPT(message, type = "dialogue", isRandom = false) {
-  console.log("✅ sendToGPT attivata");
+// ---------------------------
+// sendToGPT: costruzione prompt, telefonate, arrivi
+// ---------------------------
+export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   newCharacters.clear();
   const input = message.trim();
- // Se il giocatore digita “I call X”
- const callMatch = input.match(/\bcall\s+([A-Za-z]+)\b/i);
- if (callMatch) {
-   const callee = callMatch[1][0].toUpperCase() + callMatch[1].slice(1);
-   // marca X come “remote”
-   if (!characterExists(callee)) addCharacter(callee, "remote");
-   else characters.find(c => c.name === callee).status = "remote";
-   refreshSidebar();
- }
- // Se il player aspetta un NPC "pending", facciamolo entrare subito
-  arrivalNPCs.forEach(name => {
-    const waitRe = new RegExp(`\\bwait\\s+(for\\s+)?${name}\\b`, "i");
-    if (waitRe.test(input) && pendingArrival.has(name)) {
-      pendingArrival.delete(name);
-      scheduleArrival(name, 0);   // entrata immediata
-    }
-  });
   if (!input) return;
 
-  // Assicuriamoci che il Narrator sia sempre presente
-  if (!characterExists("Narrator")) {
-    characters.push({ name: "Narrator", status: "present" });
-  }
-
-  const storyDiv = document.getElementById("story");
-  const speakerNames = characters
-    .filter(c => selectedCharacters.includes(c.name) && c.status === "present")
-    .map(c => c.name);
-
-  if (!speakerNames.includes(player.name)) {
-    speakerNames.push(player.name); // Assicuriamoci che il player ci sia sempre
-  }
-
-  const charactersInvolved = speakerNames.join(" and ");
-
-  const storyLines = Array.from(storyDiv.querySelectorAll("p"))
-    .slice(-6)
-    .map(p => p.textContent)
-    .join("\n");
-
-  document.getElementById("choices").innerHTML = "";
-  triggerSounds(input);
-
-  // Aggiungi il messaggio del giocatore alla storia
-  const playerMsg = document.createElement("p");
-  if (type === "dialogue") {
-    playerMsg.className = `character-color-User`;
-    playerMsg.textContent = `${player.name}: "${input}"`;
-  } else {
-    playerMsg.className = "narration";
-    playerMsg.textContent = input;
-  }
-  storyDiv.appendChild(playerMsg);
-
-  // COSTRUISCI IL PROMPT: caricalo da un file di testo e sostituisci i placeholder
-  let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
-  prompt = prompt.replace("{{PLAYER_NAME}}", player.name)
-                 .replace("{{STORY_CONTEXT}}", storyLines)
-                 .replace("{{INPUT}}", input)
-                 .replace("{{CHARACTERS}}", charactersInvolved);
-
-  if (isRandom) {
-    prompt += "\nThe player triggers a sudden supernatural event...";
-  } else if (type === "narration") {
-    prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next in third person.`;
-  } else {
-    prompt += `\nThe player (${player.name}) speaks: "${input}"\nMake sure the characters respond in character. When a character responds, do not repeat the player's action; only provide the character's reaction or dialogue.`;
-  }
-
-  // Aggiungi eventuali tag richiesti alla fine del prompt
-  prompt += `
-# Trigger Tags:
-...
-`;
-
-  try {
-    const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    model: "gpt-3.5-turbo",
-    messages: [{ role: "user", content: prompt }]
-  })
-});
-if (!response.ok) throw new Error(`API returned ${response.status}`);
-
-    const data = await response.json();
-    if (!data ||
-        !data.choices ||
-        !data.choices[0] ||
-        !data.choices[0].message ||
-        !data.choices[0].message.content) {
-      alert("⚠️ GPT did not return a valid response.");
-      console.error("Invalid GPT response:", data);
-      return;
-    }
-
-    const reply = data.choices[0].message.content.trim();
-        // --- DETECTION dell’annuncio di arrivo per qualunque NPC ---
-   arrivalNPCs.forEach(name => {
-  // Regex più flessibile: cattura anche "Dean rushes…" e "Dean runs"
-  const arrivalRe = new RegExp(
-    `\\b${name}\\b.*\\b(` +
-      `on my way|` +
-      `be there soon|` +
-      `coming over|` +
-      `heading (?:over|there)|` +
-      `arriving|` +
-      `en route|` +
-      `materiali(?:s|z)es?|` +
-      `teleports?|` +
-      `appears?|` +
-      `rush(?:es|ing)?|` +
-      `runs?` +
-    `)\\b`,
-    "i"
-  );
-
-  if (arrivalRe.test(reply) && !pendingArrival.has(name)) {
-    // Settiamo lo status a "pending"
-    if (!characterExists(name)) addCharacter(name, "pending");
-    else characters.find(c => c.name === name).status = "pending";
-
-    pendingArrival.add(name);
-
-    // Timer di arrivo
-    const delay = travelTimes[name] || 30000;
-    scheduleArrival(name, delay);
-
-    // Feedback narrativo
-    const p = document.createElement("p");
-    p.classList.add("narration");
-    p.textContent = arrivalMessages[name] || `${name} is arriving…`;
-    storyDiv.appendChild(p);
-
+  // 1) Rileva “call X”
+  const callMatch = input.match(/\bcall\s+([A-Za-z]+)\b/i);
+  if (callMatch) {
+    const callee = callMatch[1][0].toUpperCase() + callMatch[1].slice(1);
+    if (!characters.some(c => c.name === callee))
+      characters.push({ name: callee, status: "remote" });
+    else
+      characters.find(c => c.name === callee).status = "remote";
     refreshSidebar();
   }
-});
 
-    // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
-    const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
-   
-    // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
-    // We'll only auto-add when GPT actually formats a dialogue line ("Dean: …").
-   // After you get `reply` but before pushing newCharacters:
-   let match;
-   while ((match = dialogueSpeakerRegex.exec(reply)) !== null) {
-     const cand = match[1];
-     if (["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].includes(cand)
-         && !characterExists(cand)) {
-       // Ask the arbiter if this really means “cand” is entering the scene
-       const recent = storyLines;  // the last 6 lines you already captured
-       const decision = await askCharacterArbiter(cand, recent);
-       if (decision === "present") {
-         characters.push({ name: cand, status: "present" });
-         selectedCharacters.push(cand);
-         newCharacters.add(cand);
-       }
-     }
-   }
-   if (newCharacters.size > 0) refreshSidebar();
-    // ─────────────────────────────────────────────────────────────────────────────
-   
-    console.log("GPT reply:", reply);
+  // 2) “wait for X” se pending
+  arrivalNPCs.forEach(name => {
+    const waitRe = new RegExp(`\\bwait (?:for )?${name}\\b`, "i");
+    if (waitRe.test(input) && pendingArrival.has(name)) {
+      pendingArrival.delete(name);
+      scheduleArrival(name, 0);
+    }
+  });
 
-    const validTags = ["#PRESENT:", "#LEAVE:"];
-    const lines = reply.split("\n")
-      .map(line => line.trim())
-      .filter(line =>
-        line &&                                // non vuota
-        line !== "Options:" &&                // ignora la riga “Options:”
-        !line.startsWith('[') &&              // ignora le scelte [Testo…]
-        !line.startsWith(`${player.name}:`) &&// ignora l’eco del tuo stesso input
-        (line[0] !== "#" ||                   // mantieni solo i tag #PRESENT/#LEAVE
-          validTags.some(tag => line.startsWith(tag)))
-      );
-    console.log("Lines being processed into story:", lines);
+  // 3) Aggiungi input del player alla storia
+  const storyDiv = document.getElementById("story");
+  const playerMsg = document.createElement("p");
+  playerMsg.className = (type === "dialogue" ? "character-color-User" : "narration");
+  playerMsg.textContent = `${player.name}: "${input}"`;
+  storyDiv.appendChild(playerMsg);
 
-    // Aggiungi le scelte (bottoni)
-   const choicesDiv = document.getElementById("choices");
-   const choiceLines = [];
-   reply.split("\n").forEach(raw => {
-     const t = raw.trim();
-     if (t.startsWith("[")) {
-       // già tra parentesi, es: [Guarda sotto il letto]
-       choiceLines.push(t);
-     } else if (/^[-–—]\s+/.test(t)) {
-       // lista con trattino, es: - Guarda sotto il letto
-       choiceLines.push(`[${ t.replace(/^[-–—]\s+/, "") }]`);
-     } else if (/^\d+\.\s+/.test(t)) {
-       // lista numerata, es: 1. Guarda sotto il letto
-       choiceLines.push(`[${ t.replace(/^\d+\.\s+/, "") }]`);
-     }
-   });
-   choicesDiv.innerHTML = "";
-   choiceLines.forEach(bracketed => {
-     // togli i [...] per il testo vero del bottone
-     const choiceText = bracketed.replace(/^\[|\]$/g, "");
-     const btn = document.createElement("button");
-     btn.className = "choice-btn";
-     btn.textContent = choiceText;
-     btn.onclick = () => {
-       // mantieni la tua logica di exorcism se serve
-       if (/exorcism|exorcise|perform an exorcism|expel the spirit/i.test(choiceText)) {
-         triggerExorcismEvent();
-       }
-       sendToGPT(choiceText, "narration");
-     };
-     choicesDiv.appendChild(btn);
-   });
+  // 4) Costruisci prompt
+  const speakerNames = characters
+    .filter(c => c.status === "present" && selectedCharacters.includes(c.name))
+    .map(c => c.name);
+  if (!speakerNames.includes(player.name)) speakerNames.push(player.name);
 
-    // Processa ogni linea del reply
-    lines.forEach(line => {
-      if (/^#PRESENT:\s*(.+)$/.test(line)) {
-        // Gestione tag #PRESENT
-        const name = line.replace("#PRESENT:", "").trim();
-        const existing = characters.find(c => c.name === name);
-        const wasAlreadyPresent = existing && existing.status === "present";
-        if (existing) {
-          existing.status = "present";
-        } else {
-          characters.push({ name, status: "present" });
-        }
-        if (!selectedCharacters.includes(name)) {
-          selectedCharacters.push(name);
-        }
-        newCharacters.add(name);
-        if (!wasAlreadyPresent) {
-          const msg = document.createElement("p");
-          msg.className = "narration";
-          msg.textContent = `${name} has arrived.`;
-          storyDiv.appendChild(msg);
-          triggerSounds("character_arrived");
-        }
-        if (pendingArrival.has(name)) pendingArrival.delete(name);
-        refreshSidebar();
+  const contextLines = Array.from(storyDiv.querySelectorAll("p"))
+    .slice(-6).map(p => p.textContent).join("\n");
 
-      } else if (/^#LEAVE:\s*(.+)$/.test(line)) {
-        // Gestione tag #LEAVE
-        const name = line.replace("#LEAVE:", "").trim();
-        removeCharacter(name);
+  let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
+  prompt = prompt
+    .replace("{{PLAYER_NAME}}", player.name)
+    .replace("{{STORY_CONTEXT}}", contextLines)
+    .replace("{{INPUT}}", input)
+    .replace("{{CHARACTERS}}", speakerNames.join(" and "));
+  if (isRandom) prompt += "\nThe player triggers a sudden supernatural event...";
+  else if (type === "narration")
+    prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next.`;
+  else
+    prompt += `\nThe player speaks: "${input}". Make sure characters respond in character.`;
 
-      } else if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
-        // Gestione del dialogo (es. "Sam: ...")
-        const name = line.split(":")[0].trim();
-        const blockedNames = [
-          "creature", "lurker", "shadow", "figure", "thing", "entity", "monster",
-          "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil",
-          "darkness", "phantom", "force", "being"
-        ];
-        if (blockedNames.includes(name.toLowerCase())) return;
-        if (!characterExists(name) && !newCharacters.has(name)) {
-          characters.push({ name, status: "present" });
-          selectedCharacters.push(name);
-          newCharacters.add(name);
-          refreshSidebar();
-        }
-        let dialogue = line.substring(line.indexOf(":") + 1).trim();
-        if (dialogue.startsWith(input)) {
-          dialogue = dialogue.substring(input.length).trim();
-          dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '').replace(/^"+|"+$/g, '');   // remove leading/trailing "
-        }
-        const lastNode = storyDiv.lastElementChild;
-        if (
-          lastNode &&                                 // esiste un nodo precedente
-          lastNode.classList.contains(`character-color-${name}`) &&  // stesso personaggio
-          lastNode.textContent.startsWith(`${name}:`)                // e stessa intestazione
-        ) {
-          // rimuovi l'ultimo apice e accoda la nuova frase
-          lastNode.textContent =
-            lastNode.textContent.replace(/"$/, "") + " " +
-            dialogue.replace(/^"|"$/g, "") + "\"";
-        } else {
-          const p = document.createElement("p");
-          p.className = `character-color-${name}`;
-          p.textContent = `${name}: "${dialogue}"`;
-          storyDiv.appendChild(p);
-        }
-        triggerSounds(line);
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "gpt-3.5-turbo", messages: [{ role: "user", content: prompt }] })
+  });
+  const data = await res.json();
+  const reply = data.choices[0].message.content.trim();
 
-      } else {
-        // Gestione della narrazione
-        const p = document.createElement("p");
-        p.classList.add("narration");
-        p.textContent = line;
-        storyDiv.appendChild(p);
-        triggerSounds(line);
-      }
-    });
-
-    // Se tra le linee non ci sono né tag né dialoghi, stampa il blocco narrativo principale
-   /* 
-   const shouldShowReply = !lines.some(line =>
-      line.startsWith("#PRESENT:") ||
-      line.startsWith("#LEAVE:") ||
-      /^[A-Z][a-zA-Z\s'-]+:/.test(line)
+  // 5) remote → pending via “on my way”, “rush”, “runs”
+  arrivalNPCs.forEach(name => {
+    const arrivalRe = new RegExp(
+      `\\b${name}\\b.*\\b(on my way|rush(?:es|ing)?|runs?)\\b`, "i"
     );
-
-    if (shouldShowReply) {
+    const char = characters.find(c => c.name === name);
+    if (arrivalRe.test(reply) && char && char.status === "remote") {
+      char.status = "pending";
+      pendingArrival.add(name);
+      scheduleArrival(name, travelTimes[name] || 30000);
       const p = document.createElement("p");
       p.classList.add("narration");
-      // Mostra solo la parte testuale, escludendo righe che iniziano con "[" o "Options:"
-      const narrativeOnly = reply
-        .split("\n")
-        .filter(line => {
-          const trimmed = line.trim();
-          return !trimmed.startsWith("[") && trimmed !== "Options:";
-        })
-        .join(" ")
-        .trim();
-      p.textContent = narrativeOnly;
+      p.textContent = arrivalMessages[name] || `${name} is arriving…`;
+      storyDiv.appendChild(p);
+      refreshSidebar();
+    }
+  });
+
+  // 6) Processa #PRESENT, #LEAVE, dialoghi, narrazione
+  const validTags = ["#PRESENT:", "#LEAVE:"];
+  const lines = reply.split("\n")
+    .map(l => l.trim())
+    .filter(l =>
+      l && !l.startsWith("[") && l !== "Options:" &&
+      (l[0] !== "#" || validTags.some(t => l.startsWith(t)))
+    );
+
+  // 6a) Schermo scelte
+  const choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML = "";
+  reply.split("\n").forEach(raw => {
+    const t = raw.trim();
+    if (t.startsWith("[")) {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.textContent = t.replace(/^\[|\]$/g, "");
+      btn.onclick = () => sendToGPT(btn.textContent, "narration");
+      choicesDiv.appendChild(btn);
+    }
+  });
+
+  // 6b) Append lines
+  lines.forEach(line => {
+    if (/^#PRESENT:\s*(.+)$/.test(line)) {
+      const name = line.replace(/^#PRESENT:\s*/, "").trim();
+      const existing = characters.find(c => c.name === name);
+      if (existing) existing.status = "present";
+      else characters.push({ name, status: "present" });
+      if (!selectedCharacters.includes(name)) selectedCharacters.push(name);
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = `${name} has arrived.`;
+      storyDiv.appendChild(p);
+      pendingArrival.delete(name);
+      refreshSidebar();
+
+    } else if (/^#LEAVE:\s*(.+)$/.test(line)) {
+      removeCharacter(line.replace(/^#LEAVE:\s*/, "").trim());
+
+    } else if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
+      const [name, ...rest] = line.split(":");
+      let dlg = rest.join(":").trim().replace(/^"+|"+$/g, "");
+      const p = document.createElement("p");
+      p.className = `character-color-${name}`;
+      p.textContent = `${name}: "${dlg}"`;
+      storyDiv.appendChild(p);
+
+    } else {
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = line;
       storyDiv.appendChild(p);
     }
-    */
-    if (newCharacters.size > 0) refreshSidebar();
+  });
 
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    alert("Something went wrong: " + err.message);
-  }
+  if (newCharacters.size) refreshSidebar();
 }
 
-/**
- * Riproduce suoni basati sul contenuto del testo.
- */
-function triggerSounds(text) {
-  const lowerText = text.toLowerCase();
+// ---------------------------
+// Audio e helper vari
+// ---------------------------
+export function triggerSounds(text) {
+  const lower = text.toLowerCase();
   const triggers = [
-    { id: 'sound-door', patterns: [/knock/, /door\s+creak/, /door\s+slam/, /opens\s+the\s+door/] },
-    { id: 'sound-gunshot', patterns: [/gunshot/, /shoots?/, /fired/, /pulls\s+the\s+trigger/, /bang/, /blast/, /bullet/, /pistol/, /shooting/] },
-    { id: 'sound-scream', patterns: [/scream/, /shout/, /yell/, /cry\s+out/, /wail/, /screeches?/] },
-    { id: 'sound-demon', patterns: [/demon/, /growl/, /possess/, /evil/, /dark\s+presence/, /hellhound/] },
-    { id: 'sound-whisper', patterns: [/whisper/, /ghost/, /murmur/, /breath/, /chill/, /spirit/] },
-    { id: 'sound-impala', patterns: [/impala/, /car/, /engine/, /rev/, /roar/] },
-    { id: 'sound-arrival', patterns: [/phone/, /call/, /dial/, /voicemail/] },
+    { id: 'sound-door', patterns: [/knock/, /door/, /opens/] },
+    { id: 'sound-gunshot', patterns: [/gunshot/, /shoot/] },
+    { id: 'sound-scream', patterns: [/scream/, /shout/] },
+    { id: 'sound-demon', patterns: [/demon/, /growl/] },
+    { id: 'sound-whisper', patterns: [/whisper/, /ghost/] },
+    { id: 'sound-impala', patterns: [/impala/, /engine/, /roar/] },
+    { id: 'sound-arrival', patterns: [/phone/, /call/, /dial/] }
   ];
-
   for (const { id, patterns } of triggers) {
-    if (patterns.some(regex => regex.test(lowerText))) {
-      const audio = document.getElementById(id);
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.volume = 0.8;
-        audio.play();
-      }
+    if (patterns.some(rx => rx.test(lower))) {
+      const a = document.getElementById(id);
+      if (a) { a.pause(); a.currentTime = 0; a.volume = 0.8; a.play(); }
       break;
     }
   }
-
   if (text === "character_arrived") {
-    const arrivalAudio = document.getElementById("sound-arrival");
-    if (arrivalAudio) {
-      arrivalAudio.pause();
-      arrivalAudio.currentTime = 0;
-      arrivalAudio.volume = 0.8;
-      arrivalAudio.play();
-    }
+    const a = document.getElementById("sound-arrival");
+    if (a) { a.pause(); a.currentTime = 0; a.volume = 0.8; a.play(); }
   }
 }
 
-/**
- * Verifica se una linea di testo è contestualmente appropriata rispetto al contesto corrente.
- * @param {string} line - La linea di testo da verificare.
- * @param {string} context - Il contesto corrente (tipicamente, le ultime linee della storia).
- * @returns {boolean} - true se la linea è appropriata, false altrimenti.
- */
-function isContextuallyAppropriate(line, context) {
-  const lowerLine = line.toLowerCase();
-  const lowerContext = context.toLowerCase();
-
-  // Esempio: se il contesto contiene 'forest', 'woods' o 'outdoors',
-  // scarta le linee che contengono termini tipici degli ambienti interni.
-  if (/forest|woods|outdoors/.test(lowerContext)) {
-    if (/room|inside|hall|building/.test(lowerLine)) {
-      console.warn("Skipping line due to context mismatch:", line);
-      return false;
-    }
-  }
-
-  // Puoi aggiungere ulteriori regole se necessario.
+export function isContextuallyAppropriate(line, context) {
+  const lowL = line.toLowerCase(), lowC = context.toLowerCase();
+  if (/forest|woods|outdoors/.test(lowC) && /room|inside|hall/.test(lowL))
+    return false;
   return true;
 }
 
-
-/**
- * Schedula l'arrivo di un personaggio modificando il suo stato a "present"
- * dopo un certo ritardo (in millisecondi).
- */
-function scheduleArrival(characterName, delay) {
-   // ➊ salviamo ETA e durata per il timer grafico
+export function scheduleArrival(characterName, delay) {
   arrivalETA[characterName]    = Date.now() + delay;
   arrivalDuration[characterName] = delay;
   setTimeout(() => {
@@ -839,150 +484,89 @@ function scheduleArrival(characterName, delay) {
       p.classList.add("narration");
       p.textContent = `${characterName} has arrived.`;
       storyDiv.appendChild(p);
-      // Riproduci il suono specifico per l'arrivo
       triggerSounds("character_arrived");
     }
   }, delay);
 }
 
-/**
- * Invia una richiesta per stabilire se un personaggio deve essere aggiunto come presente.
- * (Funzione per eventuali controlli, se necessario.)
- */
-async function askCharacterArbiter(reply, recentStory) {
-  const arbiterPrompt = `
-You’re a moderator for a Supernatural role‑playing game.
-Given the previous context and the AI’s new reply, output ONLY the presence tags:
-
-  • #PRESENT: <Name>   for NPCs (Dean, Sam, Castiel, Crowley, Bobby, Ruby, Jo, Ellen)
-  • #PRESENT: <Entity> for supernatural entities (Ghost, Shadow) only when they truly appear
-
-Return nothing else.
-
-CONTEXT:
-${recentStory}
-
-REPLY:
-${reply}
-
-EXAMPLE 1:
-CONTEXT: You wake in a crypt, hear a growl.
-REPLY: Suddenly, Dean storms in.
-OUTPUT: #PRESENT: Dean
-
-EXAMPLE 2:
-CONTEXT: You stand in a clearing, trees silent.
-REPLY: A pale mist forms into a skeletal figure.
-OUTPUT: #PRESENT: Ghost
-
-EXAMPLE 3:
-CONTEXT: You’re safe in the bunker.
-REPLY: You dial Sam’s number.
-OUTPUT: 
-`;
-
-  try {
-    const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gpt-4",
-        messages: [{ role: "user", content: arbiterPrompt }]
-      })
-    });
-    const json = await res.json();
-    return json.choices[0].message.content
-      .split("\n")
-      .filter(line => line.startsWith("#PRESENT:"))
-      .map(line => line.trim());
-  } catch (err) {
-    console.error("Arbiter error:", err);
-    return [];
-  }
-}
-
-
-/**
- * Gestisce l'uscita di un personaggio dalla scena (dismiss).
- */
-async function dismissCharacter(name) {
+export async function dismissCharacter(name) {
   const storyDiv = document.getElementById("story");
+  // Prendi le ultime 6 righe di storia come contesto
   const recentStory = Array.from(storyDiv.querySelectorAll("p"))
     .slice(-6)
     .map(p => p.textContent)
     .join("\n");
 
+  // Costruisci il prompt per far uscire il personaggio in modo coerente
   const prompt = `
 You are writing the next line in a Supernatural role-playing game.
 The character "${name}" is currently present.
 The player wants to dismiss this character in a way that fits the context.
-...
-(Completa il prompt per il dismiss)
+
+CONTEXT:
+${recentStory}
+
+INSTRUCTION:
+Output the next lines of dialogue or narration to dismiss ${name}, 
+preceded by either:
+  • #LEAVE: ${name}  (to remove them)
+  • #PRESENT: <Name> if for qualche motivo torna
+Nothing else.
 `;
+
   try {
     const response = await fetch("https://supernatural-api.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }]
+      })
     });
-
-    const data = await response.json();
+    const data  = await response.json();
     const reply = data.choices[0].message.content.trim();
-    const lines = reply.split("\n").filter(line => line.trim() !== "");
+    const lines = reply.split("\n").filter(l => l.trim() !== "");
 
     lines.forEach(line => {
-      const trimmedLine = line.trim();
-      if (trimmedLine.startsWith("#PRESENT:")) {
-        const name = trimmedLine.replace("#PRESENT:", "").trim();
-        const existing = characters.find(c => c.name === name);
-        const wasAlreadyPresent = existing && existing.status === "present";
-        if (existing) { existing.status = "present"; }
-        else { characters.push({ name, status: "present" }); }
-        if (!selectedCharacters.includes(name)) { selectedCharacters.push(name); }
-        newCharacters.add(name);
-        if (!wasAlreadyPresent) {
-          const msg = document.createElement("p");
-          msg.className = "narration";
-          msg.textContent = `${name} has arrived.`;
-          storyDiv.appendChild(msg);
-          triggerSounds("character_arrived");
+      const trimmed = line.trim();
+      if (trimmed.startsWith("#PRESENT:")) {
+        // Rientra un NPC (se serve)
+        const nm = trimmed.replace("#PRESENT:", "").trim();
+        const existing = characters.find(c => c.name === nm);
+        if (existing) existing.status = "present";
+        else {
+          characters.push({ name: nm, status: "present" });
+          selectedCharacters.push(nm);
         }
-        if (pendingArrival.has(name)) pendingArrival.delete(name);
-        refreshSidebar();
-        return;
-      }
-      if (trimmedLine.startsWith("#LEAVE:")) {
-        const name = trimmedLine.replace("#LEAVE:", "").trim();
-        removeCharacter(name);
-        return;
-      }
-
-      if (/^[A-Z][a-zA-Z\s'-]+:/.test(trimmedLine)) {
-        const name = trimmedLine.split(":")[0].trim();
-        const blockedNames = ["creature", "lurker", "shadow", "figure", "thing", "entity", "monster", "spirit", "demon", "ghost", "voice", "presence", "apparition", "evil", "darkness", "phantom", "force", "being"];
-        if (blockedNames.includes(name.toLowerCase())) return;
-        if (name.toLowerCase() !== player.name.toLowerCase() &&
-            name !== "Narrator" &&
-            !characterExists(name) &&
-            !newCharacters.has(name) &&
-            !selectedCharacters.includes(name)) {
-          characters.push({ name, status: "present" });
-          selectedCharacters.push(name);
-          newCharacters.add(name);
-        }
-        const p = document.createElement("p");
-        p.className = `character-color-${name}`;
-        p.textContent = trimmedLine;
-        storyDiv.appendChild(p);
-        triggerSounds(line);
-      } else {
         const p = document.createElement("p");
         p.classList.add("narration");
-        p.textContent = trimmedLine;
+        p.textContent = `${nm} has arrived.`;
         storyDiv.appendChild(p);
-        triggerSounds(line);
+        refreshSidebar();
+      }
+      else if (trimmed.startsWith("#LEAVE:")) {
+        // Rimuovi l’NPC
+        const nm = trimmed.replace("#LEAVE:", "").trim();
+        removeCharacter(nm);
+      }
+      else if (/^[A-Z][a-zA-Z\s'-]+:/.test(trimmed)) {
+        // Dialogo normalizzato
+        const [speaker, ...rest] = trimmed.split(":");
+        let text = rest.join(":").trim().replace(/^"+|"+$/g, "");
+        const p = document.createElement("p");
+        p.className = `character-color-${speaker}`;
+        p.textContent = `${speaker}: "${text}"`;
+        storyDiv.appendChild(p);
+      }
+      else {
+        // Narrazione
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = trimmed;
+        storyDiv.appendChild(p);
       }
     });
+
     refreshSidebar();
   } catch (err) {
     console.error("Failed to dismiss character:", err);
@@ -990,90 +574,41 @@ The player wants to dismiss this character in a way that fits the context.
   }
 }
 
-// -------------------------------
-// Funzioni per eventi speciali
-// -------------------------------
-function triggerRandomEvent() {
+export function triggerRandomEvent() {
   sendToGPT("random", "narration", true);
 }
-
-function toggleSidebar() {
+export function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
 }
-
-function toggleMusic() {
+export function toggleMusic() {
   const bgm = document.getElementById("background-music");
-  if (bgm) {
-    if (bgm.paused) {
-      bgm.volume = 0.3;
-      bgm.play();
-    } else {
-      bgm.pause();
-    }
-  }
+  if (bgm.paused) bgm.play().catch(()=>{});
+  else bgm.pause();
+}
+export function triggerExorcismEvent() {
+  const o = document.getElementById('exorcism-overlay'),
+        g = document.getElementById('ghost'),
+        c = document.getElementById('chant');
+  o.classList.remove('hidden');
+  g.style.opacity = '1'; g.style.transform = 'translateY(0)';
+  c.textContent = '"Exorcizamus te, omnis immundus spiritus..."'; c.style.opacity = '1';
+  setTimeout(()=>{ g.style.opacity='0'; g.style.transform='translateY(-150px)'; }, 500);
+  setTimeout(()=>{ c.textContent = '"Spiritus expulsus est!"'; }, 3500);
+  setTimeout(()=>{ o.classList.add('hidden'); }, 5500);
 }
 
-function triggerExorcismEvent() {
-  const overlay = document.getElementById('exorcism-overlay');
-  const ghost = document.getElementById('ghost');
-  const chant = document.getElementById('chant');
-
-  overlay.classList.remove('hidden');
-  ghost.style.opacity = '1';
-  ghost.style.transform = 'translateY(0)';
-  chant.textContent = '"Exorcizamus te, omnis immundus spiritus..."';
-  chant.style.opacity = '1';
-
-  setTimeout(() => {
-    ghost.style.opacity = '0';
-    ghost.style.transform = 'translateY(-150px)';
-  }, 500);
-
-  setTimeout(() => {
-    chant.textContent = '"Spiritus expulsus est!"';
-  }, 3500);
-
-  setTimeout(() => {
-    overlay.classList.add('hidden');
-  }, 5500);
-}
-
-/**
- * Funzione per avviare il gioco.
- */
-function startGame() {
-  const selection = document.getElementById("playerSelect").value;
-  if (selection === "custom") {
+export function startGame() {
+  const sel = document.getElementById("playerSelect").value;
+  if (sel === "custom") {
     const name = document.getElementById("playerName").value.trim();
     if (name) player.name = name;
     player.isCustom = true;
-  } else if (selection !== "") {
-    player.name = selection;
+  } else if (sel) {
+    player.name = sel;
     player.isCustom = false;
   }
-  characterColors["User"] = "#3399ff";
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
   refreshSidebar();
   loadIntro();
 }
-
-// -------------------------------
-// Export delle funzioni da usare in main.js
-// -------------------------------
-export {
-  setPlayer,
-  loadDropdown,
-  setupActions,
-  loadCharacterLore,
-  refreshSidebar,
-  triggerRandomEvent,
-  toggleSidebar,
-  toggleMusic,
-  startGame,
-  addSelectedCharacter,
-  addCustomCharacter,
-  sendToGPT,
-  dismissCharacter,
-  scheduleArrival
-}; 
