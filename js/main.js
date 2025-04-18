@@ -122,16 +122,14 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // System-prompt che chiede a GPT4 il tag #PRESENT: se intende venire
     const mode = txt.startsWith("/call") ? "phone call" : "SMS";
-    const systemMsg = `
-You are ${currentCallee}, speaking via ${mode} in character.
-If after your next line you intend to come help the player,
-append exactly on its own line at the end:
-
-#PRESENT: ${currentCallee}
-
-Otherwise do not output that tag.
-Only output your dialogue lines and that tag—nothing else.
-`;
+    const systemMsg = `You are ${currentCallee}, speaking via ${mode} in character.
+    If after your next line you intend to come help the player,
+    append exactly on its own line at the end:
+    
+    #PRESENT: ${currentCallee}
+    
+    Otherwise do not output that tag.
+    Only output your dialogue lines and that tag—nothing else.`;
     const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
 
     // Chiamata a GPT‑4
