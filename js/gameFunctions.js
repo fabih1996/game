@@ -188,13 +188,25 @@ export function refreshSidebar() {
   const remoteList = document.getElementById("charListRemote");
   if (remoteList) {
     remoteList.innerHTML = "";
-    characters.filter(c => c.status === "remote")
-      .forEach(c => {
-        const li = document.createElement("li");
-        li.textContent = c.name;
-        li.style.opacity = 0.6;
-        remoteList.appendChild(li);
-      });
+   characters.filter(c => c.status === "remote")
+     .forEach(c => {
+       const li = document.createElement("li");
+       li.textContent = c.name;
+       li.style.opacity = 0.6;
+       li.style.cursor  = "pointer";
+       // Al click sposta da 'remote' a 'present'
+       li.onclick = () => {
+         // cambia lo status
+         characters.find(ch => ch.name === c.name).status = "present";
+         // aggiungilo ai selezionati
+         if (!selectedCharacters.includes(c.name)) {
+           selectedCharacters.push(c.name);
+         }
+         // refresh per mostrare l'icona nella lista principale
+         refreshSidebar();
+       };
+       remoteList.appendChild(li);
+     });
   }
 
   // Present & Pending
