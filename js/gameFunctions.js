@@ -514,10 +514,11 @@ if (!response.ok) throw new Error(`API returned ${response.status}`);
     const reply = data.choices[0].message.content.trim();
         // --- DETECTION dell’annuncio di arrivo per qualunque NPC ---
     arrivalNPCs.forEach(name => {
-      const arrivalRe = new RegExp(
-        `^${name}:.*\\b(on my way|be there soon|coming over|heading (over|there)|arriving|en route)\\b`,
-        "im"
-      );
+    const arrivalRe = new RegExp(
+      `^${name}:.*\\b(on my way|be there soon|coming over|heading (over|there)|arriving|en route|` +
+      `materiali(?:s|z)es?|teleports?|appears?)\\b`,
+      "im"
+    );
 
       if (arrivalRe.test(reply) && !pendingArrival.has(name)) {
 
@@ -655,7 +656,7 @@ if (!response.ok) throw new Error(`API returned ${response.status}`);
         let dialogue = line.substring(line.indexOf(":") + 1).trim();
         if (dialogue.startsWith(input)) {
           dialogue = dialogue.substring(input.length).trim();
-          dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '');
+          dialogue = dialogue.replace(/^[-–—,:;.\s]+/, '').replace(/^"+|"+$/g, '');   // remove leading/trailing "
         }
         const lastNode = storyDiv.lastElementChild;
         if (
