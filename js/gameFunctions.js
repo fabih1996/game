@@ -34,6 +34,8 @@ const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
 ];
 
+const arrivalNPCs = allAvailableCharacters.filter(n => n !== "Other...");
+
 // Tempo di viaggio (ms) per ciascun NPC  – regolali a piacere
 const travelTimes = {
   Dean: 30000,
@@ -489,7 +491,6 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
     // We'll only auto-add when GPT actually formats a dialogue line ("Dean: …").
    // After you get `reply` but before pushing newCharacters:
-   const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
    let match;
    while ((match = dialogueSpeakerRegex.exec(reply)) !== null) {
      const cand = match[1];
