@@ -52,6 +52,19 @@ const travelTimes = {
 const arrivalETA = {};        // { Dean: 1682345678901, ... }
 const arrivalDuration = {};   // durata in ms usata per calcolare la % completata
 
+// --- Aggiorna l'anello di progresso ogni 1 s ---
+setInterval(() => {
+  const now = Date.now();
+  document.querySelectorAll(".char-wrapper.pending").forEach(wrap => {
+    const name = wrap.querySelector(".char-icon").dataset.name;
+    const eta  = arrivalETA[name];
+    const dur  = arrivalDuration[name] || 1;
+    const pct  = Math.max(0, Math.min(100, 100 - ((eta - now) / dur) * 100));
+    wrap.style.setProperty("--prog", pct + "%");
+    if (now >= eta) wrap.classList.remove("pending");  // sicurezza
+  });
+}, 1000);
+
 const characterColors = {
   "Dean": "#FFD700",
   "Sam": "#00BFFF",
@@ -180,9 +193,11 @@ function refreshSidebar() {
     )
     .forEach(({ name, status }) => {
     // Trattiamo tutti i personaggi come "present"
-    const li = document.createElement("li");
-    const wrapper = document.createElement("div");
-    wrapper.style.position = "relative";
+   const li      = document.createElement("li");
+   const wrapper = document.createElement("div");
+   wrapper.className = "char-wrapper";          // nuovo wrapper standard
+
+   if (status === "pending") wrapper.classList.add("pending");
 
     // Generazione immagine del personaggio
     const img = document.createElement("img");
@@ -206,11 +221,7 @@ function refreshSidebar() {
     img.src = imgSrc;
     img.alt = name;
     img.style.color = characterColors[matchedName || name] || characterColors["default"];
-    // Se il personaggio è "pending", rendi l'icona semitrasparente
-    const charObj = characters.find(c => c.name === name);
-    if (charObj && charObj.status === "pending") {
-      img.style.opacity = 0.5;   // grigio finché non arriva
-    }
+
     if (selectedCharacters.includes(name)) { img.classList.add("selected"); }
     img.setAttribute("data-name", name);
 
@@ -721,10 +732,15 @@ function isContextuallyAppropriate(line, context) {
  * dopo un certo ritardo (in millisecondi).
  */
 function scheduleArrival(characterName, delay) {
+   // ➊ salviamo ETA e durata per il timer grafico
+  arrivalETA[characterName]    = Date.now() + delay;
+  arrivalDuration[characterName] = delay;
   setTimeout(() => {
     const char = characters.find(c => c.name === characterName);
     if (char && char.status !== "present") {
       char.status = "present";
+      delete arrivalETA[characterName];
+      delete arrivalDuration[characterName];
       refreshSidebar();
       const storyDiv = document.getElementById("story");
       const p = document.createElement("p");
