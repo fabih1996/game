@@ -148,9 +148,13 @@ export async function loadIntro() {
     // 6) Crea i pulsanti delle prime scelte
     const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
-    reply.split("\n")
+    const buttons = reply
+      .split("\n")
       .filter(l => l.trim().startsWith("["))
-      .forEach(br => {
+      .slice(0, 3);      // prendi solo i primi 3
+    buttons.forEach(br => {
+      /* crea i bottoni */
+    });
         const btn = document.createElement("button");
         btn.className = "choice-btn";
         btn.textContent = br.replace(/^\[|\]$/g, "");
@@ -214,12 +218,6 @@ export function refreshSidebar() {
       img.alt = name;
       if (selectedCharacters.includes(name)) img.classList.add("selected");
 
-      // Dismiss
-      const dismissBtn = document.createElement("button");
-      dismissBtn.textContent = "Dismiss";
-      dismissBtn.className = "dismiss-btn";
-      dismissBtn.onclick = () => dismissCharacter(name);
-
       // Click sull’icona per selezionare/deselezionare
       img.onclick = () => {
         if (selectedCharacters.includes(name))
@@ -230,7 +228,6 @@ export function refreshSidebar() {
       };
 
       wrapper.appendChild(img);
-      wrapper.appendChild(dismissBtn);
       li.appendChild(wrapper);
       presentList.appendChild(li);
     });
