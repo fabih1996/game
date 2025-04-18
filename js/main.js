@@ -86,6 +86,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   const phoneHangupBtn = document.getElementById("phone-hangup");
   let   currentCallee  = null;
   let   convoHistory   = [];
+  // Traccia chi ha detto #PRESENT: durante la chiamata
+  const callIntents = new Set();
 
   // 1) Apri il dialer e popola i contatti
   document.getElementById("phone-button").onclick = () => {
@@ -152,27 +154,11 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
   convoHistory.push({ role: "assistant", content: clean });
   phoneInput.value = "";
 
-  // 7) Se vediamo il tag OPPURE la frase “on my way”, partiamo con l’arrivo
-  const arrivalRegex = /\b(on my way|sto arrivando|in arrivo)\b/i;
-if (hasTag) {
-  console.log("🚗 Scheduling arrival for", currentCallee);
-
-  // ————— INIZIO FIX PER PROBLEM 3 —————
-  // 1) Registra il personaggio come “remote” se non c’è già
-  if (!characters.some(c => c.name === currentCallee)) {
-    characters.push({ name: currentCallee, status: 'remote' });
-  } else {
-    const ch = characters.find(c => c.name === currentCallee);
-    ch.status = 'remote';
+  // 7) Registra l’intenzione di venire, ma non partire subito
+  if (hasTag) {
+    console.log(`${currentCallee} intends to come`);
+    callIntents.add(currentCallee);
   }
-  // 2) Aggiorna subito la sidebar
-  refreshSidebar();
-  // ————— FINE FIX —————
-
-  // 3) Ora calcola il delay e parti col timer
-  const delay = travelTimes[currentCallee] ?? 30000;
-  scheduleArrival(currentCallee, delay);
-}
 };
 
   // 5) Helper per appendere messaggi
@@ -186,6 +172,23 @@ if (hasTag) {
 
   // 6) Reset telefono
   function resetPhone() {
+    // 1) Se c’è stato un #PRESENT:, ora schedula l’arrivo
+    if (currentCallee && callIntents.has(currentCallee)) {
+      console.log(`🚗 Scheduling arrival for ${currentCallee} after the call`);
+      // imposta come remote
+      if (!characters.some(c => c.name === currentCallee)) {
+        characters.push({ name: currentCallee, status: 'remote' });
+      } else {
+        characters.find(c => c.name === currentCallee).status = 'remote';
+      }
+      refreshSidebar();
+      // avvia il timer
+      const delay = travelTimes[currentCallee] ?? 30000;
+      scheduleArrival(currentCallee, delay);
+      callIntents.delete(currentCallee);
+    }
+  
+    // 2) Poi resetta l’interfaccia del telefono
     phoneOverlay.classList.add("hidden");
     phoneConvo.classList.add("hidden");
     messagesDiv.innerHTML = "";
