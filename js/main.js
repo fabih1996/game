@@ -154,21 +154,25 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
 
   // 7) Se vediamo il tag OPPURE la frase “on my way”, partiamo con l’arrivo
   const arrivalRegex = /\b(on my way|sto arrivando|in arrivo)\b/i;
-  if (hasTag || arrivalRegex.test(reply)) {
-    console.log("🚗 Scheduling arrival for", currentCallee);
-    // --- INIZIO SNIPPET FIX ---
-    if (!characters.some(c => c.name === currentCallee)) {
-      characters.push({ name: currentCallee, status: 'remote' });
-    } else {
-      const ch = characters.find(c => c.name === currentCallee);
-      ch.status = 'remote';
-    }
-    // Rinfresca la sidebar prima di scheduleArrival
-    refreshSidebar();
-    // --- FINE SNIPPET FIX ---
-    const delay = travelTimes[currentCallee] ?? 30000;
-    scheduleArrival(currentCallee, delay);
+if (hasTag) {
+  console.log("🚗 Scheduling arrival for", currentCallee);
+
+  // ————— INIZIO FIX PER PROBLEM 3 —————
+  // 1) Registra il personaggio come “remote” se non c’è già
+  if (!characters.some(c => c.name === currentCallee)) {
+    characters.push({ name: currentCallee, status: 'remote' });
+  } else {
+    const ch = characters.find(c => c.name === currentCallee);
+    ch.status = 'remote';
   }
+  // 2) Aggiorna subito la sidebar
+  refreshSidebar();
+  // ————— FINE FIX —————
+
+  // 3) Ora calcola il delay e parti col timer
+  const delay = travelTimes[currentCallee] ?? 30000;
+  scheduleArrival(currentCallee, delay);
+}
 };
 
   // 5) Helper per appendere messaggi
