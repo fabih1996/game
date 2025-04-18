@@ -33,6 +33,19 @@ const quickActions = [
 const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
 ];
+
+// Tempo di viaggio (ms) per ciascun NPC  – regolali a piacere
+const travelTimes = {
+  Dean: 30000,
+  Sam: 40000,
+  Castiel: 5000,   // teleport!
+  Crowley: 7000,
+  Bobby: 45000,
+  Ruby: 35000,
+  Jo: 30000,
+  Ellen: 45000
+};
+
 const characterColors = {
   "Dean": "#FFD700",
   "Sam": "#00BFFF",
@@ -187,7 +200,11 @@ function refreshSidebar() {
     img.src = imgSrc;
     img.alt = name;
     img.style.color = characterColors[matchedName || name] || characterColors["default"];
-
+    // Se il personaggio è "pending", rendi l'icona semitrasparente
+    const charObj = characters.find(c => c.name === name);
+    if (charObj && charObj.status === "pending") {
+      img.style.opacity = 0.5;   // grigio finché non arriva
+    }
     if (selectedCharacters.includes(name)) { img.classList.add("selected"); }
     img.setAttribute("data-name", name);
 
@@ -349,6 +366,14 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   console.log("✅ sendToGPT attivata");
   newCharacters.clear();
   const input = message.trim();
+ // Se il player aspetta un NPC "pending", facciamolo entrare subito
+  arrivalNPCs.forEach(name => {
+    const waitRe = new RegExp(`\\bwait\\s+(for\\s+)?${name}\\b`, "i");
+    if (waitRe.test(input) && pendingArrival.has(name)) {
+      pendingArrival.delete(name);
+      scheduleArrival(name, 0);   // entrata immediata
+    }
+  });
   if (!input) return;
 
   // Assicuriamoci che il Narrator sia sempre presente
@@ -429,6 +454,38 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
     }
 
     const reply = data.choices[0].message.content.trim();
+        // --- DETECTION dell’annuncio di arrivo per qualunque NPC ---
+    arrivalNPCs.forEach(name => {
+      const arrivalRe = new RegExp(
+        `^${name}:.*\\b(on my way|be there soon|coming over|heading (over|there)|arriving|en route)\\b`,
+        "im"
+      );
+
+      if (arrivalRe.test(reply) && !pendingArrival.has(name)) {
+
+        // Mettiamo/aggiorniamo lo status a "pending"
+        if (!characterExists(name)) addCharacter(name, "pending");
+        else characters.find(c => c.name === name).status = "pending";
+
+        pendingArrival.add(name);
+
+        // Timer di arrivo
+        const delay = travelTimes[name] || 30000;
+        scheduleArrival(name, delay);
+
+        // Feedback narrativo
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = name === "Castiel"
+          ? "Un fruscio d’ali vibra nell’aria: Castiel sta per materializzarsi…"
+          : `${name} è in arrivo…`;
+        storyDiv.appendChild(p);
+      }
+    });
+
+    // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
+    const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
+   
     // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
     // We'll only auto-add when GPT actually formats a dialogue line ("Dean: …").
    // After you get `reply` but before pushing newCharacters:
