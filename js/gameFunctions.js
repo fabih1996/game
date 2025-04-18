@@ -423,6 +423,15 @@ async function sendToGPT(message, type = "dialogue", isRandom = false) {
   console.log("✅ sendToGPT attivata");
   newCharacters.clear();
   const input = message.trim();
+ // Se il giocatore digita “I call X”
+ const callMatch = input.match(/\bcall\s+([A-Za-z]+)\b/i);
+ if (callMatch) {
+   const callee = callMatch[1][0].toUpperCase() + callMatch[1].slice(1);
+   // marca X come “remote”
+   if (!characterExists(callee)) addCharacter(callee, "remote");
+   else characters.find(c => c.name === callee).status = "remote";
+   refreshSidebar();
+ }
  // Se il player aspetta un NPC "pending", facciamolo entrare subito
   arrivalNPCs.forEach(name => {
     const waitRe = new RegExp(`\\bwait\\s+(for\\s+)?${name}\\b`, "i");
