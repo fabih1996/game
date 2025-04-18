@@ -375,3 +375,109 @@ body {
   transition: background 0.2s linear;
 }
 .char-wrapper.pending img { opacity: 0.5; }     /* già usato prima */
+
+/* ---------------------------------- */
+/* Phone Overlay Styles               */
+/* ---------------------------------- */
+
+/* Overlay a schermo intero */
+#phone-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+/* Nascondi con la classe hidden */
+#phone-overlay.hidden {
+  display: none !important;
+}
+
+/* “Schermo” del cellulare */
+.phone-screen {
+  background-color: #222;
+  color: #eee;
+  padding: 16px;
+  border-radius: 8px;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Lista contatti */
+#phone-contact-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+#phone-contact-list li {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #444;
+}
+#phone-contact-list li:last-child {
+  border-bottom: none;
+}
+#phone-contact-list li:hover {
+  background-color: #333;
+}
+
+/* Conversazione */
+#phone-conversation {
+  margin-top: 12px;
+}
+#messages {
+  background-color: #111;
+  padding: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #444;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.msg-you {
+  text-align: right;
+  margin: 4px 0;
+}
+.msg-them {
+  text-align: left;
+  margin: 4px 0;
+}
+
+/* Input e bottoni */
+#phone-input {
+  width: calc(100% - 100px);
+  padding: 6px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #111;
+  color: #eee;
+  margin-right: 4px;
+}
+#phone-send,
+#phone-hangup,
+#phone-close {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: #444;
+  color: #eee;
+  cursor: pointer;
+  margin-top: 4px;
+  margin-right: 4px;
+}
+#phone-send:hover,
+#phone-hangup:hover,
+#phone-close:hover {
+  background: #555;
+}
