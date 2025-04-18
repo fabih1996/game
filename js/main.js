@@ -151,13 +151,14 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
   phoneInput.value = "";
 
   // 6) Se GPT ha emesso il tag, schedula l’arrivo
-  if (hasTag) {
-    // Assicuro che l’NPC sia presente in characters
-    // (devo importare characters da gameFunctions.js se non l’hai già fatto)
+  if (
+    hasTag ||
+    /\bon my way\b/i.test(reply)    // catturo “On my way”
+  ) {
+    // Assicuro che l’NPC sia nel tuo array
     if (!characters.some(c => c.name === currentCallee)) {
       characters.push({ name: currentCallee, status: 'remote' });
     }
-  
     const delay = travelTimes[currentCallee] ?? 30000;
     scheduleArrival(currentCallee, delay);
   }
