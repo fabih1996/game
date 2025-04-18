@@ -571,7 +571,14 @@ if (!response.ok) throw new Error(`API returned ${response.status}`);
     const validTags = ["#PRESENT:", "#LEAVE:"];
     const lines = reply.split("\n")
       .map(line => line.trim())
-      .filter(line => line && line !== "Options:" && (line[0] !== "#" || validTags.some(tag => line.startsWith(tag))));
+      .filter(line =>
+        line &&                                // non vuota
+        line !== "Options:" &&                // ignora la riga “Options:”
+        !line.startsWith('[') &&              // ignora le scelte [Testo…]
+        !line.startsWith(`${player.name}:`) &&// ignora l’eco del tuo stesso input
+        (line[0] !== "#" ||                   // mantieni solo i tag #PRESENT/#LEAVE
+          validTags.some(tag => line.startsWith(tag)))
+      );
     console.log("Lines being processed into story:", lines);
 
     // Aggiungi le scelte (bottoni)
