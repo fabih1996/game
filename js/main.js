@@ -156,6 +156,16 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
   const arrivalRegex = /\b(on my way|sto arrivando|in arrivo)\b/i;
   if (hasTag || arrivalRegex.test(reply)) {
     console.log("🚗 Scheduling arrival for", currentCallee);
+    // --- INIZIO SNIPPET FIX ---
+    if (!characters.some(c => c.name === currentCallee)) {
+      characters.push({ name: currentCallee, status: 'remote' });
+    } else {
+      const ch = characters.find(c => c.name === currentCallee);
+      ch.status = 'remote';
+    }
+    // Rinfresca la sidebar prima di scheduleArrival
+    refreshSidebar();
+    // --- FINE SNIPPET FIX ---
     const delay = travelTimes[currentCallee] ?? 30000;
     scheduleArrival(currentCallee, delay);
   }
