@@ -513,34 +513,45 @@ if (!response.ok) throw new Error(`API returned ${response.status}`);
 
     const reply = data.choices[0].message.content.trim();
         // --- DETECTION dell’annuncio di arrivo per qualunque NPC ---
-    arrivalNPCs.forEach(name => {
-    const arrivalRe = new RegExp(
-      `^${name}:.*\\b(on my way|be there soon|coming over|heading (over|there)|arriving|en route|` +
-      `materiali(?:s|z)es?|teleports?|appears?)\\b`,
-      "im"
-    );
+   arrivalNPCs.forEach(name => {
+  // Regex più flessibile: cattura anche "Dean rushes…" e "Dean runs"
+  const arrivalRe = new RegExp(
+    `\\b${name}\\b.*\\b(` +
+      `on my way|` +
+      `be there soon|` +
+      `coming over|` +
+      `heading (?:over|there)|` +
+      `arriving|` +
+      `en route|` +
+      `materiali(?:s|z)es?|` +
+      `teleports?|` +
+      `appears?|` +
+      `rush(?:es|ing)?|` +
+      `runs?` +
+    `)\\b`,
+    "i"
+  );
 
-      if (arrivalRe.test(reply) && !pendingArrival.has(name)) {
+  if (arrivalRe.test(reply) && !pendingArrival.has(name)) {
+    // Settiamo lo status a "pending"
+    if (!characterExists(name)) addCharacter(name, "pending");
+    else characters.find(c => c.name === name).status = "pending";
 
-        // Mettiamo/aggiorniamo lo status a "pending"
-        if (!characterExists(name)) addCharacter(name, "pending");
-        else characters.find(c => c.name === name).status = "pending";
+    pendingArrival.add(name);
 
-        pendingArrival.add(name);
+    // Timer di arrivo
+    const delay = travelTimes[name] || 30000;
+    scheduleArrival(name, delay);
 
-        // Timer di arrivo
-        const delay = travelTimes[name] || 30000;
-        scheduleArrival(name, delay);
+    // Feedback narrativo
+    const p = document.createElement("p");
+    p.classList.add("narration");
+    p.textContent = arrivalMessages[name] || `${name} is arriving…`;
+    storyDiv.appendChild(p);
 
-        // Feedback narrativo 
-        const p = document.createElement("p");
-        p.classList.add("narration");
-        p.textContent = arrivalMessages[name]            // testo specifico
-                     || `${name} is arriving…`;          // fallback generico
-        storyDiv.appendChild(p);
-        refreshSidebar();                                // ridisegna l’anello        // ⬅️ forza il ridisegno con l’anello
-      }
-    });
+    refreshSidebar();
+  }
+});
 
     // ── STRICT NPC ADD: ONLY ON #PRESENT: TAGS OR DIALOGUE LINES ─────────────────
     const dialogueSpeakerRegex = /^([A-Z][a-zA-Z]+):/gm;
