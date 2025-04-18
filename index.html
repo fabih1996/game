@@ -98,13 +98,25 @@
 
   <!-- Exorcism Overlay -->
   <div id="exorcism-overlay" class="hidden">
-    <div id="pentagram">⛧</div>
-    <div id="ghost">👻</div>
-    <div id="chant"></div>
+    … esorcismo …
+  </div>
+
+  <!-- Phone Overlay -->
+  <div id="phone-overlay" class="hidden">
+    <div class="phone-screen">
+      <h3>📱 Phone</h3>
+      <ul id="phone-contact-list"></ul>
+      <div id="phone-conversation" class="hidden">
+        <div id="messages" style="height:200px; overflow:auto; margin-bottom:8px;"></div>
+        <input type="text" id="phone-input" placeholder="Type a message…" />
+        <button id="phone-send">Send</button>
+        <button id="phone-hangup">Hang up</button>
+      </div>
+      <button id="phone-close">Close</button>
+    </div>
   </div>
 
   <!-- JavaScript -->
-  <!-- main.js importa internamente le funzioni da gameFunctions.js -->
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
