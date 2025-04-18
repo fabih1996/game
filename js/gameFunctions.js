@@ -150,7 +150,7 @@ async function loadIntro() {
     refreshSidebar();
 
     // opzionale: avvisa l’utente
-    alert("⚠️ Impossibile contattare il server delle risposte AI. Controlla la connessione o riprova più tardi.");
+    alert("⚠️ Unable to reach the AI server. Check your connection or try again later.");
   }
 }
 
@@ -183,6 +183,7 @@ function refreshSidebar() {
     // Trattiamo tutti i personaggi come "present"
    const li      = document.createElement("li");
    const wrapper = document.createElement("div");
+   const matchedName = knownNames.find(known => name.toLowerCase().includes(known.toLowerCase()));
    wrapper.className = "char-wrapper";          // nuovo wrapper standard
    wrapper.style.setProperty(
   "--ring-color",
@@ -194,7 +195,6 @@ function refreshSidebar() {
     const img = document.createElement("img");
     img.classList.add("char-icon");
     let displayName = name;
-    const matchedName = knownNames.find(known => name.toLowerCase().includes(known.toLowerCase()));
     if (matchedName) { displayName = matchedName; }
 
     let imgSrc;
