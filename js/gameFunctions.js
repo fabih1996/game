@@ -124,10 +124,22 @@ export async function loadIntro() {
         !/^[-–—]{3,}$/.test(line)  // non '---' o simili
       )
       .forEach(line => {
-          const p = document.createElement("p");
+        const m = line.match(/^([A-Z][a-zA-Z]+):\s*["“]?(.+?)["”]?$/);
+        const p = document.createElement("p");
+      
+        if (m) {
+          const name = m[1];
+          const cleanText = m[2];
           p.classList.add(`character-color-${name}`);
+          p.classList.add("glow-talk"); // facoltativo: glow anche nell’intro
           p.textContent = `${name}: "${cleanText}"`;
           storyDiv.appendChild(p);
+          setTimeout(() => p.classList.remove("glow-talk"), 2000);
+        } else {
+          p.classList.add("narration");
+          p.textContent = line;
+          storyDiv.appendChild(p);
+        }
       });
         // 4b) Scansione del testo per menzioni di NPC e auto‑aggiunta in “present”
     const introText = storyDiv.textContent;
