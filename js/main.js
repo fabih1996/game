@@ -121,25 +121,26 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   /* ─── Apertura app Messaggi (clic su ✉) ───────── */
 openMsgBtn.onclick = () => {
-  // 1. Crea la rubrica filtrando chi NON è presente
-  contactList.innerHTML = "";
-  /*
-  characters
-    .filter(c => c.status !== "present" && c.name !== "Narrator")
-    .forEach(({ name }) => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      li.onclick = () => openConversation(name);
-      contactList.appendChild(li);
-    });
-  */
-  
-//TEMPORANEO
+  // 1. Crea la rubrica filtrando chi NON è presente  
+const filtered = characters.filter(c => c.status !== "present" && c.name !== "Narrator");
+
+contactList.innerHTML = "";
+
+if (filtered.length === 0) {
   const li = document.createElement("li");
-li.textContent = "Crowley";
-li.onclick = () => openConversation("Crowley");
-contactList.appendChild(li);
-////
+  li.textContent = "No contacts available";
+  li.style.color = "#888";
+  li.style.fontStyle = "italic";
+  li.style.textAlign = "center";
+  contactList.appendChild(li);
+} else {
+  filtered.forEach(({ name }) => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    li.onclick = () => openConversation(name);
+    contactList.appendChild(li);
+  });
+}
   
   // 2. Mostra la lista, nasconde l’icona
   contactList.classList.remove("hidden");   // lista visibile
