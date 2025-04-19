@@ -279,3 +279,19 @@ body {
   opacity: 1;
   transform: translateX(-50%) translateY(-2px);
 }
+
+.glow-talk {
+  animation: glowTalk 2s ease-out;
+}
+
+@keyframes glowTalk {
+  0% {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    opacity: 1;
+  }
+  100% {
+    text-shadow: none;
+    opacity: 1;
+  }
+}
+
