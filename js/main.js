@@ -140,15 +140,16 @@ const systemMsg = `
 You are ${currentCallee}, as defined by this profile:
 ${lore}
 
-You are now speaking via phone. Here is the dialogue so far:
+You are now speaking via phone. Here is the conversation so far:
 ${convoContext}
 
-– Reply **in character** in plain English, using the personality, speech style, likes/dislikes from your profile.
-– Do NOT include any tag or scheduling instruction unless **explicitly** asked to come.
-– If the player **directly** asks "can you come" or similar, reply naturally **and then** on its own line:
-  #PRESENT: ${currentCallee}
-– Otherwise do NOT include the tag at all (especially not after goodbyes).
-– Do not output anything else—no extra lines, no JSON, no brackets.
+Instructions:
+1. Read the **entire** conversation context above and understand the player’s intent.
+2. Reply naturally in character in plain English, using your personality, speech style, likes/dislikes from your profile.
+3. **Only if** the full conversation clearly shows the player is asking you to come help (e.g. “can you come here?”, “I need your help”, “please come now”), then after your dialogue append on its own line:
+   #PRESENT: ${currentCallee}
+4. In **all other cases** (greetings, small talk, follow‑up questions, farewells), **do not** include the tag.
+5. Do **not** output anything else—no extra lines, no JSON, no brackets.
 `.trim();
 
   // 4) Prepara e invia la request
@@ -173,13 +174,6 @@ ${convoContext}
   // Se GPT4 non ha fornito alcuna battuta ma c'è il tag, usiamo un fallback
   if (!clean && hasTag) {
     clean = "I'll be right there.";
-  }
-
-  // 5b) Se la risposta è solo un saluto, rimuovi l’intenzione
-  const lowerClean = clean.toLowerCase();
-  const isGoodbye = /\b(bye|goodbye|see you|take care)\b/.test(lowerClean);
-  if (hasTag && isGoodbye) {
-    callIntents.delete(currentCallee);
   }
 
   // 6) Append della risposta solo se c'è testo vero
