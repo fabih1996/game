@@ -18,18 +18,6 @@ export function setPlayer(p) {
 // ---------------------------
 // Azioni rapide e NPC disponibili
 // ---------------------------
-const quickActions = [
-  "Let's go to the Impala",
-  "I pull out my gun",
-  "I open the door cautiously",
-  "I check the anti-demon salts",
-  "I call Castiel",
-  "I grab Ruby's knife",
-  "I turn on a flashlight",
-  "I read from John's journal",
-  "I punch the demon",
-  "I hide behind the bed"
-];
 const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
 ];
@@ -289,21 +277,6 @@ function removeCharacter(name) {
   selectedCharacters = selectedCharacters.filter(n => n !== name);
   newCharacters.delete(name);
   refreshSidebar();
-}
-
-// ---------------------------
-// Azioni rapide
-// ---------------------------
-export function setupActions() {
-  const container = document.getElementById("actions-container");
-  container.innerHTML = "";
-  quickActions.forEach(action => {
-    const btn = document.createElement("button");
-    btn.className = "action-btn";
-    btn.textContent = action;
-    btn.onclick = () => sendToGPT(action, "narration");
-    container.appendChild(btn);
-  });
 }
 
 // ---------------------------
