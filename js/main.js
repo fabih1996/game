@@ -163,84 +163,69 @@ phoneSendBtn.onclick = async () => {
   const txt = phoneInput.value.trim();
   if (!txt || !currentCallee) return;
 
-    // ——— NUOVO SNIPPET: costruiamo lore e convoContext ———
-  // Estraggo dal characterKnowledge il profilo di currentCallee
+  // ——— NUOVO SNIPPET: costruiamo lore e convoContext ———
   const lore = characterKnowledge
     .split("---")
     .find(chunk => chunk.startsWith(currentCallee))
     ?.trim() || "";
 
-  // Ricompongo l’intera conversazione fatta finora (You vs NPC)
   const convoContext = convoHistory
     .map(m => m.role === "user"
       ? `You: ${m.content}`
       : `${currentCallee}: ${m.content}`)
     .join("\n");
-  // ————————————————————————————————
-  
-  // 1) Stampa un log per debug
-  console.log("📱 Send clicked; reply incoming for", currentCallee);
+  // ———————————————————————————————————————————
 
-  // 2) Mostra subito il messaggio dell’utente
+  console.log("📱 Send clicked; reply incoming for", currentCallee);
   appendMessage("You", txt);
   convoHistory.push({ role: "user", content: txt });
 
-  // 3) Prompt univoco: siamo sempre in chiamata
+  // Prepara il prompt e fai la call
   const promptTxt = await (await fetch("texts/phone_prompt.txt")).text();
-const systemMsg = promptTxt
-  .replace("{{CALLEE}}", currentCallee)
-  .replace("{{LORE}}", lore)
-  .replace("{{CONTEXT}}", convoContext);
+  const systemMsg = promptTxt
+    .replace("{{CALLEE}}", currentCallee)
+    .replace("{{LORE}}", lore)
+    .replace("{{CONTEXT}}", convoContext);
 
-  // 4) Prepara e invia la request
-  const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
-  const res  = await fetch("https://supernatural-api.vercel.app/api/chat", {
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "gpt-4", messages: msgs })
+    body: JSON.stringify({ model: "gpt-4", messages: [{ role: "system", content: systemMsg }, ...convoHistory] })
   });
-  const data  = await res.json();
+  const data = await res.json();
   const reply = data.choices[0].message.content.trim();
   console.log("Reply string:", reply);
 
-  // 5) Estrai tag e testo pulito
-  const lines  = reply.split("\n").map(l => l.trim());
-  const normalizedTag = `#PRESENT: ${currentCallee}`;
-  const hasTag = lines.some(l => l.toUpperCase() === normalizedTag.toUpperCase());
-  // Controllo per tag errati tipo "#PRESENT: User" o "#PRESENT: Me"
-  const wrongTag = lines.find(l => /^#PRESENT:\s*/i.test(l) && !hasTag);
-if (wrongTag) {
-  console.warn("⚠️ GPT gave a wrong #PRESENT tag:", wrongTag);
-}
+  // 1) Split in righe, individua il tag
+  const lines = reply.split("\n").map(l => l.trim());
+  const hasTag = lines.some(l => /^#PRESENT:/i.test(l));
 
-if (
-  hasTag || 
-  /i'll be there|hang tight|on my way|i'm coming|i am coming|see you soon/i.test(reply)
-) {
-  console.log(`✅ Interpreting as intent to come: ${currentCallee}`);
-  callIntents.add(currentCallee);
-}
-// Strip out qualsiasi #PRESENT:tag, anche sbagliati
-  let clean = reply
-    .split("\n")
-    .filter(l => !/^#PRESENT:/i.test(l))   // scarta intere righe taggate
-    .join("\n")
-    .trim();
+  // 2) Interpreta intent anche da frasi “on my way”
+  if (
+    hasTag ||
+    /i'll be there|hang tight|on my way|i'm coming|i am coming|see you soon/i.test(reply)
+  ) {
+    console.log(`✅ Interpreting as intent to come: ${currentCallee}`);
+    callIntents.add(currentCallee);
+  }
 
-// Se dopo aver tolto il tag non rimane testo (ma c’era l’intent), fallback
-  if ((!clean || clean === "") && hasTag) {
+  // 3) Filtra via SOLO le righe #PRESENT e ricomponi
+  const kept = lines.filter(l => !/^#PRESENT:/i.test(l));
+  let clean = kept.join(" ").trim();
+
+  // 4) Se non resta niente ma c’era intent, fallback
+  if (!clean && hasTag) {
     clean = "I'll be right there.";
   }
 
-
-  // 6) Append della risposta solo se c'è testo vero
+  // 5) Aggiungi in chat
   if (clean) {
     appendMessage(currentCallee, clean);
     convoHistory.push({ role: "assistant", content: clean });
   }
   phoneInput.value = "";
 
-  // 7) Registra l’intenzione di venire, ma non partire subito
+  // 6) Mantieni l’intent per scheduleArrival
   if (hasTag) {
     console.log(`${currentCallee} intends to come`);
     callIntents.add(currentCallee);
