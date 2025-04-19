@@ -221,14 +221,17 @@ if (
   callIntents.add(currentCallee);
 }
 // Strip out qualsiasi #PRESENT:tag, anche sbagliati
-let clean = reply
-  .replace(/#PRESENT:\s*\w+/gi, "")  // rimuove #PRESENT: User / Bobby / ecc.
-  .trim();
+  let clean = reply
+    .split("\n")
+    .filter(l => !/^#PRESENT:/i.test(l))   // scarta intere righe taggate
+    .join("\n")
+    .trim();
 
 // Se dopo aver tolto il tag non rimane testo (ma c’era l’intent), fallback
-if (!clean && hasTag) {
-  clean = "I'll be right there.";
-}
+  if ((!clean || clean === "") && hasTag) {
+    clean = "I'll be right there.";
+  }
+
 
   // 6) Append della risposta solo se c'è testo vero
   if (clean) {
