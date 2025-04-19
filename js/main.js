@@ -123,6 +123,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 openMsgBtn.onclick = () => {
   // 1. Crea la rubrica filtrando chi NON è presente
   contactList.innerHTML = "";
+  /*
   characters
     .filter(c => c.status !== "present" && c.name !== "Narrator")
     .forEach(({ name }) => {
@@ -131,7 +132,15 @@ openMsgBtn.onclick = () => {
       li.onclick = () => openConversation(name);
       contactList.appendChild(li);
     });
-
+  */
+  
+//TEMPORANEO
+  const li = document.createElement("li");
+li.textContent = "Crowley";
+li.onclick = () => openConversation("Crowley");
+contactList.appendChild(li);
+////
+  
   // 2. Mostra la lista, nasconde l’icona
   contactList.classList.remove("hidden");   // lista visibile
   openMsgBtn.classList.add("hidden");       // icona nascosta
