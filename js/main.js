@@ -202,7 +202,18 @@ const systemMsg = promptTxt
 
   // 5) Estrai tag e testo pulito
   const lines  = reply.split("\n").map(l => l.trim());
-  const hasTag = lines.some(l => l.includes(`#PRESENT: ${currentCallee}`));
+  const normalizedTag = `#PRESENT: ${currentCallee}`;
+  const hasTag = lines.some(l => l.toUpperCase() === normalizedTag.toUpperCase());
+  // Controllo per tag errati tipo "#PRESENT: User" o "#PRESENT: Me"
+  const wrongTag = lines.find(l => /^#PRESENT:\s*/i.test(l) && !hasTag);
+  if (wrongTag) {
+    console.warn("⚠️ GPT gave a wrong #PRESENT tag:", wrongTag);
+    // Forza comunque la partenza se contiene "I'll be there", ecc.
+    if (/i'll be there|hang tight|on my way/i.test(reply)) {
+      console.warn("✅ Forcing arrival despite incorrect tag");
+      callIntents.add(currentCallee);
+    }
+  }
   let clean  = lines
     .map(l => l.replace(`#PRESENT: ${currentCallee}`, "").trim())
     .filter(l => l)
