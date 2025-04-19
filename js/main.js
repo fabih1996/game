@@ -274,16 +274,6 @@ if (
   // ───────────────────────────────────────
 });
 
-function updateHealthUI() {
-  const el = document.getElementById("player-health");
-  if (el) el.textContent = `❤️ Health: ${player.health}`;
-}
-
-function damagePlayer(amount) {
-  player.health = Math.max(0, player.health - amount);
-  updateHealthUI();
-}
-
 // 🔧 Funzione per aggiornare salute del player
 function updateHealthUI() {
   const bar = document.getElementById("player-health-bar");
