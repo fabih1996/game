@@ -91,23 +91,40 @@ window.addEventListener("DOMContentLoaded", async () => {
   const callIntents = new Set();
 
   // 1) Apri il dialer e popola i contatti
-    document.getElementById("phone-button").onclick = () => {
-    
-      /* ── 1. Wallpaper random ───────────────────────── */
-      const wpCount = 5;
-      const n = Math.floor(Math.random() * wpCount) + 1;
-      phoneScreen.style.background =
-        `url('images/wallpaper${n}.jpg') center/cover no-repeat`;
-    
-      /* ── 2. Home screen: mostra solo icona ✉ ───────── */
-      contactList.innerHTML = "";
-      contactList.classList.add("hidden");
-      phoneConvo.classList.add("hidden");
-      openMsgBtn.classList.remove("hidden");
-    
-      /* ── 3. Apri overlay ───────────────────────────── */
-      phoneOverlay.classList.remove("hidden");
+document.getElementById("phone-button").onclick = () => {
+  // ── 1. Wallpaper random dinamico con fallback ────────
+  let wallpaperFound = false;
+  for (let i = 1; i <= 20; i++) {
+    const img = new Image();
+    img.onload = () => {
+      if (!wallpaperFound) {
+        wallpaperFound = true;
+        phoneScreen.style.background = `url('${img.src}') center/cover no-repeat`;
+      }
     };
+    img.onerror = () => {
+      // continua a cercare
+    };
+    img.src = `images/wallpaper${i}.jpg`;
+  }
+
+  // Fallback dopo 500ms se nessuna immagine caricata
+  setTimeout(() => {
+    if (!wallpaperFound) {
+      phoneScreen.style.background =
+        `url('images/default_wallpaper.jpg') center/cover no-repeat`;
+    }
+  }, 500);
+
+  // ── 2. Home screen: mostra solo ✉ ────────────────────
+  contactList.innerHTML = "";
+  contactList.classList.add("hidden");
+  phoneConvo.classList.add("hidden");
+  openMsgBtn.classList.remove("hidden");
+
+  // ── 3. Mostra il telefono ─────────────────────────────
+  phoneOverlay.classList.remove("hidden");
+};
 
   // 2) Chiudi telefono (Close e Hangup)
   phoneClose.onclick = resetPhone;
