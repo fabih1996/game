@@ -51,6 +51,27 @@ body {
   animation: glowPulse 2s infinite ease-in-out;
 }
 
+.char-wrapper.selected::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, currentColor 10%, transparent 70%);
+  opacity: 0.3;
+  animation: pulseBG 2s infinite ease-in-out;
+  z-index: -1;
+}
+@keyframes pulseBG {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.5;
+  }
+}
+
 @keyframes glowPulse {
   0%, 100% {
     box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
