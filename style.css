@@ -110,6 +110,22 @@ body {
   }
 }
 
+/* Dismiss button */
+.dismiss-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 14px;
+  opacity: 0.7;
+  cursor: pointer;
+  display: none;
+  color: #f66;
+  z-index: 10;
+}
+.char-wrapper:hover .dismiss-btn {
+  display: block;
+}
+
 /* ─────────────── Player Card ─────────────── */
 #player-section {
   margin-top: 30px;
@@ -208,17 +224,61 @@ body {
   background: #111;
 }
 
-/* ─────────────── Responsive ─────────────── */
+/* ─────────────── Phone Overlay ─────────────── */
+#phone-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+#phone-overlay.hidden {
+  display: none !important;
+}
+
+.phone-screen {
+  background: rgba(34,34,34,0.8);
+  color: #eee;
+  padding: 16px;
+  border-radius: 16px;
+  width: 260px;
+  aspect-ratio: 9/16;
+  max-width: 90vw;
+  box-shadow: 0 0 18px rgba(0,0,0,0.8), 0 0 30px rgba(0,150,255,0.25);
+  overflow: hidden;
+  position: relative;
+  z-index: 10001;
+  background-size: cover;
+  background-position: center;
+}
+
+/* App icon ✉ */
+.app-icon {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  font-size: 26px;
+  line-height: 48px;
+  text-align: center;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+.app-icon:hover {
+  background: rgba(0,0,0,0.5);
+}
+
+/* Responsive */
 @media (min-width: 768px) {
-  #menu-toggle {
-    display: none;
-  }
-
-  .container {
-    margin-left: 250px;
-    padding: 20px;
-  }
-
+  #menu-toggle { display: none; }
+  .container { margin-left: 250px; padding: 20px; }
   #sidebar {
     left: 0;
     top: 0;
@@ -228,23 +288,12 @@ body {
     border-bottom: none;
     padding-top: 15px;
   }
-
-  #input-area {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  #narrationInput,
-  #dialogueInput {
-    width: 45%;
-  }
+  #input-area { flex-direction: row; flex-wrap: wrap; gap: 10px; }
+  #narrationInput, #dialogueInput { width: 45%; }
 }
 
-/* ─────────────── Utility ─────────────── */
-.hidden {
-  display: none !important;
-}
+/* Utility */
+.hidden { display: none !important; }
 
 .glow-talk {
   animation: characterTextGlow 1.2s ease-in-out;
@@ -258,3 +307,4 @@ body {
     text-shadow: 0 0 14px currentColor, 0 0 24px currentColor;
   }
 }
+
