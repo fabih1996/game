@@ -127,7 +127,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 openMsgBtn.onclick = () => {
   contactList.innerHTML = "";
 
-  const activeNames = characters.map(c => c.name);
+  const activeNames = characters
+  .filter(c => ["present", "remote", "pending"].includes(c.status))
+  .map(c => c.name);
   const contacts = availableCharacters.filter(
     name => name !== "Narrator" && !activeNames.includes(name)
   );
