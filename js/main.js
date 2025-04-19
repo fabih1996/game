@@ -33,6 +33,21 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Carica il lore dei personaggi da file esterno
   await loadCharacterLore();
   document.getElementById("start-btn").addEventListener("click", startGame);  
+
+    // mostra overlay telefono
+  document.getElementById("phone-button").onclick = () => {
+    document.getElementById("phone-overlay").classList.remove("hidden");
+  };
+  // chiude overlay telefono
+  document.getElementById("phone-close").onclick = () => {
+    document.getElementById("phone-overlay").classList.add("hidden");
+  };
+  // apre la rubrica dentro l'overlay
+  document.getElementById("open-messages").onclick = () => {
+    document.getElementById("phone-contact-list").classList.remove("hidden");
+  };
+
+  
   // Abilita l'audio al primo click dell'utente
   document.addEventListener("click", () => {
     const bgm = document.getElementById("background-music");
@@ -62,6 +77,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   });
     // ─────────── PHONE DIALER ───────────
+  
   const phoneOverlay   = document.getElementById("phone-overlay");
   const phoneClose     = document.getElementById("phone-close");
   const contactList    = document.getElementById("phone-contact-list");
