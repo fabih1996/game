@@ -28,6 +28,10 @@ let player = {
 };
 setPlayer(player);
 
+const availableCharacters = [
+  "Dean", "Sam", "Castiel", "Crowley", "Jo", "Ellen", "Bobby", "Ruby"
+];
+
 // Al caricamento del DOM, inizializza il gioco
 window.addEventListener("DOMContentLoaded", async () => {
 
@@ -121,30 +125,30 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   /* ─── Apertura app Messaggi (clic su ✉) ───────── */
 openMsgBtn.onclick = () => {
-  // 1. Crea la rubrica filtrando chi NON è presente  
-const filtered = characters.filter(c => c.status !== "present" && c.name !== "Narrator");
+  contactList.innerHTML = "";
 
-contactList.innerHTML = "";
+  const activeNames = characters.map(c => c.name);
+  const contacts = availableCharacters.filter(
+    name => name !== "Narrator" && !activeNames.includes(name)
+  );
 
-if (filtered.length === 0) {
-  const li = document.createElement("li");
-  li.textContent = "No contacts available";
-  li.style.color = "#888";
-  li.style.fontStyle = "italic";
-  li.style.textAlign = "center";
-  contactList.appendChild(li);
-} else {
-  filtered.forEach(({ name }) => {
+  if (contacts.length === 0) {
     const li = document.createElement("li");
-    li.textContent = name;
-    li.onclick = () => openConversation(name);
+    li.textContent = "No contacts available";
+    li.style.color = "#888";
+    li.style.textAlign = "center";
     contactList.appendChild(li);
-  });
-}
-  
-  // 2. Mostra la lista, nasconde l’icona
-  contactList.classList.remove("hidden");   // lista visibile
-  openMsgBtn.classList.add("hidden");       // icona nascosta
+  } else {
+    contacts.forEach(name => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      li.onclick = () => openConversation(name);
+      contactList.appendChild(li);
+    });
+  }
+
+  contactList.classList.remove("hidden");
+  openMsgBtn.classList.add("hidden");
 };
 
 phoneSendBtn.onclick = async () => {
