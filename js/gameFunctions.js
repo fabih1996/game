@@ -621,6 +621,8 @@ export function startGame() {
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
+
+  loadIntro();
 }
 
 export function updatePlayerUI(player) {
