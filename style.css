@@ -1,523 +1,313 @@
-/* MOBILE-FIRST STYLE FOR SUPERNATURAL RPG */
+/* --------------------------------------------------
+   MOBILE‑FIRST STYLE FOR SUPERNATURAL RPG
+-------------------------------------------------- */
 
 body {
-  background: #111;
-  color: #eee;
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
+  background:#111;
+  color:#eee;
+  font-family:'Segoe UI',sans-serif;
+  margin:0;
+  padding:0;
 }
 
-.container {
-  padding: 10px;
-}
+.container { padding:10px; }
 
-/* Sidebar Menu Icon */
+/* ----------------------------------
+   ☰  Sidebar Menu Icon
+---------------------------------- */
 #menu-toggle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #222;
-  color: white;
-  font-size: 24px;
-  width: 50px;
-  height: 50px;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1001;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#222;
+  color:#fff;
+  font-size:24px;
+  width:50px;height:50px;
+  position:fixed;top:10px;left:10px;
+  z-index:1001;
+  border:none;border-radius:6px;
+  cursor:pointer;
 }
 
 #music-toggle {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #444;
-  color: white;
-  font-size: 16px;
-  padding: 6px 12px;
-  margin-top: 10px;
-  width: 100%;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#444;
+  color:#fff;
+  font-size:16px;
+  padding:6px 12px;
+  margin-top:10px;
+  width:100%;
+  border:none;border-radius:6px;
+  cursor:pointer;
 }
+#music-toggle:hover{background:#666;}
 
-#music-toggle:hover {
-  background: #666;
-}
-
-/* Sidebar */
+/* ----------------------------------
+   Sidebar
+---------------------------------- */
 #sidebar {
-  background-color: #222;
-  padding: 15px;
-  border-bottom: 2px solid #444;
-  position: fixed;
-  top: 0;
-  left: -100%;
-  width: 250px;
-  height: 100%;
-  z-index: 1000;
-  overflow-y: auto;
-  transition: left 0.3s ease;
-  padding-top: 70px;
+  background:#222;
+  padding:15px 15px 15px;
+  border-bottom:2px solid #444;
+  position:fixed;top:0;left:-100%;
+  width:250px;height:100%;
+  z-index:1000;
+  overflow-y:auto;
+  transition:left .3s ease;
+  padding-top:70px;
 }
+#sidebar.open{left:0;}
 
-#sidebar.open {
-  left: 0;
-}
-
-/* Lista dei personaggi presenti */
+/* Lista personaggi */
 #charListPresent {
-  padding-left: 0;
-  margin-top: 10px;
-  list-style: none;
+  list-style:none;
+  padding-left:0;
+  margin-top:10px;
 }
-
-/* Se vuoi mantenere qualche stile per la lista remote, puoi anche commentarla o rimuoverla */
-/*
-#charListRemote {
-  padding-left: 0;
-  margin-top: 10px;
-  list-style: none;
-}
-
-#charListRemote li {
-  display: inline-block;
-  margin: 6px;
-}
-
-#charListRemote li::before {
-  content: "📞 ";
-  font-size: 12px;
-  color: #aaa;
-}
-*/
-
 #charListPresent li {
-  display: inline-block;
-  margin: 6px;
-  cursor: pointer;
+  display:inline-block;
+  margin:6px;
+  cursor:pointer;
 }
 
 .char-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  transition: 0.2s;
+  width:40px;height:40px;
+  border-radius:50%;
+  border:2px solid transparent;
+  transition:.2s;
 }
-
 .char-icon.selected {
-  border: 2px solid currentColor;
-  box-shadow: 0 0 10px currentColor;
+  border:2px solid currentColor;
+  box-shadow:0 0 10px currentColor;
 }
 
-/* Narration style */
+/* ----------------------------------
+   Story / UI elements
+---------------------------------- */
 .narration {
-  font-style: italic;
-  color: #bbb;
-  background-color: #1a1a1a;
-  margin: 10px 0;
-  padding: 6px 10px;
-  border-left: 3px solid #555;
-  border-radius: 5px;
+  font-style:italic;
+  color:#bbb;
+  background:#1a1a1a;
+  margin:10px 0;
+  padding:6px 10px;
+  border-left:3px solid #555;
+  border-radius:5px;
 }
 
-/* Input areas */
 #input-area {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-/* Dual input fields */
-#narrationInput,
-#dialogueInput {
-  width: 100%;
-  padding: 10px;
-  font-size: 18px;
-  border-radius: 5px;
-  border: none;
-  outline: none;
+#narrationInput,#dialogueInput {
+  width:100%;
+  padding:10px;
+  font-size:18px;
+  border:none;border-radius:5px;
+  outline:none;
+}
+#narrationInput { background:#222;color:#bbb;font-style:italic; }
+#dialogueInput   { background:#333;color:#eee; }
+
+.choice-btn{
+  margin:6px;
+  padding:10px;
+  background:#444;
+  border:none;border-radius:4px;
+  color:#fff;
+  cursor:pointer;
+}
+.choice-btn:hover{background:#666;}
+
+#rollDice{
+  background:#444;
+  border:none;
+  padding:12px;
+  font-size:18px;
+  border-radius:5px;
+  cursor:pointer;
+  color:#fff;
+  width:100%;
+  margin-top:10px;
+}
+#rollDice:hover{background:#666;}
+
+/* ----------------------------------
+   Character colour classes
+---------------------------------- */
+.character-color-Dean { color:#FFD700;font-weight:bold; }
+.character-color-Sam  { color:#00BFFF;font-weight:bold; }
+.character-color-Castiel { color:#7FFFD4;font-weight:bold; }
+.character-color-Crowley { color:#FF4500;font-weight:bold; }
+.character-color-Bobby { color:#90EE90;font-weight:bold; }
+.character-color-Ruby  { color:#FF69B4;font-weight:bold; }
+.character-color-Jo    { color:#FF8C00;font-weight:bold; }
+.character-color-Ellen { color:#8A2BE2;font-weight:bold; }
+.character-color-Narrator { color:#ddd; }
+.character-color-User  { color:#3399ff;font-weight:bold; }
+
+/* ----------------------------------
+   Desktop tweaks
+---------------------------------- */
+@media (min-width:768px){
+  #menu-toggle{display:none;}
+  .container{margin-left:250px;padding:20px;}
+  #sidebar{left:0;top:0;height:100%;width:230px;border-right:2px solid #444;border-bottom:none;padding-top:15px;}
+  #input-area{flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:10px;}
+  #narrationInput,#dialogueInput{width:45%;}
+  .char-icon{width:50px;height:50px;}
 }
 
-#narrationInput {
-  background-color: #222;
-  color: #bbb;
-  font-style: italic;
+/* ----------------------------------
+   Exorcism overlay
+---------------------------------- */
+#exorcism-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
+  color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999;
+}
+#pentagram{font-size:120px;animation:rotate 10s linear infinite;margin-bottom:20px;}
+#ghost{font-size:80px;opacity:1;transition:opacity 3s ease-out,transform 3s ease-out;}
+#chant{margin-top:20px;font-size:20px;opacity:0;transition:opacity 2s ease-in;}
+@keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+.hidden{display:none!important;}
+
+/* ----------------------------------
+   Generic game buttons
+---------------------------------- */
+.game-button{
+  padding:10px 20px;font-size:16px;cursor:pointer;
+  background:#222;color:#fff;
+  border:1px solid #555;border-radius:5px;
+  margin:10px;
+}
+.game-button:hover{background:#555;}
+
+/* ----------------------------------
+   Progress ring for PENDING NPCs
+---------------------------------- */
+.char-wrapper{
+  position:relative;width:50px;height:50px;
+}
+.char-wrapper.pending::before{
+  content:"";
+  position:absolute;top:-4px;left:-4px;
+  width:calc(100% + 8px);height:calc(100% + 8px);
+  border-radius:50%;
+  background:conic-gradient(var(--ring-color,#00bfff) var(--prog,0%),#444 0);
+  transition:background .2s linear;
+}
+.char-wrapper.pending img{opacity:.5;}
+
+/* Dismiss ❌ overlay on char */
+.char-wrapper::after{
+  content:"❌";
+  position:absolute;bottom:2px;right:2px;
+  font-size:14px;
+  pointer-events:auto;
+  opacity:.7;transition:opacity .2s;
+}
+.char-wrapper:hover::after{opacity:1;}
+
+/* ----------------------------------
+   Phone Overlay
+---------------------------------- */
+#phone-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.65);  /* ↓ meno opaco rispetto allo 0.8 originale */
+  display:flex;align-items:center;justify-content:center;
+  z-index:10000;
+}
+#phone-overlay.hidden{display:none!important;}
+
+/* Phone “screen” */
+.phone-screen{
+  background:rgba(34,34,34,.8); /* semi‑trasp per far vedere il wallpaper */
+  color:#eee;
+  padding:16px;
+  border-radius:8px;
+  width:300px;max-width:90%;
+  box-shadow:0 0 18px rgba(0,0,0,.8),0 0 30px rgba(0,150,255,.25);
+  overflow:hidden;              /* clip del wallpaper */
+  position:relative;
+  transform:scale(1);transition:transform .25s;
+}
+#phone-overlay:not(.hidden) .phone-screen{transform:scale(1.03);} /* micro pop‑in */
+
+/* Wallpaper layer control */
+#phone-screen{background-size:cover;background-position:center;}
+#phone-screen::after{
+  content:"";position:absolute;inset:0;
+  background:rgba(0,0,0,.22); /* velo di contrasto – più leggero */
+  border-radius:8px;
+  pointer-events:none;
 }
 
-#dialogueInput {
-  background-color: #333;
-  color: #eee;
+/* App icon (✉) */
+.app-icon{
+  width:48px;height:48px;
+  border:none;border-radius:12px;
+  font-size:26px;line-height:48px;text-align:center;
+  background:rgba(0,0,0,.35);
+  color:#fff;
+  position:absolute;bottom:16px;left:16px;
+  backdrop-filter:blur(4px);
+  cursor:pointer;transition:background .2s;
 }
+.app-icon:hover{background:rgba(0,0,0,.5);}
 
-.choice-btn {
-  margin: 6px;
-  padding: 10px;
-  background: #444;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  cursor: pointer;
+/* Rubrica */
+#phone-contact-list{
+  list-style:none;margin:0;padding:0;
+  max-height:200px;overflow-y:auto;
+  border:1px solid #444;border-radius:4px;
 }
-
-.choice-btn:hover {
-  background: #666;
+#phone-contact-list li{
+  padding:8px;cursor:pointer;border-bottom:1px solid #444;
 }
-
-#rollDice {
-  background: #444;
-  border: none;
-  padding: 12px;
-  font-size: 18px;
-  border-radius: 5px;
-  cursor: pointer;
-  color: white;
-  width: 100%;
-  margin-top: 10px;
-}
-
-#rollDice:hover {
-  background: #666;
-}
-
-/* CHARACTER COLORS */
-.character-color-Dean { color: #FFD700; font-weight: bold; }
-.character-color-Sam { color: #00BFFF; font-weight: bold; }
-.character-color-Castiel { color: #7FFFD4; font-weight: bold; }
-.character-color-Crowley { color: #FF4500; font-weight: bold; }
-.character-color-Bobby { color: #90EE90; font-weight: bold; }
-.character-color-Ruby { color: #FF69B4; font-weight: bold; }
-.character-color-Jo { color: #FF8C00; font-weight: bold; }
-.character-color-Ellen { color: #8A2BE2; font-weight: bold; }
-.character-color-Narrator { color: #dddddd; }
-.character-color-User { color: #3399ff; font-weight: bold; }
-
-/* DESKTOP STYLE */
-@media screen and (min-width: 768px) {
-  #menu-toggle {
-    display: none;
-  }
-
-  .container {
-    margin-left: 250px;
-    padding: 20px;
-  }
-
-  #sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 230px;
-    border-right: 2px solid #444;
-    border-bottom: none;
-    padding-top: 15px;
-  }
-
-  #sidebar.open {
-    left: 0;
-  }
-
-  #input-area {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  #narrationInput,
-  #dialogueInput {
-    width: 45%;
-  }
-
-  #actions-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .char-icon {
-    width: 50px;
-    height: 50px;
-  }
-}
-
-/* Exorcism Overlay Styles */
-#exorcism-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-#pentagram {
-  font-size: 120px;
-  animation: rotate infinite 10s linear;
-  margin-bottom: 20px;
-}
-
-#ghost {
-  font-size: 80px;
-  opacity: 1;
-  transition: opacity 3s ease-out, transform 3s ease-out;
-}
-
-#chant {
-  margin-top: 20px;
-  font-size: 20px;
-  opacity: 0;
-  transition: opacity 2s ease-in;
-}
-
-.hidden {
-  display: none !important;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.game-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #222;
-  color: #fff;
-  border: 1px solid #555;
-  border-radius: 5px;
-  margin: 10px;
-}
-
-.game-button:hover {
-  background-color: #555;
-}
-
-/* Liste dei personaggi */
-#charListPresent li {
-  display: inline-block;
-  margin: 6px;
-}
-
-/* Stili dei titoli nella sidebar */
-#sidebar h3, #sidebar h4 {
-  margin-bottom: 4px;
-  border-bottom: 1px solid #444;
-  padding-bottom: 4px;
-}
-
-/* Story area styling */
-#story {
-  min-height: 100px;
-  padding: 10px;
-  margin-top: 20px;
-  background-color: #111;
-}
-
-/* ---- PROGRESS RING PER NPC "PENDING" ---- */
-.char-wrapper {
-  position: relative;
-  width: 50px;                 /* stesso size dell’icona desktop */
-  height: 50px;
-}
-
-/* L’anello di progresso: conic‑gradient che cresce usando la CSS var --prog */
-.char-wrapper.pending::before {
-  content: "";
-  position: absolute;
-  top: -4px; left: -4px;               /* anello leggermente fuori */
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-  border-radius: 50%;
-  background:
-    conic-gradient(var(--ring-color, #00bfff) var(--prog, 0%),
-                   #444                          0);
-  transition: background 0.2s linear;
-}
-.char-wrapper.pending img { opacity: 0.5; }     /* già usato prima */
-
-/* ---------------------------------- */
-/* Phone Overlay Styles               */
-/* ---------------------------------- */
-
-/* Overlay a schermo intero */
-#phone-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-/* Nascondi con la classe hidden */
-#phone-overlay.hidden {
-  display: none !important;
-}
-
-/* “Schermo” del cellulare */
-.phone-screen {
-  background-color: #222;
-  color: #eee;
-  padding: 16px;
-  border-radius: 8px;
-  width: 300px;
-  max-width: 90%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Lista contatti */
-#phone-contact-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  max-height: 200px;
-  overflow-y: auto;
-  border: 1px solid #444;
-  border-radius: 4px;
-}
-#phone-contact-list li {
-  padding: 8px;
-  cursor: pointer;
-  border-bottom: 1px solid #444;
-}
-#phone-contact-list li:last-child {
-  border-bottom: none;
-}
-#phone-contact-list li:hover {
-  background-color: #333;
-}
-
-/* ─── App icon (✉) ────────────────────────────────── */
-.app-icon {
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 12px;
-  font-size: 26px;
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  backdrop-filter: blur(4px);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.app-icon:hover { background: rgba(255,255,255,0.25); }
-
-/* ─── Highlight contatto selezionato ──────────────── */
-#phone-contact-list li.selected {
-  background-color: #3b3b3b;
-  color: #ffcc33;
+#phone-contact-list li:last-child{border-bottom:none;}
+#phone-contact-list li:hover{background:#333;}
+#phone-contact-list li.selected{
+  background:#ffcc33;color:#222;font-weight:bold;
 }
 
 /* Conversazione */
-#phone-conversation {
-  margin-top: 12px;
+#phone-conversation{margin-top:12px;}
+#messages{
+  background:#111;padding:8px;
+  max-height:180px;overflow-y:auto;
+  border:1px solid #444;border-radius:4px;margin-bottom:8px;
 }
-#messages {
-  background-color: #111;
-  padding: 8px;
-  max-height: 180px;
-  overflow-y: auto;
-  border: 1px solid #444;
-  border-radius: 4px;
-  margin-bottom: 8px;
-}
-.msg-you {
-  text-align: right;
-  margin: 4px 0;
-}
-.msg-them {
-  text-align: left;
-  margin: 4px 0;
-}
+.msg-you{text-align:right;margin:4px 0;}
+.msg-them{text-align:left;margin:4px 0;}
 
-/* Input e bottoni */
-#phone-input {
-  width: calc(100% - 100px);
-  padding: 6px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  background: #111;
-  color: #eee;
-  margin-right: 4px;
+#phone-input{
+  width:calc(100% - 100px);
+  padding:6px;
+  border:1px solid #444;border-radius:4px;
+  background:#111;color:#eee;
+  margin-right:4px;
 }
-#phone-send,
-#phone-hangup,
-#phone-close {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 4px;
-  background: #444;
-  color: #eee;
-  cursor: pointer;
-  margin-top: 4px;
-  margin-right: 4px;
+#phone-send,#phone-close{
+  padding:6px 10px;border:none;border-radius:4px;
+  background:#444;color:#eee;
+  cursor:pointer;margin-top:4px;margin-right:4px;
 }
-#phone-send:hover,
-#phone-hangup:hover,
-#phone-close:hover {
-  background: #555;
-}
+#phone-send:hover,#phone-close:hover{background:#555;}
 
-/* Phone wallpaper handling */
-#phone-screen {
-  background: #222;               /* fallback se mancano le immagini */
-  background-size: cover;
-  background-position: center;
-  position: relative;
-}
-
-/* leggero velo scuro sopra il wallpaper per contrasto */
-#phone-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;                       /* full overlay */
-  background: rgba(0,0,0,.35);
-  border-radius: 8px;
-  pointer-events: none;
-}
-
-
-/* =================================== */
-/* ❌ Icona di dismiss sulla char-wrap */
-/* =================================== */
-.char-wrapper {
-  position: relative;  /* già c’è, ma confermiamo */
-}
-
-/* Pseudo‑elemento che mostra la ❌ */
-.char-wrapper::after {
-  content: "❌";
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  font-size: 14px;
-  pointer-events: auto;  /* ora il click raggiunge il wrapper */
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-
-.char-wrapper:hover::after {
-  opacity: 1;
+/* ----------------------------------
+   Story box base
+---------------------------------- */
+#story{
+  min-height:100px;
+  padding:10px;
+  margin-top:20px;
+  background:#111;
 }
