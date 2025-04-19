@@ -55,11 +55,19 @@
 
     <!-- Game interface -->
     <div id="game-interface" style="display: none;">
+        <!-- Mini‑map widget -->
+        <div id="mini-map-widget" class="collapsed">
+          <canvas id="mini-map-canvas" width="150" height="150"></canvas>
+          <!-- nord che oscilla -->
+          <div id="north-pointer"></div>
+          <!-- close button (visibile solo in expanded) -->
+          <button id="mini-map-close">✕</button>
+        </div>
       <div id="story"></div>
 
       <!-- Map Panel -->
       <div id="map-container">
-        <h3>Mappa</h3>
+        <h3>Map</h3>
         <div id="game-map">
           <canvas id="map-canvas" width="400" height="200"></canvas>
         </div>
