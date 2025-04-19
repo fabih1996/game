@@ -592,6 +592,7 @@ export function triggerExorcismEvent() {
 }
 
 export function startGame() {
+  console.log("✅ startGame called");
   const name = document.getElementById("playerName").value.trim();
   const age = document.getElementById("playerAge").value.trim();
   const desc = document.getElementById("playerDesc").value.trim();
