@@ -20,14 +20,7 @@ import {
 } from './gameFunctions.js';
 
 // Variabile globale per il giocatore
-let player = {
-  name: "User",
-  isCustom: true,
-  color: "#3399ff",
-  health: 100   // 👈 aggiungiamola qui
-};
-
-setPlayer(player);
+let player
 
 const availableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Jo", "Ellen", "Bobby", "Ruby"
@@ -38,13 +31,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Carica il lore dei personaggi da file esterno
   await loadCharacterLore();
-
-  // Crea il box della vita in fondo alla sidebar
-  const statsDiv = document.createElement("div");
-  statsDiv.id = "player-stats";
-  statsDiv.className = "player-stats";
-  statsDiv.innerHTML = `<strong>You</strong><br><span id="player-health">❤️ Health: ${player.health}</span>`;
-  document.getElementById("sidebar").appendChild(statsDiv);
 
    // Mostra/nascondi il form “Create custom character”
   const playerSelect = document.getElementById("playerSelect");
