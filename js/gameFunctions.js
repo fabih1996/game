@@ -272,25 +272,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const input = message.trim();
   if (!input) return;
 
-  // 1) Rileva “call X”
-  const callMatch = input.match(/\bcall\s+([A-Za-z]+)\b/i);
-  if (callMatch) {
-    const callee = callMatch[1][0].toUpperCase() + callMatch[1].slice(1);
-    if (!characters.some(c => c.name === callee))
-      characters.push({ name: callee, status: "remote" });
-    else
-      characters.find(c => c.name === callee).status = "remote";
-    refreshSidebar();
-  }
-
-  // 2) “wait for X” se pending
-  arrivalNPCs.forEach(name => {
-    const waitRe = new RegExp(`\\bwait (?:for )?${name}\\b`, "i");
-    if (waitRe.test(input) && pendingArrival.has(name)) {
-      pendingArrival.delete(name);
-      scheduleArrival(name, 0);
-    }
-  });
 
   // 3) Aggiungi input del player alla storia
   const storyDiv = document.getElementById("story");
@@ -328,23 +309,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
 
-  // 5) remote → pending via “on my way”, “rush”, “runs”
-  arrivalNPCs.forEach(name => {
-    const arrivalRe = new RegExp(
-      `\\b${name}\\b.*\\b(on my way|rush(?:es|ing)?|runs?)\\b`, "i"
-    );
-    const char = characters.find(c => c.name === name);
-    if (arrivalRe.test(reply) && char && char.status === "remote") {
-      char.status = "pending";
-      pendingArrival.add(name);
-      scheduleArrival(name, travelTimes[name] || 30000);
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = arrivalMessages[name] || `${name} is arriving…`;
-      storyDiv.appendChild(p);
-      refreshSidebar();
-    }
-  });
 
   // 6) Processa #PRESENT, #LEAVE, dialoghi, narrazione
   const validTags = ["#PRESENT:", "#LEAVE:"];
