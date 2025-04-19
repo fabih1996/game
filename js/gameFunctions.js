@@ -141,6 +141,17 @@ export async function loadIntro() {
         p.textContent = line;
         storyDiv.appendChild(p);
       });
+        // 4b) Scansione del testo per menzioni di NPC e auto‑aggiunta in “present”
+    const introText = storyDiv.textContent;
+    allAvailableCharacters.forEach(name => {
+      if (
+        introText.includes(name) &&                                  // nome menzionato
+        !characters.some(c => c.name === name)                       // non già presente
+      ) {
+        characters.push({ name, status: "present" });
+        selectedCharacters.push(name);
+      }
+    });
 
     // 5) Se ci sono nuovi personaggi, aggiorna subito la sidebar
     refreshSidebar();
