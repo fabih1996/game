@@ -287,7 +287,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   if (!speakerNames.includes(player.name)) speakerNames.push(player.name);
 
   const contextLines = Array.from(storyDiv.querySelectorAll("p"))
-    .slice(-6).map(p => p.textContent).join("\n");
+    .slice(-20).map(p => p.textContent).join("\n");
 
   // Costruisco un prompt semplificato per i dialoghi, in modo che non ripetano il contesto
   let prompt;
@@ -295,9 +295,9 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     prompt = [
       `Scene context (ultime 6 righe):\n${contextLines}`,
       `Player (${player.name}) dice: "${input}"`,
-      `ORA: rispondi solo con nuove battute dei personaggi presenti (${speakerNames.join(", ")}), ` +
-        `formattate esattamente come CharacterName: "Testo". ` +
-        `Non ripetere mai frasi già presenti nel contesto, non aggiungere narrazione né scelte.`
+      `NOW: Reply only with new jokes of the characters present (${speakerNames.join(", ")}), ` +
+        `formatted exactly as CharacterName: "Text". ` +
+        `Never repeat sentences already present in the context, do not add narration or choices.`
     ].join("\n\n");
   } else {
     // per narrazione e RandomEvent puoi usare ancora il template originale
