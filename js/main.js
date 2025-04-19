@@ -268,6 +268,51 @@ phoneSendBtn.onclick = async () => {
     convoHistory = [];
   }
   // ───────────────────────────────────────
+
+  // ─────────── Map setup ───────────
+const map = L.map('game-map', {
+  center: [45.4642, 9.1900], // default: Milano
+  zoom: 13,
+  zoomControl: false,
+  attributionControl: false
+});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19
+}).addTo(map);
+
+const mapMarkers = {};
+
+/**
+ * @param {{lat:number,lng:number}} playerPos
+ * @param {{id:string,lat:number,lng:number,label:string}[]} objectives
+ */
+function updateMap(playerPos, objectives) {
+  // player
+  if (mapMarkers.player) {
+    mapMarkers.player.setLatLng([playerPos.lat, playerPos.lng]);
+  } else {
+    mapMarkers.player = L.marker([playerPos.lat, playerPos.lng], { title: 'Tu' }).addTo(map);
+  }
+  // obiettivi
+  objectives.forEach(obj => {
+    if (mapMarkers[obj.id]) {
+      mapMarkers[obj.id].setLatLng([obj.lat, obj.lng]);
+    } else {
+      mapMarkers[obj.id] = L.marker([obj.lat, obj.lng], {
+        title: obj.label,
+        icon: L.divIcon({ className: 'objective-icon', html: '🎯' })
+      }).addTo(map);
+    }
+  });
+}
+
+// esempio iniziale
+updateMap(
+  { lat: 45.4642, lng: 9.1900 },
+  [{ id: 'case1', lat: 45.4668, lng: 9.1835, label: 'Locanda Abbandonata' }]
+);
+// ────────────────────────────────────
+  
 });
 
 // 🔧 Funzione per aggiornare salute del player
