@@ -373,20 +373,19 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
         const rawText   = rest.join(":").trim();
         const cleanText = rawText.replace(/^"+|"+$/g, "");  // rimuove eventuali virgolette esterne
         const p = document.createElement("p");
-        const safeClass = `character-color-${name.replace(/\s+/g, "")}`; p.classList.add(safeClass);
+        
+        function safeClass(name) {
+          return `character-color-${name.replace(/\s+/g, "")}`;
+        }
+        p.classList.add(safeClass(name));  
         p.textContent = `${name}: "${cleanText}"`;
         storyDiv.appendChild(p);
       } else {
         // narrazione
         const p = document.createElement("p");
-        const safeClass = `character-color-${name.replace(/\s+/g, "")}`; p.classList.add(safeClass);
-        p.classList.add("glow-talk"); // ✨ aggiunta dell’effetto
-        p.textContent = `${name}: "${cleanText}"`;
+        p.classList.add("narration");
+        p.textContent = line;
         storyDiv.appendChild(p);
-        
-        setTimeout(() => {
-          p.classList.remove("glow-talk");
-        }, 2000);
       }
     });
 
