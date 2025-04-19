@@ -7,7 +7,7 @@ export let characters = [
 let selectedCharacters = ["Narrator"];
 let pendingArrival = new Set();
 const newCharacters = new Set();
-let characterKnowledge = "";
+export let characterKnowledge = "";
 
 // Variabile player (verrà impostata tramite setPlayer da main.js)
 let player;
