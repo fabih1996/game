@@ -281,29 +281,14 @@ body {
 }
 
 .glow-talk {
-  animation: characterGlow 1.5s ease-in-out;
+  animation: characterTextGlow 1.2s ease-in-out;
 }
 
-@keyframes characterGlow {
-  0% {
-    filter: drop-shadow(0 0 2px white);
+@keyframes characterTextGlow {
+  0%, 100% {
+    text-shadow: 0 0 6px currentColor, 0 0 10px currentColor;
   }
   50% {
-    filter: drop-shadow(0 0 6px white);
-  }
-  100% {
-    filter: drop-shadow(0 0 2px white);
+    text-shadow: 0 0 14px currentColor, 0 0 24px currentColor;
   }
 }
-
-@keyframes glowTalk {
-  0% {
-    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
-    opacity: 1;
-  }
-  100% {
-    text-shadow: none;
-    opacity: 1;
-  }
-}
-
