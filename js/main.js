@@ -269,7 +269,7 @@ phoneSendBtn.onclick = async () => {
   }
   // ───────────────────────────────────────
 
-// ─────────── Mappa fittizia ───────────
+// ─────────── Mappa fittizia interattiva ───────────
 const canvas = document.getElementById('map-canvas');
 const ctx    = canvas.getContext('2d');
 
@@ -290,7 +290,7 @@ function drawMap() {
   const { cols, rows, cellSize } = mapConfig;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Griglia
+  // 1) griglia
   ctx.strokeStyle = '#555';
   for (let i = 0; i <= cols; i++) {
     ctx.beginPath();
@@ -305,7 +305,7 @@ function drawMap() {
     ctx.stroke();
   }
 
-  // Obiettivi (cerchi dorati)
+  // 2) obiettivi
   objectives.forEach(obj => {
     const cx = obj.x * cellSize + cellSize/2;
     const cy = obj.y * cellSize + cellSize/2;
@@ -318,7 +318,7 @@ function drawMap() {
     ctx.fillText(obj.label, cx - cellSize/4, cy - cellSize/3);
   });
 
-  // Player (quadrato blu)
+  // 3) player
   ctx.fillStyle = '#3399ff';
   ctx.fillRect(
     playerCell.x * cellSize + 4,
@@ -328,8 +328,27 @@ function drawMap() {
   );
 }
 
-// Prima chiamata al disegno
+// Gestione click: sposta il player dove clicchi
+canvas.addEventListener('click', (evt) => {
+  const rect = canvas.getBoundingClientRect();
+  const clickX = evt.clientX - rect.left;
+  const clickY = evt.clientY - rect.top;
+  const x = Math.floor(clickX / mapConfig.cellSize);
+  const y = Math.floor(clickY / mapConfig.cellSize);
+
+  // se clicchi dentro la griglia
+  if (x >= 0 && x < mapConfig.cols && y >= 0 && y < mapConfig.rows) {
+    playerCell = { x, y };
+    drawMap();
+
+    // qui potresti integrare la logica di gioco, ad es.:
+    // sendToGPT(`Mi sposto alla cella ${x},${y}`, 'narration');
+  }
+});
+
+// Disegno iniziale
 drawMap();
+// ────────────────────────────────────────────────
 // ─────────────────────────────────────────
   
 });
