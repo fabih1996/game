@@ -185,12 +185,23 @@ export function refreshSidebar() {
       const li = document.createElement("li");
       const wrapper = document.createElement("div");
       wrapper.className = "char-wrapper";
+      wrapper.dataset.name = name;
       wrapper.style.setProperty(
         "--ring-color",
         characterColors[name] || characterColors.default
       );
       wrapper.style.color = characterColors[name] || characterColors.default;
       if (status === "pending") wrapper.classList.add("pending");
+
+      // Aggiunta del pulsante ❌
+      const dismissBtn = document.createElement("div");
+      dismissBtn.className = "dismiss-btn";
+      dismissBtn.textContent = "❌";
+      dismissBtn.onclick = (e) => {
+        e.stopPropagation();
+        dismissCharacter(name);
+      };
+      wrapper.appendChild(dismissBtn);
       
       // Icona
       const img = document.createElement("img");
@@ -200,12 +211,6 @@ export function refreshSidebar() {
                 (characterImages[name] = `images/${name.toLowerCase()}.png`);
       img.alt = name;
       if (selectedCharacters.includes(name)) img.classList.add("selected");
-
-      // intercetto il click sul wrapper per fare il dismiss
-      wrapper.onclick = (e) => {
-        dismissCharacter(name);
-        e.stopPropagation();
-      };
 
       // Click sull’icona per selezionare/deselezionare
      img.onclick = (e) => {
