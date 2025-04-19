@@ -277,22 +277,6 @@ export function addSelectedCharacter() {
     dropdown.value = "";
   }
 }
-
-export function loadDropdown() {
-  const dropdown = document.getElementById("charDropdown");
-  dropdown.innerHTML = `<option value="">-- Select character --</option>`;
-  allAvailableCharacters.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = name;
-    opt.textContent = name;
-    dropdown.appendChild(opt);
-  });
-  dropdown.onchange = () => {
-    document.getElementById("customCharFields").style.display =
-      dropdown.value === "Other..." ? "block" : "none";
-  };
-}
-
 // ---------------------------
 // Helper NPC
 // ---------------------------
