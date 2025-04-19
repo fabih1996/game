@@ -269,49 +269,68 @@ phoneSendBtn.onclick = async () => {
   }
   // ───────────────────────────────────────
 
-  // ─────────── Map setup ───────────
-const map = L.map('game-map', {
-  center: [45.4642, 9.1900], // default: Milano
-  zoom: 13,
-  zoomControl: false,
-  attributionControl: false
-});
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19
-}).addTo(map);
+// ─────────── Mappa fittizia ───────────
+const canvas = document.getElementById('map-canvas');
+const ctx    = canvas.getContext('2d');
 
-const mapMarkers = {};
+// Configurazione griglia
+const mapConfig = { cols: 5, rows: 3, cellSize: 80 };
 
-/**
- * @param {{lat:number,lng:number}} playerPos
- * @param {{id:string,lat:number,lng:number,label:string}[]} objectives
- */
-function updateMap(playerPos, objectives) {
-  // player
-  if (mapMarkers.player) {
-    mapMarkers.player.setLatLng([playerPos.lat, playerPos.lng]);
-  } else {
-    mapMarkers.player = L.marker([playerPos.lat, playerPos.lng], { title: 'Tu' }).addTo(map);
+// Posizione iniziale del player (colonna, riga)
+let playerCell = { x: 2, y: 1 };
+
+// Obiettivi da mostrare sulla mappa
+const objectives = [
+  { x: 4, y: 2, label: 'Negozio' },
+  { x: 1, y: 0, label: 'Locanda' }
+];
+
+// Disegna la mappa: griglia, obiettivi e player
+function drawMap() {
+  const { cols, rows, cellSize } = mapConfig;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Griglia
+  ctx.strokeStyle = '#555';
+  for (let i = 0; i <= cols; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * cellSize, 0);
+    ctx.lineTo(i * cellSize, rows * cellSize);
+    ctx.stroke();
   }
-  // obiettivi
+  for (let j = 0; j <= rows; j++) {
+    ctx.beginPath();
+    ctx.moveTo(0, j * cellSize);
+    ctx.lineTo(cols * cellSize, j * cellSize);
+    ctx.stroke();
+  }
+
+  // Obiettivi (cerchi dorati)
   objectives.forEach(obj => {
-    if (mapMarkers[obj.id]) {
-      mapMarkers[obj.id].setLatLng([obj.lat, obj.lng]);
-    } else {
-      mapMarkers[obj.id] = L.marker([obj.lat, obj.lng], {
-        title: obj.label,
-        icon: L.divIcon({ className: 'objective-icon', html: '🎯' })
-      }).addTo(map);
-    }
+    const cx = obj.x * cellSize + cellSize/2;
+    const cy = obj.y * cellSize + cellSize/2;
+    ctx.fillStyle = 'gold';
+    ctx.beginPath();
+    ctx.arc(cx, cy, cellSize/6, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(obj.label, cx - cellSize/4, cy - cellSize/3);
   });
+
+  // Player (quadrato blu)
+  ctx.fillStyle = '#3399ff';
+  ctx.fillRect(
+    playerCell.x * cellSize + 4,
+    playerCell.y * cellSize + 4,
+    cellSize - 8,
+    cellSize - 8
+  );
 }
 
-// esempio iniziale
-updateMap(
-  { lat: 45.4642, lng: 9.1900 },
-  [{ id: 'case1', lat: 45.4668, lng: 9.1835, label: 'Locanda Abbandonata' }]
-);
-// ────────────────────────────────────
+// Prima chiamata al disegno
+drawMap();
+// ─────────────────────────────────────────
   
 });
 
