@@ -126,9 +126,11 @@ phoneSendBtn.onclick = async () => {
 
   // 3) Prompt univoco: siamo sempre in chiamata
   const systemMsg = `You are ${currentCallee}, speaking via phone call in character.
-After your next line, if you intend to come help the player, append on its own line:
+Respond with exactly one line of spoken dialogue (in plain English, no quotes needed).
+Then, if you intend to come help the player, append on its own line:
 #PRESENT: ${currentCallee}
-Otherwise do not output that tag. Only output your dialogue and that tag—nothing else.`;
+If you do not intend to come, do not include the tag.
+Do not output anything else—no extra whitespace or lines.`;
 
   // 4) Prepara e invia la request
   const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
@@ -150,8 +152,10 @@ Otherwise do not output that tag. Only output your dialogue and that tag—nothi
     .join("\n");
 
   // 6) Append della risposta
-  appendMessage(currentCallee, clean);
-  convoHistory.push({ role: "assistant", content: clean });
+  if (clean) {
+    appendMessage(currentCallee, clean);
+    convoHistory.push({ role: "assistant", content: clean });
+  }
   phoneInput.value = "";
 
   // 7) Registra l’intenzione di venire, ma non partire subito
