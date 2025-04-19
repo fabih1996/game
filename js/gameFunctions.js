@@ -144,21 +144,6 @@ export async function loadIntro() {
     // 5) Se ci sono nuovi personaggi, aggiorna subito la sidebar
     refreshSidebar();
 
-    // 6) Crea i pulsanti delle prime 3 scelte
-    const choicesDiv = document.getElementById("choices");
-    choicesDiv.innerHTML = "";
-    const buttons = reply
-      .split("\n")
-      .filter(l => l.trim().startsWith("["))
-      .slice(0, 3);      // prendi solo i primi 3
-    buttons.forEach(br => {
-      const btn = document.createElement("button");
-      btn.className = "choice-btn";
-      btn.textContent = br.replace(/^\[|\]$/g, "");
-      btn.onclick = () => sendToGPT(btn.textContent, "narration");
-      choicesDiv.appendChild(btn);
-    });
-
     // 7) Auto‑aggiungi come “present” chi appare in dialogo
     reply.split("\n").forEach(line => {
       const m = line.match(/^([A-Z][a-zA-Z]+):/);
