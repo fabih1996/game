@@ -117,6 +117,21 @@ phoneSendBtn.onclick = async () => {
   const txt = phoneInput.value.trim();
   if (!txt || !currentCallee) return;
 
+    // ——— NUOVO SNIPPET: costruiamo lore e convoContext ———
+  // Estraggo dal characterKnowledge il profilo di currentCallee
+  const lore = characterKnowledge
+    .split("---")
+    .find(chunk => chunk.startsWith(currentCallee))
+    ?.trim() || "";
+
+  // Ricompongo l’intera conversazione fatta finora (You vs NPC)
+  const convoContext = convoHistory
+    .map(m => m.role === "user"
+      ? `You: ${m.content}`
+      : `${currentCallee}: ${m.content}`)
+    .join("\n");
+  // ————————————————————————————————
+  
   // 1) Stampa un log per debug
   console.log("📱 Send clicked; reply incoming for", currentCallee);
 
@@ -139,18 +154,18 @@ const convoContext = convoHistory
 const systemMsg = `
 You are ${currentCallee}, as defined by this profile:
 ${lore}
-
 You are now speaking via phone. Here is the conversation so far:
 ${convoContext}
 
 Instructions:
-1. Read the **entire** conversation context above and understand the player’s intent.
-2. Reply naturally in character in plain English, using your personality, speech style, likes/dislikes from your profile.
-3. **Only if** the full conversation clearly shows the player is asking you to come help (e.g. “can you come here?”, “I need your help”, “please come now”), then after your dialogue append on its own line:
-   #PRESENT: ${currentCallee}
-4. In **all other cases** (greetings, small talk, follow‑up questions, farewells), **do not** include the tag.
-5. Do **not** output anything else—no extra lines, no JSON, no brackets.
-`.trim();
+ 1. Read the entire conversation context above and understand the player’s intent.
+ 2. Reply naturally in character in plain English, using your personality, speech style, likes/dislikes from your profile.
+ 3. Only if the full conversation clearly shows the player is asking you to come help (e.g. “can you come here?”, “I need your help”, “please come now”), then after your dialogue append on its own line:
+    #PRESENT: ${currentCallee}
+ 4. In all other cases (greetings, small talk, follow‑up questions, farewells), do not include the tag.
+ 5. Do not output anything else—no extra lines, no JSON, no brackets.
+ `.trim();
+
 
   // 4) Prepara e invia la request
   const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
