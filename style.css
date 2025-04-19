@@ -455,6 +455,25 @@ body {
 #phone-close:hover {
   background: #555;
 }
+
+/* Phone wallpaper handling */
+#phone-screen {
+  background: #222;               /* fallback se mancano le immagini */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* leggero velo scuro sopra il wallpaper per contrasto */
+#phone-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;                       /* full overlay */
+  background: rgba(0,0,0,.35);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
 /* =================================== */
 /* ❌ Icona di dismiss sulla char-wrap */
 /* =================================== */
