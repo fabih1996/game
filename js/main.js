@@ -284,10 +284,27 @@ function damagePlayer(amount) {
   updateHealthUI();
 }
 
+// 🔧 Funzione per aggiornare salute del player
+function updateHealthUI() {
+  const bar = document.getElementById("player-health-bar");
+  const label = document.getElementById("player-health-label");
+
+  if (bar && label) {
+    const percent = player.health;
+    bar.style.width = percent + "%";
+    label.textContent = `❤️ Health: ${percent}`;
+  }
+}
+
+// 🔧 Funzione per danneggiare il player
+function damagePlayer(amount) {
+  if (!player) return;
+  player.health = Math.max(0, player.health - amount);
+  updateHealthUI();
+}
+
 window.startGame = startGame;
 // expose these for the inline onclicks in index.html
-  window.addSelectedCharacter = addSelectedCharacter;
-  window.addCustomCharacter   = addCustomCharacter;
   window.toggleMusic          = toggleMusic;
   window.toggleSidebar        = toggleSidebar;
   window.scheduleArrival = scheduleArrival;
