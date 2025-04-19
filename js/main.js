@@ -175,6 +175,13 @@ ${convoContext}
     clean = "I'll be right there.";
   }
 
+  // 5b) Se la risposta è solo un saluto, rimuovi l’intenzione
+  const lowerClean = clean.toLowerCase();
+  const isGoodbye = /\b(bye|goodbye|see you|take care)\b/.test(lowerClean);
+  if (hasTag && isGoodbye) {
+    callIntents.delete(currentCallee);
+  }
+
   // 6) Append della risposta solo se c'è testo vero
   if (clean) {
     appendMessage(currentCallee, clean);
