@@ -80,6 +80,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const phoneInput     = document.getElementById("phone-input");
   const phoneSendBtn   = document.getElementById("phone-send");
   const phoneHangupBtn = document.getElementById("phone-hangup");
+  const phoneScreen    = document.getElementById("phone-screen");
   let   currentCallee  = null;
   let   convoHistory   = [];
   // Traccia chi ha detto #PRESENT: durante la chiamata
@@ -87,6 +88,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // 1) Apri il dialer e popola i contatti
   document.getElementById("phone-button").onclick = () => {
+      /* ---------- wallpaper random ---------- */
+  const wpCount = 5;                     // quanti wallpaper1.jpg ... wallpaper5.jpg
+  const n = Math.floor(Math.random() * wpCount) + 1;
+  phoneScreen.style.background =
+    `url('images/wallpaper${n}.jpg') center / cover no-repeat`;
+    
     contactList.innerHTML = "";
     ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(name => {
       const li = document.createElement("li");
