@@ -124,11 +124,10 @@ export async function loadIntro() {
         !/^[-–—]{3,}$/.test(line)  // non '---' o simili
       )
       .forEach(line => {
-        const p = document.createElement("p");
-        p.classList.add(`character-color-${name}`, "glow-talk");
-        p.textContent = `${name}: "${cleanText}"`;
-        storyDiv.appendChild(p);
-        setTimeout(() => p.classList.remove("glow-talk"), 2000);
+          const p = document.createElement("p");
+          p.classList.add(`character-color-${name}`);
+          p.textContent = `${name}: "${cleanText}"`;
+          storyDiv.appendChild(p);
       });
         // 4b) Scansione del testo per menzioni di NPC e auto‑aggiunta in “present”
     const introText = storyDiv.textContent;
@@ -367,9 +366,14 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       } else {
         // narrazione
         const p = document.createElement("p");
-        p.classList.add("narration");
-        p.textContent = line;
+        p.classList.add(`character-color-${name}`);
+        p.classList.add("glow-talk"); // ✨ aggiunta dell’effetto
+        p.textContent = `${name}: "${cleanText}"`;
         storyDiv.appendChild(p);
+        
+        setTimeout(() => {
+          p.classList.remove("glow-talk");
+        }, 2000);
       }
     });
 
