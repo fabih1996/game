@@ -289,17 +289,30 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const contextLines = Array.from(storyDiv.querySelectorAll("p"))
     .slice(-6).map(p => p.textContent).join("\n");
 
-  let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
-  prompt = prompt
-    .replace("{{PLAYER_NAME}}", player.name)
-    .replace("{{STORY_CONTEXT}}", contextLines)
-    .replace("{{INPUT}}", input)
-    .replace("{{CHARACTERS}}", speakerNames.join(" and "));
-  if (isRandom) prompt += "\nThe player triggers a sudden supernatural event...";
-  else if (type === "narration")
-    prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next.`;
-  else
-    prompt += `\nThe player speaks: "${input}". Make sure characters respond in character.`;
+  // Costruisco un prompt semplificato per i dialoghi, in modo che non ripetano il contesto
+  let prompt;
+  if (type === "dialogue") {
+    prompt = [
+      `Scene context (ultime 6 righe):\n${contextLines}`,
+      `Player (${player.name}) dice: "${input}"`,
+      `ORA: rispondi solo con nuove battute dei personaggi presenti (${speakerNames.join(", ")}), ` +
+        `formattate esattamente come CharacterName: "Testo". ` +
+        `Non ripetere mai frasi già presenti nel contesto, non aggiungere narrazione né scelte.`
+    ].join("\n\n");
+  } else {
+    // per narrazione e RandomEvent puoi usare ancora il template originale
+    prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
+    prompt = prompt
+      .replace("{{PLAYER_NAME}}", player.name)
+      .replace("{{STORY_CONTEXT}}", contextLines)
+      .replace("{{INPUT}}", input)
+      .replace("{{CHARACTERS}}", speakerNames.join(" and "));
+    if (isRandom) prompt += "\nThe player triggers a sudden supernatural event...";
+    else if (type === "narration")
+      prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next.`;
+    else
+      prompt += `\nThe player speaks: "${input}". Make sure characters respond in character.`;
+  }
 
   const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
     method: "POST",
