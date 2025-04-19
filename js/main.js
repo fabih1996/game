@@ -92,40 +92,18 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // 1) Apri il dialer e popola i contatti
 document.getElementById("phone-button").onclick = () => {
-  // ── 1. Trova tutti i wallpaper esistenti ───────────────
-  const maxWallpapers = 20;
-  const available = [];
+  // ── 1. Wallpaper casuale da lista ─────────────────────
+  const wallpaperList = [
+    "images/wallpaper1.jpg",
+    "images/wallpaper2.jpg",
+    "images/wallpaper3.jpg",
+    "images/wallpaper4.jpg"
+    // Aggiungi qui eventuali altri sfondi
+  ];
+  const picked = wallpaperList[Math.floor(Math.random() * wallpaperList.length)];
+  phoneScreen.style.background = `url('${picked}') center/cover no-repeat`;
 
-  let checked = 0;
-  for (let i = 1; i <= maxWallpapers; i++) {
-    const img = new Image();
-    const src = `images/wallpaper${i}.jpg`;
-
-    img.onload = () => {
-      available.push(src);
-      checked++;
-      maybePickRandom();
-    };
-    img.onerror = () => {
-      checked++;
-      maybePickRandom();
-    };
-    img.src = src;
-  }
-
-  function maybePickRandom() {
-    if (checked === maxWallpapers) {
-      if (available.length > 0) {
-        const picked = available[Math.floor(Math.random() * available.length)];
-        phoneScreen.style.background = `url('${picked}') center/cover no-repeat`;
-      } else {
-        phoneScreen.style.background =
-          `url('images/default_wallpaper.jpg') center/cover no-repeat`;
-      }
-    }
-  }
-
-  // ── 2. Home screen: mostra solo ✉ ────────────────────
+  // ── 2. Home screen: mostra solo ✉ ─────────────────────
   contactList.innerHTML = "";
   contactList.classList.add("hidden");
   phoneConvo.classList.add("hidden");
