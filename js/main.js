@@ -220,15 +220,15 @@ if (
   console.log(`✅ Interpreting as intent to come: ${currentCallee}`);
   callIntents.add(currentCallee);
 }
-  let clean  = lines
-    .map(l => l.replace(`#PRESENT: ${currentCallee}`, "").trim())
-    .filter(l => l)
-    .join("\n");
+// Strip out qualsiasi #PRESENT:tag, anche sbagliati
+let clean = reply
+  .replace(/#PRESENT:\s*\w+/gi, "")  // rimuove #PRESENT: User / Bobby / ecc.
+  .trim();
 
-  // Se GPT4 non ha fornito alcuna battuta ma c'è il tag, usiamo un fallback
-  if (!clean && hasTag) {
-    clean = "I'll be right there.";
-  }
+// Se dopo aver tolto il tag non rimane testo (ma c’era l’intent), fallback
+if (!clean && hasTag) {
+  clean = "I'll be right there.";
+}
 
   // 6) Append della risposta solo se c'è testo vero
   if (clean) {
