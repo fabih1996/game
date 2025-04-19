@@ -204,8 +204,10 @@ export function refreshSidebar() {
         characterColors[name] || characterColors.default
       );
       wrapper.style.color = characterColors[name] || characterColors.default;
-      if (status === "pending") wrapper.classList.add("pending");
-
+      if (status === "pending"){
+        wrapper.classList.add("pending");
+        wrapper.style.setProperty("--prog", "0%");  // inizializza l’anello
+      }
       // Aggiunta del pulsante ❌
       const dismissBtn = document.createElement("div");
       dismissBtn.className = "dismiss-btn";
@@ -452,39 +454,45 @@ export function isContextuallyAppropriate(line, context) {
   return true;
 }
 
-export function scheduleArrival(characterName, delay) {
-  // 1) Imposta subito lo stato a "pending" e mostralo in sidebar
-  const char = characters.find(c => c.name === characterName);
-  if (char) {
-    char.status = "pending";
-    pendingArrival.add(characterName);
-    refreshSidebar();
-  }
+ export function scheduleArrival(characterName, delay) {
+   // 1) Imposta subito lo stato a "pending" e mostralo in sidebar
+   const char = characters.find(c => c.name === characterName);
+   if (char) {
+     char.status = "pending";
+     pendingArrival.add(characterName);
+     refreshSidebar();
 
-  // 2) Registra ETA e durata per il ring
-  arrivalETA[characterName]      = Date.now() + delay;
-  arrivalDuration[characterName] = delay;
-
-  // 3) Dopo il delay, rendilo "present"
-  setTimeout(() => {
-    const c = characters.find(c => c.name === characterName);
-    if (c && c.status !== "present") {
-      c.status = "present";
-      pendingArrival.delete(characterName);
-      delete arrivalETA[characterName];
-      delete arrivalDuration[characterName];
-      refreshSidebar();
-
-      // Aggiungi la linea in chat
-      const storyDiv = document.getElementById("story");
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = `${characterName} has arrived.`;
-      storyDiv.appendChild(p);
-      triggerSounds("character_arrived");
+   // ⇒ appena lo rendiamo pending, inizializziamo "--prog" a 0%
+    const wrapperEl = document.querySelector(`.char-wrapper[data-name="${characterName}"]`);
+    if (wrapperEl) {
+      wrapperEl.style.setProperty("--prog", "0%");
     }
-  }, delay);
-}
+   }
+
+   // 2) Registra ETA e durata per il ring
+   arrivalETA[characterName]      = Date.now() + delay;
+   arrivalDuration[characterName] = delay;
+
+   // 3) Dopo il delay, rendilo "present"
+   setTimeout(() => {
+     const c = characters.find(c => c.name === characterName);
+     if (c && c.status !== "present") {
+       c.status = "present";
+       pendingArrival.delete(characterName);
+       delete arrivalETA[characterName];
+       delete arrivalDuration[characterName];
+       refreshSidebar();
+
+       // Aggiungi la linea in chat
+       const storyDiv = document.getElementById("story");
+       const p = document.createElement("p");
+       p.classList.add("narration");
+       p.textContent = `${characterName} has arrived.`;
+       storyDiv.appendChild(p);
+       triggerSounds("character_arrived");
+     }
+   }, delay);
+ }
 
 export async function dismissCharacter(name) {
   const storyDiv = document.getElementById("story");
