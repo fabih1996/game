@@ -15,49 +15,48 @@
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
 
-
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
-
-    <!-- Phone button in sidebar -->
     <button id="phone-button" class="game-button">📱 Phone</button>
-    
-  <!-- Player Section -->
-  <div id="player-section">
-    <h3>Player</h3>
-    <div class="char-wrapper selected" style="--ring-color: #3399ff;">
-      <img class="char-icon selected" src="images/user.png" alt="User" data-name="User" />
+
+    <!-- Player Section (hidden initially) -->
+    <div id="player-section" style="display: none;">
+      <h3>Player</h3>
+      <div class="char-wrapper selected" style="--ring-color: #3399ff;">
+        <img class="char-icon selected" src="images/user.png" alt="User" data-name="User" />
+      </div>
+      <div id="player-details">
+        <div id="player-name-display" class="player-line"></div>
+        <div id="player-age-display" class="player-line"></div>
+        <div id="player-desc-display" class="player-line"></div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-health-bar"></div>
+        </div>
+        <div class="player-health-label" id="player-health-label">❤️ Health: 100</div>
+      </div>
     </div>
-    <div class="health-bar-container">
-      <div class="health-bar" id="player-health-bar"></div>
-    </div>
-    <div class="player-health-label" id="player-health-label">❤️ 100</div>
-  </div>
-</div>
-    
   </div>
 
   <!-- Main container -->
   <div class="container">
     <h1>Supernatural: Role-Playing Adventure</h1>
 
+    <!-- Player creation -->
     <div id="user-character-select">
-      <h3>Who are you?</h3>
-      <select id="playerSelect">
-        <option value="">-- Choose your character --</option>
-        <option value="custom">Create custom character</option>
-        <option value="Dean">Dean</option>
-        <option value="Sam">Sam</option>
-        <option value="Castiel">Castiel</option>
-        <option value="Jo">Jo</option>
-        <option value="Ellen">Ellen</option>
-      </select>
-      <div id="customPlayerFields" style="display: none;">
+      <h3>Create Your Character</h3>
+      <div id="customPlayerFields">
+        <label for="playerName">Name:</label>
         <input type="text" id="playerName" placeholder="Your name" />
+
+        <label for="playerAge">Age:</label>
+        <input type="number" id="playerAge" placeholder="Your age" />
+
+        <label for="playerDesc">Description:</label>
         <input type="text" id="playerDesc" placeholder="Short description" />
       </div>
       <button onclick="startGame()">Start Game</button>
     </div>
 
+    <!-- Game interface -->
     <div id="game-interface" style="display: none;">
       <div id="story"></div>
 
@@ -67,15 +66,16 @@
         <input type="text" id="dialogueInput" placeholder="Say something to a character..." />
       </div>
 
-    <!-- Audio Elements -->
-    <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
-    <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
-    <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
-    <audio id="sound-demon" src="sounds/demon_growl.mp3" preload="auto"></audio>
-    <audio id="sound-whisper" src="sounds/whisper.mp3" preload="auto"></audio>
-    <audio id="sound-impala" src="sounds/impala_engine.mp3" preload="auto"></audio>
-    <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
-    <audio id="sound-arrival" src="sounds/arrival.mp3" preload="auto"></audio>
+      <!-- Audio Elements -->
+      <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
+      <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
+      <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
+      <audio id="sound-demon" src="sounds/demon_growl.mp3" preload="auto"></audio>
+      <audio id="sound-whisper" src="sounds/whisper.mp3" preload="auto"></audio>
+      <audio id="sound-impala" src="sounds/impala_engine.mp3" preload="auto"></audio>
+      <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
+      <audio id="sound-arrival" src="sounds/arrival.mp3" preload="auto"></audio>
+    </div>
   </div>
 
   <!-- Exorcism Overlay -->
@@ -87,26 +87,19 @@
 
   <!-- Phone Overlay -->
   <div id="phone-overlay" class="hidden">
-<div class="phone-screen" id="phone-screen">
-
-  <!-- BOTTONE APP ICON IN ALTO -->
-  <button id="open-messages" class="app-icon">✉</button>
-
-  <!-- RUBRICA -->
-  <ul id="phone-contact-list" class="hidden"></ul>
-
-  <!-- CONVERSAZIONE -->
-  <div id="phone-conversation" class="hidden">
-    <div id="messages" style="height:200px; overflow:auto; margin-bottom:8px;"></div>
-    <input type="text" id="phone-input" placeholder="Type a message…" />
-    <button id="phone-send">Send</button>
+    <div class="phone-screen" id="phone-screen">
+      <button id="open-messages" class="app-icon">✉</button>
+      <ul id="phone-contact-list" class="hidden"></ul>
+      <div id="phone-conversation" class="hidden">
+        <div id="messages" style="height:200px; overflow:auto; margin-bottom:8px;"></div>
+        <input type="text" id="phone-input" placeholder="Type a message…" />
+        <button id="phone-send">Send</button>
+      </div>
+      <button id="phone-close">Close</button>
+    </div>
   </div>
 
-  <button id="phone-close">Close</button>
-</div>
-  </div>
-
-  <!-- JavaScript -->
+  <!-- Main JS -->
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
