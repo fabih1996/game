@@ -206,14 +206,17 @@ const systemMsg = promptTxt
   const hasTag = lines.some(l => l.toUpperCase() === normalizedTag.toUpperCase());
   // Controllo per tag errati tipo "#PRESENT: User" o "#PRESENT: Me"
   const wrongTag = lines.find(l => /^#PRESENT:\s*/i.test(l) && !hasTag);
-  if (wrongTag) {
-    console.warn("⚠️ GPT gave a wrong #PRESENT tag:", wrongTag);
-    // Forza comunque la partenza se contiene "I'll be there", ecc.
-    if (/i'll be there|hang tight|on my way/i.test(reply)) {
-      console.warn("✅ Forcing arrival despite incorrect tag");
-      callIntents.add(currentCallee);
-    }
-  }
+if (wrongTag) {
+  console.warn("⚠️ GPT gave a wrong #PRESENT tag:", wrongTag);
+}
+
+if (
+  hasTag || 
+  /i'll be there|hang tight|on my way|i'm coming|i am coming|see you soon/i.test(reply)
+) {
+  console.log(`✅ Interpreting as intent to come: ${currentCallee}`);
+  callIntents.add(currentCallee);
+}
   let clean  = lines
     .map(l => l.replace(`#PRESENT: ${currentCallee}`, "").trim())
     .filter(l => l)
