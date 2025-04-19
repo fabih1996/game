@@ -52,3 +52,4 @@ This signals you will soon arrive in person.
 ---
 
 🎯 Important: the tag MUST appear *only* when needed. Otherwise, respond naturally as yourself. No brackets. No code. No explanation.
+IMPORTANT: Use the exact format "#PRESENT: {{CALLEE}}". Do not write "#PRESENT: User", "#PRESENT: Me", or similar.
