@@ -79,42 +79,63 @@ window.addEventListener("DOMContentLoaded", async () => {
   const messagesDiv    = document.getElementById("messages");
   const phoneInput     = document.getElementById("phone-input");
   const phoneSendBtn   = document.getElementById("phone-send");
-  const phoneHangupBtn = document.getElementById("phone-hangup");
   const phoneScreen    = document.getElementById("phone-screen");
+  const openMsgBtn    = document.getElementById("open-messages");
   let   currentCallee  = null;
   let   convoHistory   = [];
   // Traccia chi ha detto #PRESENT: durante la chiamata
   const callIntents = new Set();
 
   // 1) Apri il dialer e popola i contatti
-  document.getElementById("phone-button").onclick = () => {
-      /* ---------- wallpaper random ---------- */
-  const wpCount = 5;                     // quanti wallpaper1.jpg ... wallpaper5.jpg
-  const n = Math.floor(Math.random() * wpCount) + 1;
-  phoneScreen.style.background =
-    `url('images/wallpaper${n}.jpg') center / cover no-repeat`;
+    document.getElementById("phone-button").onclick = () => {
     
-    contactList.innerHTML = "";
-    ["Dean","Sam","Castiel","Crowley","Bobby","Ruby","Jo","Ellen"].forEach(name => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      li.onclick = () => openConversation(name);
-      contactList.appendChild(li);
-    });
-    phoneOverlay.classList.remove("hidden");
-  };
+      /* ── 1. Wallpaper random ───────────────────────── */
+      const wpCount = 5;
+      const n = Math.floor(Math.random() * wpCount) + 1;
+      phoneScreen.style.background =
+        `url('images/wallpaper${n}.jpg') center/cover no-repeat`;
+    
+      /* ── 2. Home screen: mostra solo icona ✉ ───────── */
+      contactList.innerHTML = "";
+      contactList.classList.add("hidden");
+      phoneConvo.classList.add("hidden");
+      openMsgBtn.classList.remove("hidden");
+    
+      /* ── 3. Apri overlay ───────────────────────────── */
+      phoneOverlay.classList.remove("hidden");
+    };
 
   // 2) Chiudi telefono (Close e Hangup)
   phoneClose.onclick = resetPhone;
-  phoneHangupBtn.onclick = resetPhone;
-
   // 3) Apri conversazione
   function openConversation(name) {
+    // ─── Highlight grafico sul contatto selezionato
+    Array.from(contactList.children).forEach(li => {
+      li.classList.toggle("selected", li.textContent === name);
+    });
     currentCallee = name;
     convoHistory = [];
     messagesDiv.innerHTML = "";
     phoneConvo.classList.remove("hidden");
   }
+
+  /* ─── Apertura app Messaggi (clic su ✉) ───────── */
+openMsgBtn.onclick = () => {
+  // 1. Crea la rubrica filtrando chi NON è presente
+  contactList.innerHTML = "";
+  characters
+    .filter(c => c.status !== "present" && c.name !== "Narrator")
+    .forEach(({ name }) => {
+      const li = document.createElement("li");
+      li.textContent = name;
+      li.onclick = () => openConversation(name);
+      contactList.appendChild(li);
+    });
+
+  // 2. Mostra la lista, nasconde l’icona
+  contactList.classList.remove("hidden");   // lista visibile
+  openMsgBtn.classList.add("hidden");       // icona nascosta
+};
 
 phoneSendBtn.onclick = async () => {
   const txt = phoneInput.value.trim();
