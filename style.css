@@ -69,11 +69,6 @@ body {
 }
 .choice-btn:hover{background:#666;}
 
-#rollDice{
-  background:#444;border:none;padding:12px;font-size:18px;
-  border-radius:5px;cursor:pointer;color:#fff;width:100%;margin-top:10px;
-}
-#rollDice:hover{background:#666;}
 
 /* ─────────── Character colour classes ─────────── */
 .character-color-Dean{color:#FFD700;font-weight:bold;}
