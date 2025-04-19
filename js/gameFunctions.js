@@ -377,9 +377,11 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
         function safeClass(name) {
           return `character-color-${name.replace(/\s+/g, "")}`;
         }
-        p.classList.add(safeClass(name));  
-        p.textContent = `${name}: "${cleanText}"`;
-        storyDiv.appendChild(p);
+          p.classList.add(safeClass(name));  
+          p.classList.add("glow-talk"); // ← AGGIUNGI QUESTO
+          p.textContent = `${name}: "${cleanText}"`;
+          storyDiv.appendChild(p);
+          setTimeout(() => p.classList.remove("glow-talk"), 2000); // opzionale
       } else {
         // narrazione
         const p = document.createElement("p");
