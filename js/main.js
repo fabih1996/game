@@ -30,10 +30,7 @@ setPlayer(player);
 
 // Al caricamento del DOM, inizializza il gioco
 window.addEventListener("DOMContentLoaded", async () => {
-  // Carica il dropdown per la scelta dei personaggi
-  //loadDropdown();
-  // Imposta le azioni rapide
-  setupActions();
+
   // Carica il lore dei personaggi da file esterno
   await loadCharacterLore();
 
