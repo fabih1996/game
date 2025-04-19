@@ -133,11 +133,6 @@ body {
   transition: background 0.2s linear;
 }
 .char-wrapper.pending img{opacity:.5;}
-.char-wrapper::after{
-  content:\"❌\";position:absolute;bottom:2px;right:2px;font-size:14px;
-  pointer-events:auto;opacity:.7;transition:opacity .2s;
-}
-.char-wrapper:hover::after{opacity:1;}
 
 .dismiss-btn {
   position: absolute;
