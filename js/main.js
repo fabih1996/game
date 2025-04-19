@@ -32,7 +32,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Carica il lore dei personaggi da file esterno
   await loadCharacterLore();
-  
+  document.getElementById("start-btn").addEventListener("click", startGame);  
   // Abilita l'audio al primo click dell'utente
   document.addEventListener("click", () => {
     const bgm = document.getElementById("background-music");
