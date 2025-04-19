@@ -611,12 +611,7 @@ export function startGame() {
   };
   setPlayer(player);
 
-  // Popola l’interfaccia
-  document.getElementById("player-name-display").textContent = `🧍 Name: ${name}`;
-  document.getElementById("player-age-display").textContent = `🎂 Age: ${age}`;
-  document.getElementById("player-desc-display").textContent = `📝 ${desc}`;
-  document.getElementById("player-health-bar").style.width = "100%";
-  document.getElementById("player-health-label").textContent = `❤️ Health: ${player.health}`;
+  updatePlayerUI(player);
 
   // Mostra la sezione player
   document.getElementById("player-section").style.display = "block";
@@ -624,4 +619,18 @@ export function startGame() {
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
+}
+
+export function updatePlayerUI(player) {
+  const nameEl  = document.getElementById("player-name-display");
+  const ageEl   = document.getElementById("player-age-display");
+  const descEl  = document.getElementById("player-desc-display");
+  const healthBar = document.getElementById("player-health-bar");
+  const healthLabel = document.getElementById("player-health-label");
+
+  if (nameEl) nameEl.textContent = `🧍 Name: ${player.name}`;
+  if (ageEl) ageEl.textContent = `🎂 Age: ${player.age}`;
+  if (descEl) descEl.textContent = `📝 ${player.desc}`;
+  if (healthBar) healthBar.style.width = player.health + "%";
+  if (healthLabel) healthLabel.textContent = `❤️ Health: ${player.health}`;
 }
