@@ -21,14 +21,18 @@
     <!-- Phone button in sidebar -->
     <button id="phone-button" class="game-button">📱 Phone</button>
     
-     <!-- Player info in sidebar -->
-        <div id="player-info">
-        <h3>Player</h3>
-        <div id="player-name-display">User</div>
-        <div id="player-health-bar">
-          <div id="health-fill"></div>
-        </div>
-      </div>
+  <!-- Player Section -->
+  <div id="player-section">
+    <h3>Player</h3>
+    <div class="char-wrapper selected" style="--ring-color: #3399ff;">
+      <img class="char-icon selected" src="images/user.png" alt="User" data-name="User" />
+    </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-health-bar"></div>
+    </div>
+    <div class="player-health-label" id="player-health-label">❤️ 100</div>
+  </div>
+</div>
     
   </div>
 
