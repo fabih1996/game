@@ -140,17 +140,6 @@ phoneSendBtn.onclick = async () => {
   convoHistory.push({ role: "user", content: txt });
 
   // 3) Prompt univoco: siamo sempre in chiamata
-// prima di tutto, recupera il profilo del personaggio
-const lore = characterKnowledge
-  .split("---")
-  .find(chunk => chunk.startsWith(currentCallee))
-  ?.trim() || "";
-
-// poi costruisci un prompt che include contesto, lore e regole
-const convoContext = convoHistory
-  .map(m => `${m.role === "user" ? "You" : currentCallee}: ${m.content}`)
-  .join("\n");
-
 const systemMsg = `
 You are ${currentCallee}, as defined by this profile:
 ${lore}
