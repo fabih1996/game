@@ -439,12 +439,14 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     .forEach(line => {
       if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
         const [name, ...rest] = line.split(":");
+        // Se è una battuta del player, la saltiamo (vedi punto 2)
+        if (name === player.name) return;
+      
+        const rawText   = rest.join(":").trim();
+        const cleanText = rawText.replace(/^"+|"+$/g, "");  // rimuove eventuali virgolette esterne
         const p = document.createElement("p");
-        // Aggiunge la classe colore senza cancellare altre
         p.classList.add(`character-color-${name}`);
-        // Fallback inline, nel caso il CSS non fosse ancora applicato
-        p.style.color = characterColors[name] || characterColors.default;
-        p.textContent = `${name}: "${rest.join(":").trim()}"`;
+        p.textContent = `${name}: "${cleanText}"`;
         storyDiv.appendChild(p);
       } else {
         // narrazione
