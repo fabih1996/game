@@ -229,3 +229,32 @@ body {
 
 /* ─────────────── Story box base ─────────────── */
 #story{min-height:100px;padding:10px;margin-top:20px;background:#111;}
+
+/* ─────────────── Tooltip per icone personaggi ─────────────── */
+.char-wrapper[data-tooltip] {
+  position: relative;
+}
+
+.char-wrapper[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%; /* mostra sopra */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  margin-bottom: 6px;
+  z-index: 9999;
+}
+
+.char-wrapper[data-tooltip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
