@@ -239,7 +239,7 @@ body {
 #narrationInput { background:#222; color:#bbb; font-style:italic; }
 #dialogueInput  { background:#333; color:#eee; }
 
-#story { min-height:100px; padding:10px; margin-top:20px; background:#111; border-radius:4px; }
+#story { min-height:100px; padding:10px; margin-top:20px; background:#111; border-radius:4px; padding-top: 160px;}
 
 /* ─────────────── Responsive ─────────────── */
 @media (min-width: 768px) {
@@ -277,14 +277,16 @@ body {
   display: block;
 }
 
-/* north pointer arrow */
+/* north pointer: small red triangle */
 #north-pointer {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 50%;
-  background: gold;
+  top: 8px;               /* un po’ più in alto */
+  left: calc(50% - 6px);  /* centrato orizzontalmente */
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 12px solid red;
   transform-origin: bottom center;
   animation: wobble 2s ease-in-out infinite;
 }
@@ -319,33 +321,3 @@ body {
 .hidden { display: none !important; }
 .glow-talk { animation: characterTextGlow 1.2s ease-in-out; }
 @keyframes characterTextGlow { 0%,100% { text-shadow: 0 0 6px currentColor, 0 0 10px currentColor; } 50% { text-shadow: 0 0 14px currentColor, 0 0 24px currentColor; } }
-
-/* ───────────── Map Panel ───────────── */
-#map-container {
-  margin-top: 20px;
-  background: #222;
-  border: 1px solid #444;
-  border-radius: 6px;
-  padding: 10px;
-}
-#map-container h3 {
-  margin: 0 0 8px;
-  color: #fff;
-  font-size: 16px;
-}
-#game-map {
-  width: 100%;
-  height: 200px; /* puoi aumentare se vuoi una mappa più grande */
-  border-radius: 4px;
-}
-
-/* ─────────── Map Canvas ─────────── */
-#game-map { position: relative; }
-#map-canvas {
-  width: 100%;
-  height: 200px;       /* stessa altezza di prima */
-  background: #333;    /* sfondo scuro */
-  border-radius: 4px;
-  display: block;
-  cursor: pointer;
-}
