@@ -2,8 +2,6 @@
 import {
   characters,
   characterKnowledge,
-  //loadDropdown,
-  setupActions,
   loadCharacterLore,
   refreshSidebar,
   triggerRandomEvent,
