@@ -354,6 +354,30 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       (l[0] !== "#" || validTags.some(t => l.startsWith(t)))
     );
 
+  // ------------------------------
+// Filtro: rifiuto implicito → ignora #PRESENT
+// ------------------------------
+const lowerReply = reply.toLowerCase();
+const rejectedTags = new Set();
+lines.forEach(line => {
+  if (line.startsWith("#PRESENT:")) {
+    const name = line.split(":")[1].trim();
+    if (rejectedTags.has(name)) return; // ignora
+    if (
+      lowerReply.includes("can't make it") ||
+      lowerReply.includes("can't join") ||
+      lowerReply.includes("not right now") ||
+      lowerReply.includes("maybe another time") ||
+      lowerReply.includes("i'm sorry") && lowerReply.includes("can't") ||
+      lowerReply.includes("have some urgent matters") ||
+      lowerReply.includes("really can't") ||
+      lowerReply.includes("i understand it's urgent")
+    ) {
+      console.log(`❌ Ignored #PRESENT for ${name} due to contradiction`);
+      rejectedTags.add(name);
+    }
+  }
+});
 
   // 6b) Append narrazione pulita e dialoghi
   lines
