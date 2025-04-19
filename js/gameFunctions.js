@@ -355,19 +355,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       (l[0] !== "#" || validTags.some(t => l.startsWith(t)))
     );
 
-  // 6a) Schermo scelte
-  const choicesDiv = document.getElementById("choices");
-  choicesDiv.innerHTML = "";
-  reply.split("\n").forEach(raw => {
-    const t = raw.trim();
-    if (t.startsWith("[")) {
-      const btn = document.createElement("button");
-      btn.className = "choice-btn";
-      btn.textContent = t.replace(/^\[|\]$/g, "");
-      btn.onclick = () => sendToGPT(btn.textContent, "narration");
-      choicesDiv.appendChild(btn);
-    }
-  });
 
   // 6b) Append narrazione pulita e dialoghi
   lines
