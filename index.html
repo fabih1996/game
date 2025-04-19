@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Supernatural RPG</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Hamburger Menu -->
-  <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
-
   <!-- Sidebar -->
   <div id="sidebar">
     <h3>Characters</h3>
@@ -18,11 +15,11 @@
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
     <button id="phone-button" class="game-button">📱 Phone</button>
 
-    <!-- Player Section (hidden initially) -->
-    <div id="player-section" style="display: none;">
+    <!-- Player Info (hidden until creation) -->
+    <div id="player-section" class="player-card hidden">
       <h3>Player</h3>
-      <div class="char-wrapper selected" style="--ring-color: #3399ff;">
-        <img class="char-icon selected" src="images/user.png" alt="User" data-name="User" />
+      <div class="char-wrapper" style="--ring-color: #3399ff;">
+        <img class="char-icon" src="images/user.png" alt="User" />
       </div>
       <div id="player-details">
         <div id="player-name-display" class="player-line"></div>
@@ -40,7 +37,7 @@
   <div class="container">
     <h1>Supernatural: Role-Playing Adventure</h1>
 
-    <!-- Player creation -->
+    <!-- Character Creation -->
     <div id="user-character-select">
       <h3>Create Your Character</h3>
       <div id="customPlayerFields">
@@ -53,20 +50,19 @@
         <label for="playerDesc">Description:</label>
         <input type="text" id="playerDesc" placeholder="Short description" />
       </div>
-      <button onclick="startGame()">Start Game</button>
+      <button id="start-btn">Start Game</button>
     </div>
 
     <!-- Game interface -->
     <div id="game-interface" style="display: none;">
       <div id="story"></div>
 
-      <!-- Input Area: Narration and Dialogue -->
       <div id="input-area">
         <input type="text" id="narrationInput" placeholder="Narrate your action..." />
         <input type="text" id="dialogueInput" placeholder="Say something to a character..." />
       </div>
 
-      <!-- Audio Elements -->
+      <!-- Audio -->
       <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
       <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
       <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
@@ -78,20 +74,19 @@
     </div>
   </div>
 
-  <!-- Exorcism Overlay -->
+  <!-- Overlays -->
   <div id="exorcism-overlay" class="hidden">
     <div id="pentagram">⛧</div>
     <div id="ghost">👻</div>
     <div id="chant"></div>
   </div>
 
-  <!-- Phone Overlay -->
   <div id="phone-overlay" class="hidden">
     <div class="phone-screen" id="phone-screen">
       <button id="open-messages" class="app-icon">✉</button>
       <ul id="phone-contact-list" class="hidden"></ul>
       <div id="phone-conversation" class="hidden">
-        <div id="messages" style="height:200px; overflow:auto; margin-bottom:8px;"></div>
+        <div id="messages" style="height: 200px; overflow: auto; margin-bottom: 8px;"></div>
         <input type="text" id="phone-input" placeholder="Type a message…" />
         <button id="phone-send">Send</button>
       </div>
