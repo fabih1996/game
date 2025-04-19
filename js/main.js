@@ -183,22 +183,11 @@ phoneSendBtn.onclick = async () => {
   convoHistory.push({ role: "user", content: txt });
 
   // 3) Prompt univoco: siamo sempre in chiamata
-  const systemMsg = `
-You are ${currentCallee}. Here is your complete profile from the Supernatural database:
-${lore}
-
-This is the phone‑call conversation so far:
-${convoContext}
-
-INSTRUCTIONS:
-1. Use every detail in your profile (personality, speech style, history) to reply in character, in plain English.
-2. Reply naturally—if the player is checking in (“How’s it going?”, “And Jessica?”), answer with in‑character info.
-3. Only if the player’s request clearly asks you to come help (“can you come here?”, “I need your help”), then **after** your dialogue append on its own line:
-   #PRESENT: ${currentCallee}
-4. In all other cases (greetings, small talk, farewells), **do not** include the tag.
-5. Do not output anything else—no extra lines, no JSON, no brackets.
-`.trim();
-
+  const promptTxt = await (await fetch("texts/phone_prompt.txt")).text();
+const systemMsg = promptTxt
+  .replace("{{CALLEE}}", currentCallee)
+  .replace("{{LORE}}", lore)
+  .replace("{{CONTEXT}}", convoContext);
 
   // 4) Prepara e invia la request
   const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
