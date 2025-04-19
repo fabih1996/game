@@ -211,7 +211,10 @@ export function refreshSidebar() {
                 (characterImages[name] = `images/${name.toLowerCase()}.png`);
       img.alt = name;
       wrapper.setAttribute("data-tooltip", name);
-      if (selectedCharacters.includes(name)) img.classList.add("selected");
+      if (selectedCharacters.includes(name)){
+        img.classList.add("selected");
+        wrapper.classList.add("selected");
+      } 
 
       // Click sull’icona per selezionare/deselezionare
      img.onclick = (e) => {
