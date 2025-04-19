@@ -125,9 +125,10 @@ export async function loadIntro() {
       )
       .forEach(line => {
         const p = document.createElement("p");
-        p.classList.add("narration");
-        p.textContent = line;
+        p.classList.add(`character-color-${name}`, "glow-talk");
+        p.textContent = `${name}: "${cleanText}"`;
         storyDiv.appendChild(p);
+        setTimeout(() => p.classList.remove("glow-talk"), 2000);
       });
         // 4b) Scansione del testo per menzioni di NPC e auto‑aggiunta in “present”
     const introText = storyDiv.textContent;
