@@ -23,8 +23,10 @@ import {
 let player = {
   name: "User",
   isCustom: true,
-  color: "#3399ff"
+  color: "#3399ff",
+  health: 100   // 👈 aggiungiamola qui
 };
+
 setPlayer(player);
 
 const availableCharacters = [
