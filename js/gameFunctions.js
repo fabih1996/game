@@ -346,7 +346,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
         const [name, ...rest] = line.split(":");
         // Se è una battuta del player, la saltiamo (vedi punto 2)
-        if (name === player.name) return;
+        if (name === "Narrator" || name === player.name) return;  // salta Narratore e Player
       
         const rawText   = rest.join(":").trim();
         const cleanText = rawText.replace(/^"+|"+$/g, "");  // rimuove eventuali virgolette esterne
