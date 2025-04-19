@@ -125,12 +125,31 @@ phoneSendBtn.onclick = async () => {
   convoHistory.push({ role: "user", content: txt });
 
   // 3) Prompt univoco: siamo sempre in chiamata
-  const systemMsg = `You are ${currentCallee}, speaking via phone call in character with the player.  
-Read the conversation so far and reply naturally in character in plain English.  
-After your dialogue, if you intend to come help the player, append on its own line:  
-#PRESENT: ${currentCallee}  
-Otherwise, do not include the tag.  
-Do not output anything else—no JSON, no brackets, no extra lines.`;
+// prima di tutto, recupera il profilo del personaggio
+const lore = characterKnowledge
+  .split("---")
+  .find(chunk => chunk.startsWith(currentCallee))
+  ?.trim() || "";
+
+// poi costruisci un prompt che include contesto, lore e regole
+const convoContext = convoHistory
+  .map(m => `${m.role === "user" ? "You" : currentCallee}: ${m.content}`)
+  .join("\n");
+
+const systemMsg = `
+You are ${currentCallee}, as defined by this profile:
+${lore}
+
+You are now speaking via phone. Here is the dialogue so far:
+${convoContext}
+
+– Reply **in character** in plain English, using the personality, speech style, likes/dislikes from your profile.
+– Do NOT include any tag or scheduling instruction unless **explicitly** asked to come.
+– If the player **directly** asks "can you come" or similar, reply naturally **and then** on its own line:
+  #PRESENT: ${currentCallee}
+– Otherwise do NOT include the tag at all (especially not after goodbyes).
+– Do not output anything else—no extra lines, no JSON, no brackets.
+`.trim();
 
   // 4) Prepara e invia la request
   const msgs = [{ role: "system", content: systemMsg }, ...convoHistory];
