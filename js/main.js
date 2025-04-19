@@ -146,12 +146,17 @@ Do not output anything else—no extra whitespace or lines.`;
   // 5) Estrai tag e testo pulito
   const lines  = reply.split("\n").map(l => l.trim());
   const hasTag = lines.some(l => l.includes(`#PRESENT: ${currentCallee}`));
-  const clean  = lines
+  let clean  = lines
     .map(l => l.replace(`#PRESENT: ${currentCallee}`, "").trim())
     .filter(l => l)
     .join("\n");
 
-  // 6) Append della risposta
+  // Se GPT4 non ha fornito alcuna battuta ma c'è il tag, usiamo un fallback
+  if (!clean && hasTag) {
+    clean = "I'll be right there.";
+  }
+
+  // 6) Append della risposta solo se c'è testo vero
   if (clean) {
     appendMessage(currentCallee, clean);
     convoHistory.push({ role: "assistant", content: clean });
