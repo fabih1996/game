@@ -205,6 +205,7 @@ export function refreshSidebar() {
         "--ring-color",
         characterColors[name] || characterColors.default
       );
+      wrapper.style.color = characterColors[name] || characterColors.default;
       if (status === "pending") wrapper.classList.add("pending");
       
       // Icona
