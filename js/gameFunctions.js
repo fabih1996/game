@@ -624,7 +624,7 @@ export function startGame() {
   updatePlayerUI(player);
 
   // Mostra la sezione player
-  document.getElementById("player-section").style.display = "block";
+  document.getElementById("player-section").classList.remove("hidden");
 
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
