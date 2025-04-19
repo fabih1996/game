@@ -596,6 +596,7 @@ export function startGame() {
   const name = document.getElementById("playerName").value.trim();
   const age = document.getElementById("playerAge").value.trim();
   const desc = document.getElementById("playerDesc").value.trim();
+  console.log("Name:", name, "Age:", age, "Desc:", desc);
 
   if (!name || !age || !desc) {
     alert("Please fill in all fields to start the game.");
