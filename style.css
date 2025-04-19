@@ -12,302 +12,192 @@ body {
 
 .container { padding:10px; }
 
-/* ----------------------------------
-   ☰  Sidebar Menu Icon
----------------------------------- */
+/* ────────────── ☰  Sidebar Menu Icon ────────────── */
 #menu-toggle {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#222;
-  color:#fff;
-  font-size:24px;
+  display:flex;justify-content:center;align-items:center;
+  background:#222;color:#fff;font-size:24px;
   width:50px;height:50px;
-  position:fixed;top:10px;left:10px;
-  z-index:1001;
-  border:none;border-radius:6px;
-  cursor:pointer;
+  position:fixed;top:10px;left:10px;z-index:1001;
+  border:none;border-radius:6px;cursor:pointer;
 }
 
 #music-toggle {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#444;
-  color:#fff;
-  font-size:16px;
-  padding:6px 12px;
-  margin-top:10px;
-  width:100%;
-  border:none;border-radius:6px;
-  cursor:pointer;
+  display:flex;justify-content:center;align-items:center;
+  background:#444;color:#fff;font-size:16px;
+  padding:6px 12px;margin-top:10px;width:100%;
+  border:none;border-radius:6px;cursor:pointer;
 }
 #music-toggle:hover{background:#666;}
 
-/* ----------------------------------
-   Sidebar
----------------------------------- */
+/* ───────────────────────── Sidebar ───────────────────────── */
 #sidebar {
-  background:#222;
-  padding:15px 15px 15px;
-  border-bottom:2px solid #444;
-  position:fixed;top:0;left:-100%;
-  width:250px;height:100%;
-  z-index:1000;
-  overflow-y:auto;
-  transition:left .3s ease;
-  padding-top:70px;
+  background:#222;padding:15px;border-bottom:2px solid #444;
+  position:fixed;top:0;left:-100%;width:250px;height:100%;z-index:1000;
+  overflow-y:auto;transition:left .3s ease;padding-top:70px;
 }
 #sidebar.open{left:0;}
 
-/* Lista personaggi */
-#charListPresent {
-  list-style:none;
-  padding-left:0;
-  margin-top:10px;
+#charListPresent{list-style:none;padding-left:0;margin-top:10px;}
+#charListPresent li{display:inline-block;margin:6px;cursor:pointer;}
+
+.char-icon{
+  width:40px;height:40px;border-radius:50%;
+  border:2px solid transparent;transition:.2s;
 }
-#charListPresent li {
-  display:inline-block;
-  margin:6px;
-  cursor:pointer;
+.char-icon.selected{
+  border:2px solid currentColor;box-shadow:0 0 10px currentColor;
 }
 
-.char-icon {
-  width:40px;height:40px;
-  border-radius:50%;
-  border:2px solid transparent;
-  transition:.2s;
-}
-.char-icon.selected {
-  border:2px solid currentColor;
-  box-shadow:0 0 10px currentColor;
+/* ───────────────── Story & Inputs ───────────────── */
+.narration{
+  font-style:italic;color:#bbb;background:#1a1a1a;
+  margin:10px 0;padding:6px 10px;
+  border-left:3px solid #555;border-radius:5px;
 }
 
-/* ----------------------------------
-   Story / UI elements
----------------------------------- */
-.narration {
-  font-style:italic;
-  color:#bbb;
-  background:#1a1a1a;
-  margin:10px 0;
-  padding:6px 10px;
-  border-left:3px solid #555;
-  border-radius:5px;
+#input-area{margin-top:20px;display:flex;flex-direction:column;gap:10px;}
+#narrationInput,#dialogueInput{
+  width:100%;padding:10px;font-size:18px;
+  border:none;border-radius:5px;outline:none;
 }
-
-#input-area {
-  margin-top:20px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-#narrationInput,#dialogueInput {
-  width:100%;
-  padding:10px;
-  font-size:18px;
-  border:none;border-radius:5px;
-  outline:none;
-}
-#narrationInput { background:#222;color:#bbb;font-style:italic; }
-#dialogueInput   { background:#333;color:#eee; }
+#narrationInput{background:#222;color:#bbb;font-style:italic;}
+#dialogueInput {background:#333;color:#eee;}
 
 .choice-btn{
-  margin:6px;
-  padding:10px;
-  background:#444;
-  border:none;border-radius:4px;
-  color:#fff;
-  cursor:pointer;
+  margin:6px;padding:10px;background:#444;
+  border:none;border-radius:4px;color:#fff;cursor:pointer;
 }
 .choice-btn:hover{background:#666;}
 
 #rollDice{
-  background:#444;
-  border:none;
-  padding:12px;
-  font-size:18px;
-  border-radius:5px;
-  cursor:pointer;
-  color:#fff;
-  width:100%;
-  margin-top:10px;
+  background:#444;border:none;padding:12px;font-size:18px;
+  border-radius:5px;cursor:pointer;color:#fff;width:100%;margin-top:10px;
 }
 #rollDice:hover{background:#666;}
 
-/* ----------------------------------
-   Character colour classes
----------------------------------- */
-.character-color-Dean { color:#FFD700;font-weight:bold; }
-.character-color-Sam  { color:#00BFFF;font-weight:bold; }
-.character-color-Castiel { color:#7FFFD4;font-weight:bold; }
-.character-color-Crowley { color:#FF4500;font-weight:bold; }
-.character-color-Bobby { color:#90EE90;font-weight:bold; }
-.character-color-Ruby  { color:#FF69B4;font-weight:bold; }
-.character-color-Jo    { color:#FF8C00;font-weight:bold; }
-.character-color-Ellen { color:#8A2BE2;font-weight:bold; }
-.character-color-Narrator { color:#ddd; }
-.character-color-User  { color:#3399ff;font-weight:bold; }
+/* ─────────── Character colour classes ─────────── */
+.character-color-Dean{color:#FFD700;font-weight:bold;}
+.character-color-Sam {color:#00BFFF;font-weight:bold;}
+.character-color-Castiel{color:#7FFFD4;font-weight:bold;}
+.character-color-Crowley{color:#FF4500;font-weight:bold;}
+.character-color-Bobby{color:#90EE90;font-weight:bold;}
+.character-color-Ruby {color:#FF69B4;font-weight:bold;}
+.character-color-Jo   {color:#FF8C00;font-weight:bold;}
+.character-color-Ellen{color:#8A2BE2;font-weight:bold;}
+.character-color-Narrator{color:#ddd;}
+.character-color-User{color:#3399ff;font-weight:bold;}
 
-/* ----------------------------------
-   Desktop tweaks
----------------------------------- */
+/* ───────────────── Desktop tweaks ───────────────── */
 @media (min-width:768px){
   #menu-toggle{display:none;}
   .container{margin-left:250px;padding:20px;}
-  #sidebar{left:0;top:0;height:100%;width:230px;border-right:2px solid #444;border-bottom:none;padding-top:15px;}
+  #sidebar{
+    left:0;top:0;height:100%;width:230px;
+    border-right:2px solid #444;border-bottom:none;padding-top:15px;
+  }
   #input-area{flex-direction:row;flex-wrap:wrap;align-items:flex-start;gap:10px;}
   #narrationInput,#dialogueInput{width:45%;}
   .char-icon{width:50px;height:50px;}
 }
 
-/* ----------------------------------
-   Exorcism overlay
----------------------------------- */
+/* ─────────────── Exorcism overlay ─────────────── */
 #exorcism-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.9);
-  color:#fff;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:999;
+  position:fixed;inset:0;background:rgba(0,0,0,.9);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;
 }
 #pentagram{font-size:120px;animation:rotate 10s linear infinite;margin-bottom:20px;}
 #ghost{font-size:80px;opacity:1;transition:opacity 3s ease-out,transform 3s ease-out;}
 #chant{margin-top:20px;font-size:20px;opacity:0;transition:opacity 2s ease-in;}
-@keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
+@keyframes rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 .hidden{display:none!important;}
 
-/* ----------------------------------
-   Generic game buttons
----------------------------------- */
 .game-button{
   padding:10px 20px;font-size:16px;cursor:pointer;
-  background:#222;color:#fff;
-  border:1px solid #555;border-radius:5px;
-  margin:10px;
+  background:#222;color:#fff;border:1px solid #555;border-radius:5px;margin:10px;
 }
 .game-button:hover{background:#555;}
 
-/* ----------------------------------
-   Progress ring for PENDING NPCs
----------------------------------- */
-.char-wrapper{
-  position:relative;width:50px;height:50px;
-}
+/* ───── Progress ring for PENDING NPCs ───── */
+.char-wrapper{position:relative;width:50px;height:50px;}
 .char-wrapper.pending::before{
-  content:"";
-  position:absolute;top:-4px;left:-4px;
-  width:calc(100% + 8px);height:calc(100% + 8px);
-  border-radius:50%;
+  content:\"\";position:absolute;top:-4px;left:-4px;
+  width:calc(100% + 8px);height:calc(100% + 8px);border-radius:50%;
   background:conic-gradient(var(--ring-color,#00bfff) var(--prog,0%),#444 0);
   transition:background .2s linear;
 }
 .char-wrapper.pending img{opacity:.5;}
-
-/* Dismiss ❌ overlay on char */
 .char-wrapper::after{
-  content:"❌";
-  position:absolute;bottom:2px;right:2px;
-  font-size:14px;
-  pointer-events:auto;
-  opacity:.7;transition:opacity .2s;
+  content:\"❌\";position:absolute;bottom:2px;right:2px;font-size:14px;
+  pointer-events:auto;opacity:.7;transition:opacity .2s;
 }
 .char-wrapper:hover::after{opacity:1;}
 
-/* ----------------------------------
-   Phone Overlay
----------------------------------- */
+/* ───────────────── Phone Overlay ───────────────── */
 #phone-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.65);  /* ↓ meno opaco rispetto allo 0.8 originale */
-  display:flex;align-items:center;justify-content:center;
-  z-index:10000;
+  position:fixed;inset:0;background:rgba(0,0,0,.65);
+  display:flex;align-items:center;justify-content:center;z-index:10000;
 }
 #phone-overlay.hidden{display:none!important;}
 
 /* Phone “screen” */
 .phone-screen{
-  background:rgba(34,34,34,.8); /* semi‑trasp per far vedere il wallpaper */
-  color:#eee;
-  padding:16px;
-  border-radius:8px;
-  width:300px;max-width:90%;
+  background:rgba(34,34,34,.8);
+  color:#eee;padding:16px;border-radius:16px;
+  width:260px;            /* larghezza fissa */  
+  aspect-ratio:9/16;      /* altezza proporzionale */  
+  max-width:90vw;
   box-shadow:0 0 18px rgba(0,0,0,.8),0 0 30px rgba(0,150,255,.25);
-  overflow:hidden;              /* clip del wallpaper */
-  position:relative;
+  overflow:hidden;position:relative;
   transform:scale(1);transition:transform .25s;
 }
-#phone-overlay:not(.hidden) .phone-screen{transform:scale(1.03);} /* micro pop‑in */
+#phone-overlay:not(.hidden) .phone-screen{transform:scale(1.03);}
 
-/* Wallpaper layer control */
+/* Wallpaper handler */
 #phone-screen{background-size:cover;background-position:center;}
 #phone-screen::after{
-  content:"";position:absolute;inset:0;
-  background:rgba(0,0,0,.22); /* velo di contrasto – più leggero */
-  border-radius:8px;
-  pointer-events:none;
+  content:\"\";position:absolute;inset:0;background:rgba(0,0,0,.22);
+  border-radius:16px;pointer-events:none;
 }
 
-/* App icon (✉) */
+/* App icon ✉ */
 .app-icon{
-  width:48px;height:48px;
-  border:none;border-radius:12px;
+  width:48px;height:48px;border:none;border-radius:12px;
   font-size:26px;line-height:48px;text-align:center;
-  background:rgba(0,0,0,.35);
-  color:#fff;
-  position:absolute;bottom:16px;left:16px;
-  backdrop-filter:blur(4px);
-  cursor:pointer;transition:background .2s;
+  background:rgba(0,0,0,.35);color:#fff;
+  position:absolute;bottom:20px;left:20px;
+  backdrop-filter:blur(4px);cursor:pointer;transition:background .2s;
 }
 .app-icon:hover{background:rgba(0,0,0,.5);}
 
 /* Rubrica */
 #phone-contact-list{
   list-style:none;margin:0;padding:0;
-  max-height:200px;overflow-y:auto;
-  border:1px solid #444;border-radius:4px;
+  max-height:200px;overflow-y:auto;border:1px solid #444;border-radius:4px;
 }
-#phone-contact-list li{
-  padding:8px;cursor:pointer;border-bottom:1px solid #444;
-}
+#phone-contact-list li{padding:8px;cursor:pointer;border-bottom:1px solid #444;}
 #phone-contact-list li:last-child{border-bottom:none;}
 #phone-contact-list li:hover{background:#333;}
-#phone-contact-list li.selected{
-  background:#ffcc33;color:#222;font-weight:bold;
-}
+#phone-contact-list li.selected{background:#ffcc33;color:#222;font-weight:bold;}
 
 /* Conversazione */
 #phone-conversation{margin-top:12px;}
 #messages{
-  background:#111;padding:8px;
-  max-height:180px;overflow-y:auto;
+  background:#111;padding:8px;max-height:180px;overflow-y:auto;
   border:1px solid #444;border-radius:4px;margin-bottom:8px;
 }
 .msg-you{text-align:right;margin:4px 0;}
 .msg-them{text-align:left;margin:4px 0;}
 
 #phone-input{
-  width:calc(100% - 100px);
-  padding:6px;
-  border:1px solid #444;border-radius:4px;
-  background:#111;color:#eee;
-  margin-right:4px;
+  width:calc(100% - 100px);padding:6px;border:1px solid #444;border-radius:4px;
+  background:#111;color:#eee;margin-right:4px;
 }
 #phone-send,#phone-close{
-  padding:6px 10px;border:none;border-radius:4px;
-  background:#444;color:#eee;
+  padding:6px 10px;border:none;border-radius:4px;background:#444;color:#eee;
   cursor:pointer;margin-top:4px;margin-right:4px;
 }
 #phone-send:hover,#phone-close:hover{background:#555;}
 
-/* ----------------------------------
-   Story box base
----------------------------------- */
-#story{
-  min-height:100px;
-  padding:10px;
-  margin-top:20px;
-  background:#111;
-}
+/* ─────────────── Story box base ─────────────── */
+#story{min-height:100px;padding:10px;margin-top:20px;background:#111;}
