@@ -92,10 +92,12 @@ body {
     #444 0
   );
   transition: background 0.2s linear;
-  z-index: 1;                   /* sotto l’icona */
+  z-index: 0;                   /* sotto l’icona */
 }
 .char-wrapper.pending img {
-  opacity: 0.5;
+  position: relative;   /* porta l’immagine in un nuovo stacking context */
+  z-index: 1;           /* sopra l’anello (che è a z-index:0) */
+  opacity: 1;           /* o il valore che preferisci */
 }
 
 .char-icon {
