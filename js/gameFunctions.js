@@ -177,7 +177,7 @@ export async function loadIntro() {
     });
 
     // 8) Refresh finale della sidebar
-    if (newCharacters.size) refreshSidebar();
+    refreshSidebar();
 
   } catch (err) {
     console.error(err);
@@ -206,7 +206,7 @@ export function refreshSidebar() {
         characterColors[name] || characterColors.default
       );
       if (status === "pending") wrapper.classList.add("pending");
-
+      
       // Icona
       const img = document.createElement("img");
       img.classList.add("char-icon");
