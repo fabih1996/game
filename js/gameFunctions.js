@@ -524,9 +524,6 @@ Nothing else.
   }
 }
 
-export function triggerRandomEvent() {
-  sendToGPT("random", "narration", true);
-}
 export function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
 }
