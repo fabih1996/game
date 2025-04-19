@@ -73,11 +73,15 @@ body {
   vertical-align: middle;
 }
 
+/* Sidebar & NPC wrappers: bordo+ring */
 .char-wrapper {
   position: relative;
-  z-index: 1; /* mantiene l’icona sempre sopra al ring */
+  z-index: 1;               /* l’icona sta sopra al ring */
+  width: 50px;              /* <-- dimensione fissa per sidebar */
+  height: 50px;
 }
 
+/* Ring “pending” semitrasparente sotto l’icona */
 .char-wrapper.pending::before {
   content: "";
   position: absolute;
@@ -85,20 +89,19 @@ body {
   width: calc(100% + 8px);
   height: calc(100% + 8px);
   border-radius: 50%;
-  /* ring colorato fino a --prog, poi trasparente */
+  /* ring fino a --prog, poi completamente trasparente */
   background: conic-gradient(
     var(--ring-color, #00bfff) var(--prog),
     transparent 0
   );
   transition: background 0.2s linear;
-  z-index: 0;  /* sotto l’icona */
+  z-index: 0;
 }
-
 .char-wrapper.pending img {
-  /* mantiene l’icona leggermente attenuata */
-  opacity: 0.5;
+  opacity: 0.5; /* icona attenuata */
 }
 
+/* Icona dentro il wrapper */
 .char-icon {
   width: 100%;
   height: 100%;
@@ -112,6 +115,7 @@ body {
   box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
   animation: glowPulse 2s infinite ease-in-out;
 }
+
 @keyframes glowPulse {
   0%,100% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
   50%    { box-shadow: 0 0 20px currentColor, 0 0 35px currentColor; }
