@@ -171,32 +171,6 @@ body {
   background: #666;
 }
 
-#quick-actions {
-  margin-top: 25px;
-  padding: 10px;
-  background: #222;
-  border-radius: 8px;
-}
-
-#actions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.action-btn {
-  background: #333;
-  color: white;
-  border: 1px solid #555;
-  border-radius: 5px;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.action-btn:hover {
-  background: #555;
-}
-
 #rollDice {
   background: #444;
   border: none;
