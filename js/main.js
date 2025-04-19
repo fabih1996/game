@@ -268,89 +268,61 @@ phoneSendBtn.onclick = async () => {
     convoHistory = [];
   }
   // ───────────────────────────────────────
+  // ─────────── Mini‑map Widget ───────────
+const mmWidget   = document.getElementById('mini-map-widget');
+const mmCanvas   = document.getElementById('mini-map-canvas');
+const mmCtx      = mmCanvas.getContext('2d');
+const mmCloseBtn = document.getElementById('mini-map-close');
 
-// ─────────── Mappa fittizia interattiva ───────────
-const canvas = document.getElementById('map-canvas');
-const ctx    = canvas.getContext('2d');
-
-// Configurazione griglia
-const mapConfig = { cols: 5, rows: 3, cellSize: 80 };
-
-// Posizione iniziale del player (colonna, riga)
-let playerCell = { x: 2, y: 1 };
-
-// Obiettivi da mostrare sulla mappa
-const objectives = [
-  { x: 4, y: 2, label: 'Negozio' },
-  { x: 1, y: 0, label: 'Locanda' }
+let mmPoints = [
+  { x:  0.6, y: -0.4, label: 'Shop' },
+  { x: -0.3, y:  0.7, label: 'Diner' }
 ];
 
-// Disegna la mappa: griglia, obiettivi e player
-function drawMap() {
-  const { cols, rows, cellSize } = mapConfig;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Draw the circular mini‑map
+function drawMiniMap() {
+  const w = mmCanvas.width, h = mmCanvas.height;
+  mmCtx.clearRect(0, 0, w, h);
 
-  // 1) griglia
-  ctx.strokeStyle = '#555';
-  for (let i = 0; i <= cols; i++) {
-    ctx.beginPath();
-    ctx.moveTo(i * cellSize, 0);
-    ctx.lineTo(i * cellSize, rows * cellSize);
-    ctx.stroke();
-  }
-  for (let j = 0; j <= rows; j++) {
-    ctx.beginPath();
-    ctx.moveTo(0, j * cellSize);
-    ctx.lineTo(cols * cellSize, j * cellSize);
-    ctx.stroke();
-  }
+  // Outer circle
+  mmCtx.strokeStyle = '#888';
+  mmCtx.lineWidth   = 2;
+  mmCtx.beginPath();
+  mmCtx.arc(w/2, h/2, w/2 - 2, 0, 2 * Math.PI);
+  mmCtx.stroke();
 
-  // 2) obiettivi
-  objectives.forEach(obj => {
-    const cx = obj.x * cellSize + cellSize/2;
-    const cy = obj.y * cellSize + cellSize/2;
-    ctx.fillStyle = 'gold';
-    ctx.beginPath();
-    ctx.arc(cx, cy, cellSize/6, 0, 2*Math.PI);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px sans-serif';
-    ctx.fillText(obj.label, cx - cellSize/4, cy - cellSize/3);
+  // Points (gold) + You at center (blue)
+  mmPoints.concat([{ x:0, y:0, label: 'You' }]).forEach(p => {
+    const px = w/2 + p.x * (w/2 - 20);
+    const py = h/2 + p.y * (h/2 - 20);
+    mmCtx.fillStyle = p.label === 'You' ? '#3399ff' : 'gold';
+    mmCtx.beginPath();
+    mmCtx.arc(px, py, 6, 0, 2 * Math.PI);
+    mmCtx.fill();
+    if (p.label !== 'You') {
+      mmCtx.fillStyle = '#fff';
+      mmCtx.font = '10px sans-serif';
+      mmCtx.fillText(p.label, px + 8, py - 8);
+    }
   });
-
-  // 3) player
-  ctx.fillStyle = '#3399ff';
-  ctx.fillRect(
-    playerCell.x * cellSize + 4,
-    playerCell.y * cellSize + 4,
-    cellSize - 8,
-    cellSize - 8
-  );
 }
 
-// Gestione click: sposta il player dove clicchi
-canvas.addEventListener('click', (evt) => {
-  const rect = canvas.getBoundingClientRect();
-  const clickX = evt.clientX - rect.left;
-  const clickY = evt.clientY - rect.top;
-  const x = Math.floor(clickX / mapConfig.cellSize);
-  const y = Math.floor(clickY / mapConfig.cellSize);
-
-  // se clicchi dentro la griglia
-  if (x >= 0 && x < mapConfig.cols && y >= 0 && y < mapConfig.rows) {
-    playerCell = { x, y };
-    drawMap();
-
-    // qui potresti integrare la logica di gioco, ad es.:
-    // sendToGPT(`Mi sposto alla cella ${x},${y}`, 'narration');
-  }
+// Toggle expand/collapse on widget click
+mmWidget.addEventListener('click', e => {
+  if (e.target === mmCloseBtn) return;
+  mmWidget.classList.toggle('expanded');
+  drawMiniMap();
 });
 
-// Disegno iniziale
-drawMap();
-// ────────────────────────────────────────────────
+// Close button hides expanded view
+mmCloseBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  mmWidget.classList.remove('expanded');
+});
+
+// Initial draw
+drawMiniMap();
 // ─────────────────────────────────────────
-  
 });
 
 // 🔧 Funzione per aggiornare salute del player
