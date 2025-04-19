@@ -406,6 +406,30 @@ body {
   background-color: #333;
 }
 
+/* ─── App icon (✉) ────────────────────────────────── */
+.app-icon {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  font-size: 26px;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.app-icon:hover { background: rgba(255,255,255,0.25); }
+
+/* ─── Highlight contatto selezionato ──────────────── */
+#phone-contact-list li.selected {
+  background-color: #3b3b3b;
+  color: #ffcc33;
+}
+
 /* Conversazione */
 #phone-conversation {
   margin-top: 12px;
@@ -473,6 +497,7 @@ body {
   border-radius: 8px;
   pointer-events: none;
 }
+
 
 /* =================================== */
 /* ❌ Icona di dismiss sulla char-wrap */
