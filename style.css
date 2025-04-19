@@ -282,4 +282,5 @@ body {
   background: #333;    /* sfondo scuro */
   border-radius: 4px;
   display: block;
+  cursor: pointer;
 }
