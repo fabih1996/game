@@ -130,7 +130,8 @@ export async function loadIntro() {
         if (m) {
           const name = m[1];
           const cleanText = m[2];
-          p.classList.add(`character-color-${name}`);
+          const safeClass = `character-color-${name.replace(/\s+/g, "")}`;
+          p.classList.add(safeClass);
           p.classList.add("glow-talk"); // facoltativo: glow anche nell’intro
           p.textContent = `${name}: "${cleanText}"`;
           storyDiv.appendChild(p);
@@ -372,13 +373,13 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
         const rawText   = rest.join(":").trim();
         const cleanText = rawText.replace(/^"+|"+$/g, "");  // rimuove eventuali virgolette esterne
         const p = document.createElement("p");
-        p.classList.add(`character-color-${name}`);
+        const safeClass = `character-color-${name.replace(/\s+/g, "")}`; p.classList.add(safeClass);
         p.textContent = `${name}: "${cleanText}"`;
         storyDiv.appendChild(p);
       } else {
         // narrazione
         const p = document.createElement("p");
-        p.classList.add(`character-color-${name}`);
+        const safeClass = `character-color-${name.replace(/\s+/g, "")}`; p.classList.add(safeClass);
         p.classList.add("glow-talk"); // ✨ aggiunta dell’effetto
         p.textContent = `${name}: "${cleanText}"`;
         storyDiv.appendChild(p);
