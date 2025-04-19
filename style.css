@@ -281,7 +281,19 @@ body {
 }
 
 .glow-talk {
-  animation: glowTalk 2s ease-out;
+  animation: characterGlow 1.5s ease-in-out;
+}
+
+@keyframes characterGlow {
+  0% {
+    filter: drop-shadow(0 0 2px white);
+  }
+  50% {
+    filter: drop-shadow(0 0 6px white);
+  }
+  100% {
+    filter: drop-shadow(0 0 2px white);
+  }
 }
 
 @keyframes glowTalk {
