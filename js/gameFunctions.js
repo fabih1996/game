@@ -592,17 +592,36 @@ export function triggerExorcismEvent() {
 }
 
 export function startGame() {
-  const sel = document.getElementById("playerSelect").value;
-  if (sel === "custom") {
-    const name = document.getElementById("playerName").value.trim();
-    if (name) player.name = name;
-    player.isCustom = true;
-  } else if (sel) {
-    player.name = sel;
-    player.isCustom = false;
+  const name = document.getElementById("playerName").value.trim();
+  const age = document.getElementById("playerAge").value.trim();
+  const desc = document.getElementById("playerDesc").value.trim();
+
+  if (!name || !age || !desc) {
+    alert("Please fill in all fields to start the game.");
+    return;
   }
+
+  player = {
+    name,
+    age,
+    desc,
+    isCustom: true,
+    color: "#3399ff",
+    health: 100
+  };
+  setPlayer(player);
+
+  // Popola l’interfaccia
+  document.getElementById("player-name-display").textContent = `🧍 Name: ${name}`;
+  document.getElementById("player-age-display").textContent = `🎂 Age: ${age}`;
+  document.getElementById("player-desc-display").textContent = `📝 ${desc}`;
+  document.getElementById("player-health-bar").style.width = "100%";
+  document.getElementById("player-health-label").textContent = `❤️ Health: ${player.health}`;
+
+  // Mostra la sezione player
+  document.getElementById("player-section").style.display = "block";
+
+  // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
-  refreshSidebar();
-  loadIntro();
 }
