@@ -2,6 +2,7 @@
 import {
   characters,
   characterKnowledge,
+  currentLocation,
   loadCharacterLore,
   refreshSidebar,
   toggleSidebar,
@@ -14,7 +15,8 @@ import {
   setPlayer,
   scheduleArrival,
   travelTimes,
-  updatePlayerUI
+  updatePlayerUI,
+  setCurrentLocation
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
@@ -22,7 +24,6 @@ import {
 
 // Variabile globale per il giocatore
 let player;
-let currentLocation = "Nowhere";  // default iniziale
 
 const availableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Jo", "Ellen", "Bobby", "Ruby"
@@ -392,7 +393,8 @@ document.getElementById("go-to-location-btn").addEventListener("click", () => {
   const story = document.getElementById("story");
   story.innerHTML += `<p><strong>You travel to the ${location}.</strong></p>`;
   document.getElementById("location-info-box").classList.add("hidden");
-  import('./gameFunctions.js').then(mod => mod.setLocation(location));
+
+  setCurrentLocation(location);  // 🔥 aggiorna la posizione
 
   // (opzionale) potresti chiamare qui una funzione per reagire al cambio luogo
 });
