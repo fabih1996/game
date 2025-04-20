@@ -367,7 +367,7 @@ mmCanvas.addEventListener('click', e => {
 
 for (let locName in places) {
   const loc = places[locName];
-  if (!loc.discovered) continue; // mostra solo se è stato scoperto
+  if (!loc.discovered || locName === currentLocation) continue;
 
   const px = mmCanvas.width / 2 + loc.x * (mmCanvas.width / 2 - 20);
   const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
