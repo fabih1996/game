@@ -245,3 +245,12 @@ h1 {
   height: 100%;
   display: block;
 }
+
+/* ────────────── Episode Status ────────────── */
+#episode-status {
+  width: 100%;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+  font-size: 0.9rem;
+}
