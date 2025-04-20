@@ -22,7 +22,6 @@ import {
   updateEpisodeState,
   advanceStage,
   places,
-  currentLocation
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
