@@ -312,6 +312,13 @@ mmWidget.addEventListener('click', e => {
   if (e.target === mmCloseBtn) return;
   mmWidget.classList.toggle('expanded');
   drawMiniMap();
+
+  const storyBox = document.getElementById("story");
+  if (mmWidget.classList.contains("expanded")) {
+    storyBox.classList.add("with-expanded-map");
+  } else {
+    storyBox.classList.remove("with-expanded-map");
+  }
 });
 
 // Close button hides expanded view
