@@ -736,6 +736,7 @@ export function startGame() {
   style.textContent = `
   .character-color-${player.name.replace(/\s+/g, "")} {
     color: ${player.color};
+    font-weight: bold;
   }`;
 document.head.appendChild(style);
 
