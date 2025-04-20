@@ -340,21 +340,6 @@ mmCloseBtn.addEventListener('click', e => {
 // Initial draw
 drawMiniMap();
 
-//mapLocations
- const mapLocations = {
-  "Diner": {
-    x: -0.3,
-    y: 0.7,
-    label: "Diner",
-    description: "A greasy spoon with strong coffee."
-  },
-  "Shop": {
-    x: 0.6,
-    y: -0.4,
-    label: "Shop",
-    description: "A dusty place filled with hunting gear."
-  }
-};
 
  function showLocationInfo(label, description) {
   const infoBox = document.getElementById("location-info-box");
@@ -372,19 +357,21 @@ mmCanvas.addEventListener('click', e => {
 
   let clickedOnLocation = false;
 
-  for (let locName in mapLocations) {
-    const loc = mapLocations[locName];
-    const px = mmCanvas.width / 2 + loc.x * (mmCanvas.width / 2 - 20);
-    const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
-    const dx = clickX - px;
-    const dy = clickY - py;
-    console.log(`Clicked: (${clickX.toFixed(1)}, ${clickY.toFixed(1)}), ${loc.label} at (${px.toFixed(1)}, ${py.toFixed(1)}), dx=${dx.toFixed(1)} dy=${dy.toFixed(1)}`);
-    if (dx * dx + dy * dy < 10 * 10) {
-      showLocationInfo(loc.label, loc.description);
-      clickedOnLocation = true;
-      break;
-    }
+for (let locName in places) {
+  const loc = places[locName];
+  if (!loc.discovered) continue; // mostra solo se è stato scoperto
+
+  const px = mmCanvas.width / 2 + loc.x * (mmCanvas.width / 2 - 20);
+  const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
+  const dx = clickX - px;
+  const dy = clickY - py;
+
+  if (dx * dx + dy * dy < 10 * 10) {
+    showLocationInfo(locName, loc.description || "No description available.");
+    clickedOnLocation = true;
+    break;
   }
+}
 
   if (clickedOnLocation) {
     e.stopPropagation(); // 👈 blocca il click dal chiudere la mappa
