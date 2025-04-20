@@ -182,14 +182,14 @@ body {
 #phone-overlay.hidden { display: none !important; }
 .phone-screen {
   position: relative;
-  width: 260px; aspect-ratio: 9/16;
-  padding-top: 50px;
   max-height: 90vh;
-  background: rgba(34,34,34,0.9) center/cover no-repeat;
+  width: 260px;
+  background: rgba(34,34,34,0.95);
   border-radius: 16px;
   box-shadow: 0 0 18px rgba(0,0,0,0.8), 0 0 30px rgba(0,150,255,0.25);
-  overflow: hidden;
-  display: flex; flex-direction: column;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   padding: 16px;
 }
 #open-messages { margin-top: auto; align-self: flex-start; }
@@ -233,9 +233,17 @@ body {
   border: 1px solid #444; border-radius: 4px;
   background: #111; color: #eee; margin-right: 4px;
 }
-#phone-send, #phone-close {
-  padding: 6px 10px; border: none; border-radius: 4px; position: absolute;
-  background: #444; color: #eee; cursor: pointer; margin-top:4px;
+#phone-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
 }
 #phone-send:hover, #phone-close:hover { background: #555; }
 
