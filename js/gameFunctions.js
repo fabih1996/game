@@ -391,7 +391,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   if (type === "dialogue") {
     prompt = [
       `Scene context (last 20 rows):\n${contextLines}`,
-      `Current location: ${currentLocation}`
+      `Current location: ${currentLocation}`,
       `Player (${player.name}) dice: "${input}"`,
       `NOW: Reply only with new jokes of the characters present (${speakerNames.join(", ")}), ` +
         `formatted exactly as CharacterName: "Text". ` +
