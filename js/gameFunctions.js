@@ -372,10 +372,15 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   // 3) Aggiungi input del player alla storia
   const storyDiv = document.getElementById("story");
-  const playerMsg = document.createElement("p");
-  playerMsg.className = (type === "dialogue" ? "character-color-User" : "narration");
-  playerMsg.textContent = `${player.name}: "${input}"`;
-  storyDiv.appendChild(playerMsg);
+  const storyDiv = document.getElementById("story");
+  
+  // Appendi input del giocatore solo se non è un dialogo (GPT lo genera)
+  if (type !== "dialogue") {
+    const playerMsg = document.createElement("p");
+    playerMsg.className = "narration";
+    playerMsg.textContent = `${player.name}: "${input}"`;
+    storyDiv.appendChild(playerMsg);
+  }
 
   // 4) Costruisci prompt
   const speakerNames = characters
