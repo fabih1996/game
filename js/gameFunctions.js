@@ -18,7 +18,7 @@ export function setPlayer(p) {
 // ---------------------------
 // Azioni rapide e NPC disponibili
 // ---------------------------
-const allAvailableCharacters = [
+export const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
 ];
 const arrivalNPCs = allAvailableCharacters.filter(n => n !== "Other...");
