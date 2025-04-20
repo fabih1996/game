@@ -398,10 +398,10 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     prompt = [
       `Scene context (last 20 rows):\n${contextLines}`,
       `Current location: ${currentLocation}`,
-      `Player (${player.name}) dice: "${input}"`,
-      `NOW: Reply only with new jokes of the characters present (${speakerNames.join(", ")}), ` +
+      `Player (${player.name}) says: "${input}"`,
+      `NOW: Reply ONLY with lines spoken by the characters present (${speakerNames.join(", ")}), ` +
         `formatted exactly as CharacterName: "Text". ` +
-        `Never repeat sentences already present in the context, do not add narration or choices.`
+        `NEVER speak for the player (${player.name}). NEVER repeat player lines. NEVER narrate.`
     ].join("\n\n");
   } else {
     // per narrazione e RandomEvent puoi usare ancora il template originale
