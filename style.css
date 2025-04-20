@@ -161,6 +161,9 @@ body {
 .health-bar { height: 100%; width: 100%; background: linear-gradient(to right, red, orange); transition: width 0.4s ease; }
 .player-health-label { margin-top: 4px; font-weight: bold; }
 
+#player-hunger-bar  { background: linear-gradient(to right, orange, darkred); }
+#player-thirst-bar  { background: linear-gradient(to right, #00bfff, #004488); }
+
 /* ────────────── Phone Overlay & Rubrica ───────────── */
 #phone-overlay {
   position: fixed; inset: 0;
