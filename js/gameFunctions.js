@@ -399,11 +399,11 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       `Scene context (last 20 messages):\n${contextLines}`,
       `Current location: ${currentLocation}`,
       `Story phase: ${storyPhase}`,
-      `Player (${player.name}) says: "${input}"`,
+      `Player (${player.name}) says: "${input}". Do NOT speak as the player.`,
   
       `NOW: Continue the conversation naturally. Do not repeat previous replies.`,
       `The characters (${speakerNames.join(", ")}) should respond in-character.`,
-      `Responses must move the story forward.`,
+      `Only generate replies for the characters (${speakerNames.join(", ")}). Do NOT generate lines for ${player.name}.`
       `Allow very short narration only if needed to give context.`,
       `Format each line as CharacterName: "Text", or plain narration.`
     ].join("\n\n");
