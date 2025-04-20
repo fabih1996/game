@@ -310,16 +310,17 @@ function drawMiniMap() {
 
 // Toggle expand/collapse on widget click
 mmWidget.addEventListener('click', e => {
-  if (e.target === mmCloseBtn) return;
+  // Do not toggle if click came from the close button or info box
+  if (
+    e.target === mmCloseBtn || 
+    e.target.closest("#location-info-box")
+  ) return;
+
   mmWidget.classList.toggle('expanded');
   drawMiniMap();
 
   const storyBox = document.getElementById("story");
-  if (mmWidget.classList.contains("expanded")) {
-    storyBox.classList.add("with-expanded-map");
-  } else {
-    storyBox.classList.remove("with-expanded-map");
-  }
+  storyBox.classList.toggle("with-expanded-map", mmWidget.classList.contains("expanded"));
 });
 
 // Close button hides expanded view
@@ -383,7 +384,8 @@ document.getElementById("go-to-location-btn").addEventListener("click", () => {
   // OPTIONAL: add logic to update player position, call GPT, or trigger sounds
 });
 
- document.getElementById("close-location-info").addEventListener("click", () => {
+document.getElementById("close-location-info").addEventListener("click", e => {
+  e.stopPropagation(); // prevent map toggle
   document.getElementById("location-info-box").classList.add("hidden");
 });
  
