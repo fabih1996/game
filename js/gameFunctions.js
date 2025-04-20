@@ -372,7 +372,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
 
   // 3) Aggiungi input del player alla storia
   const storyDiv = document.getElementById("story");
-  const storyDiv = document.getElementById("story");
   
   // Appendi input del giocatore solo se non è un dialogo (GPT lo genera)
   if (type !== "dialogue") {
