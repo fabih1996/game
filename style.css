@@ -215,6 +215,7 @@ body {
 }
 
 /* ─────────────── Responsive Sidebar Fix ─────────────── */
+/* ─────────────── Responsive Sidebar Fix COMPLETO ─────────────── */
 @media (min-width: 768px) {
   #menu-toggle {
     display: none;
@@ -226,7 +227,6 @@ body {
     padding-top: 15px;
   }
 
-  /* Sposta tutto fuori dalla sidebar */
   #episode-status,
   .container,
   #user-character-select,
@@ -234,6 +234,8 @@ body {
   #exorcism-overlay,
   #phone-overlay {
     margin-left: 250px;
+    width: calc(100% - 250px);
+    box-sizing: border-box;
   }
 
   #input-area {
