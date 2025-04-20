@@ -32,7 +32,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // Carica il lore dei personaggi da file esterno
   await loadCharacterLore();
-  document.getElementById("start-btn").addEventListener("click", startGame);  
+  document.getElementById("start-btn").addEventListener("click", startGame); 
+  document.getElementById("sidebar").classList.add("open");
 
     // mostra overlay telefono
   document.getElementById("phone-button").onclick = () => {
@@ -330,6 +331,7 @@ mmCloseBtn.addEventListener('click', e => {
 // Initial draw
 drawMiniMap();
 // ─────────────────────────────────────────
+
 });
 
 // 🔧 Funzione per aggiornare salute del player
