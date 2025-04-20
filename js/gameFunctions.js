@@ -71,6 +71,16 @@ const characterColors = {
 const characterImages = {};
 
 // ---------------------------
+// Gestione luogo
+// ---------------------------
+
+export let currentLocation = "Unknown";
+
+export function setLocation(name) {
+  currentLocation = name;
+}
+
+// ---------------------------
 // Caricamento iniziale
 // ---------------------------
 export async function loadCharacterLore() {
@@ -317,7 +327,8 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   let prompt;
   if (type === "dialogue") {
     prompt = [
-      `Scene context (ultime 6 righe):\n${contextLines}`,
+      `Scene context (last 20 rows):\n${contextLines}`,
+      `Current location: ${currentLocation}`
       `Player (${player.name}) dice: "${input}"`,
       `NOW: Reply only with new jokes of the characters present (${speakerNames.join(", ")}), ` +
         `formatted exactly as CharacterName: "Text". ` +
@@ -330,7 +341,9 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       .replace("{{PLAYER_NAME}}", player.name)
       .replace("{{STORY_CONTEXT}}", contextLines)
       .replace("{{INPUT}}", input)
-      .replace("{{CHARACTERS}}", speakerNames.join(" and "));
+      .replace("{{CHARACTERS}}", speakerNames.join(" and "))
+      .replace("{{LOCATION}}", currentLocation);
+    
     if (isRandom) prompt += "\nThe player triggers a sudden supernatural event...";
     else if (type === "narration")
       prompt += `\nThe player narrates an action: "${input}"\nDescribe what happens next.`;
