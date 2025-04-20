@@ -304,8 +304,7 @@ const dynamicPoints = getDiscoveredPoints();
 // Centro della mappa = posizione attuale
 const center = places[currentLocation] || { x: 0, y: 0 };
 
-const allPoints = dynamicPoints.concat([{ x: center.x, y: center.y, label: 'You' }]);
-
+const allPoints = dynamicPoints.concat([{ x: center.x, y: center.y, label: currentLocation }]);
 allPoints.forEach(p => {
   const dx = p.x - center.x;
   const dy = p.y - center.y;
@@ -367,7 +366,7 @@ mmCanvas.addEventListener('click', e => {
 
 for (let locName in places) {
   const loc = places[locName];
-  if (!loc.discovered || locName === currentLocation) continue;
+  if (!loc.discovered) continue;
 
   const px = mmCanvas.width / 2 + loc.x * (mmCanvas.width / 2 - 20);
   const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
