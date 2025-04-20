@@ -387,7 +387,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const speakerNames = characters
     .filter(c => c.status === "present" && selectedCharacters.includes(c.name))
     .map(c => c.name);
-  if (!speakerNames.includes(player.name)) speakerNames.push(player.name);
 
   const contextLines = Array.from(storyDiv.querySelectorAll("p"))
     .slice(-20).map(p => p.textContent).join("\n");
