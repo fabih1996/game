@@ -226,8 +226,13 @@ body {
     padding-top: 15px;
   }
 
-  /* Sposta tutto il contenuto tranne la sidebar */
-  body > *:not(#sidebar) {
+  /* Sposta tutto fuori dalla sidebar */
+  #episode-status,
+  .container,
+  #user-character-select,
+  #game-interface,
+  #exorcism-overlay,
+  #phone-overlay {
     margin-left: 250px;
   }
 
