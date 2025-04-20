@@ -384,7 +384,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   } else if (type === "narration") {
   const narr = document.createElement("p");
   narr.classList.add("narration");
-  narr.textContent = `You ${input.charAt(0).toLowerCase() + input.slice(1)}`; // es: “You open the door”
+  narr.textContent = `You: ${input.charAt(0).toLowerCase() + input.slice(1)}`; // es: “You open the door”
   storyDiv.appendChild(narr);
 }
 
