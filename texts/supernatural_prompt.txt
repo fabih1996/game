@@ -5,6 +5,9 @@ INSTRUCTION
 CURRENT LOCATION
 • The player is currently at: {{LOCATION}}.
 
+CURRENT STORY PHASE
+• The story is currently in the: {{STORY_PHASE}} phase.
+
 ALLOWED SPEAKERS
 Dean Sam Castiel Crowley Bobby Ruby Jo Ellen {{PLAYER_NAME}}
 
