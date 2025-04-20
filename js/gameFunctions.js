@@ -604,6 +604,8 @@ export function startGame() {
   const name = document.getElementById("playerName").value.trim();
   const age = document.getElementById("playerAge").value.trim();
   const desc = document.getElementById("playerDesc").value.trim();
+  const hungerBar = document.getElementById("player-hunger-bar");
+  const thirstBar = document.getElementById("player-thirst-bar");
   console.log("Name:", name, "Age:", age, "Desc:", desc);
 
   if (!name || !age || !desc) {
