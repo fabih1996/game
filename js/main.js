@@ -359,8 +359,8 @@ mmCanvas.addEventListener('click', e => {
   if (!mmWidget.classList.contains("expanded")) return;
 
   const rect = mmCanvas.getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const clickY = e.clientY - rect.top;
+  const clickX = (e.clientX - rect.left) * (mmCanvas.width / rect.width);
+  const clickY = (e.clientY - rect.top) * (mmCanvas.height / rect.height);
 
   let clickedOnLocation = false;
 
