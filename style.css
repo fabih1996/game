@@ -239,7 +239,7 @@ body {
 #narrationInput { background:#222; color:#bbb; font-style:italic; }
 #dialogueInput  { background:#333; color:#eee; }
 
-#story { min-height:100px; padding:10px; margin-top:20px; background:#111; border-radius:4px; padding-top: 160px;}
+#story { min-height:100px; padding:10px; margin-top:20px; background:#111; border-radius:4px;}
 
 #story.with-expanded-map {
   margin-top: 180px;
