@@ -474,6 +474,15 @@ lines.forEach(line => {
     .forEach(line => {
       if (/^[A-Z][a-zA-Z\s'-]+:/.test(line)) {
         const [name, ...rest] = line.split(":");
+
+        if (!characters.some(c => c.name === name)) {
+          characters.push({ name, status: "present" });
+          refreshSidebar(); // aggiorna la sidebar con l’aggiunta
+        }
+        
+        if (!selectedCharacters.includes(name)) {
+          selectedCharacters.push(name); // ora può rispondere
+        }
         // Se è una battuta del player, la saltiamo (vedi punto 2)
         if (name === "Narrator" || name === player.name) return;  // salta Narratore e Player
       
