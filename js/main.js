@@ -2,6 +2,7 @@
 import {
   characters,
   characterKnowledge,
+  allAvailableCharacters,
   currentLocation,
   loadCharacterLore,
   refreshSidebar,
