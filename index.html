@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <!-- Sidebar -->
   <div id="sidebar">
     <h3>Characters</h3>
@@ -15,44 +16,46 @@
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
     <button id="phone-button" class="game-button">📱 Phone</button>
 
-   <!-- Player Info (hidden until creation) -->
-<div id="player-section" class="player-card hidden">
-  <h3>Player</h3>
-  <div class="char-wrapper" style="--ring-color: #3399ff;">
-    <img class="char-icon" src="images/user.png" alt="User" />
-  </div>
-  <div id="player-details">
-    <div id="player-name-display" class="player-line"></div>
-    <div id="player-age-display" class="player-line"></div>
-    <div id="player-desc-display" class="player-line"></div>
+    <!-- Player Info (hidden until creation) -->
+    <div id="player-section" class="player-card hidden">
+      <h3>Player</h3>
+      <div class="char-wrapper" style="--ring-color: #3399ff;">
+        <img class="char-icon" src="images/user.png" alt="User" />
+      </div>
+      <div id="player-details">
+        <div id="player-name-display" class="player-line"></div>
+        <div id="player-age-display" class="player-line"></div>
+        <div id="player-desc-display" class="player-line"></div>
 
-    <!-- Health -->
-    <div class="player-line">❤️ Health:
-      <span class="player-health-label" id="player-health-label">100</span>
-    </div>
-    <div class="health-bar-container">
-      <div class="health-bar" id="player-health-bar"></div>
-    </div>
+        <!-- Health -->
+        <div class="player-line">❤️ Health:
+          <span class="player-health-label" id="player-health-label">100</span>
+        </div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-health-bar"></div>
+        </div>
 
-    <!-- Hunger -->
-    <div class="player-line">🍽️ Hunger:
-      <span class="player-health-label" id="player-hunger-label">100</span>
-    </div>
-    <div class="health-bar-container">
-      <div class="health-bar" id="player-hunger-bar"></div>
-    </div>
+        <!-- Hunger -->
+        <div class="player-line">🍽️ Hunger:
+          <span class="player-health-label" id="player-hunger-label">100</span>
+        </div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-hunger-bar"></div>
+        </div>
 
-    <!-- Thirst -->
-    <div class="player-line">💧 Thirst:
-      <span class="player-health-label" id="player-thirst-label">100</span>
+        <!-- Thirst -->
+        <div class="player-line">💧 Thirst:
+          <span class="player-health-label" id="player-thirst-label">100</span>
+        </div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-thirst-bar"></div>
+        </div>
+      </div>
     </div>
-    <div class="health-bar-container">
-      <div class="health-bar" id="player-thirst-bar"></div>
-    </div>
-  </div>
-</div>
+  </div> <!-- Fine Sidebar -->
 
-  <!-- Main container -->
+
+  <!-- Main container FUORI dalla sidebar -->
   <div class="container">
     <h1>Supernatural: Role-Playing Adventure</h1>
 
@@ -74,16 +77,14 @@
 
     <!-- Game interface -->
     <div id="game-interface" style="display: none;">
-        <!-- Mini‑map widget -->
-        <div id="mini-map-widget" class="collapsed">
-          <canvas id="mini-map-canvas" width="150" height="150"></canvas>
-          <!-- nord che oscilla -->
-          <div id="north-pointer"></div>
-          <!-- close button (visibile solo in expanded) -->
-          <button id="mini-map-close">✕</button>
-        </div>
+      <!-- Mini‑map widget -->
+      <div id="mini-map-widget" class="collapsed">
+        <canvas id="mini-map-canvas" width="150" height="150"></canvas>
+        <div id="north-pointer"></div>
+        <button id="mini-map-close">✕</button>
+      </div>
       <div id="story"></div>
-            
+
       <div id="input-area">
         <input type="text" id="narrationInput" placeholder="Narrate your action..." />
         <input type="text" id="dialogueInput" placeholder="Say something to a character..." />
@@ -123,6 +124,7 @@
 
   <!-- Main JS -->
   <script type="module" src="js/main.js"></script>
-    
+
 </body>
 </html>
+
