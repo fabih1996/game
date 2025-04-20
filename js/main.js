@@ -342,7 +342,7 @@ function updateHealthUI() {
   if (bar && label) {
     const percent = player.health;
     bar.style.width = percent + "%";
-    label.textContent = `❤️ Health: ${percent}`;
+    label.textContent = `${percent}`;
   }
 }
 
