@@ -512,8 +512,3 @@ h1 {
   background: #555;
 }
 
-/* TEST: dovrebbe colorare #story di verde */
-#story {
-  background: lime !important;
-  border: 2px solid red !important;
-}
