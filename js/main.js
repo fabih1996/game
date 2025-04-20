@@ -28,10 +28,6 @@ import {
 // Variabile globale per il giocatore
 let player;
 
-const availableCharacters = [
-  "Dean", "Sam", "Castiel", "Crowley", "Jo", "Ellen", "Bobby", "Ruby"
-];
-
 // Al caricamento del DOM, inizializza il gioco
 window.addEventListener("DOMContentLoaded", async () => {
 
