@@ -123,43 +123,6 @@
 
   <!-- Main JS -->
   <script type="module" src="js/main.js"></script>
-
-    <!-- TEMPORANEO -->
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-  const startBtn = document.getElementById("start-btn");
-  const playerSection = document.getElementById("player-section");
-  const userCharSelect = document.getElementById("user-character-select");
-
-  console.log("Verifica DOM iniziale:");
-
-  if (!startBtn) {
-    console.error("🚫 start-btn NON TROVATO!");
-  } else {
-    console.log("✅ start-btn trovato");
-  }
-
-  if (!playerSection) {
-    console.error("🚫 player-section NON TROVATO!");
-  } else {
-    console.log("✅ player-section trovato");
-  }
-
-  if (!userCharSelect) {
-    console.error("🚫 user-character-select NON TROVATO!");
-  } else {
-    console.log("✅ user-character-select trovato");
-  }
-
-  // Forza visualizzazione del character select
-  if (userCharSelect) {
-    userCharSelect.style.display = "block";
-    userCharSelect.classList.remove("hidden");
-    console.log("✅ user-character-select reso visibile");
-  }
-});
-</script>
- <!-- TEMPORANEO -->
     
 </body>
 </html>
