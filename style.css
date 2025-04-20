@@ -1,47 +1,67 @@
-/*────────────────────────────────────────────────
-  Supernatural RPG - style.css
-  Full-featured stylesheet for sidebar, player card,
-  story panel, minimap, phone UI, overlays, controls
-────────────────────────────────────────────────*/
-
-/*───────── Global Reset & Base Styles ─────────*/
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
+/* ──────────────────────────
+   GLOBAL RESET & BASE STYLES
+────────────────────────── */
 body {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  min-height: 100vh;
   background: #111;
   color: #eee;
   font-family: 'Segoe UI', sans-serif;
-  line-height: 1.6;
-  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-a { color: inherit; text-decoration: none; }
-button { font-family: inherit; }
+.container { padding: 10px; }
 
-.hidden { display: none !important; }
-
-/*───────── Sidebar ─────────*/
-#sidebar {
-  width: 250px;
+/* ────────────── Menu Toggle ☰ ────────────── */
+#menu-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: #222;
-  padding: 20px 15px;
-  border-right: 2px solid #444;
-  height: 100vh;
+  color: #fff;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1100;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ───────────────── Sidebar ───────────────── */
+#sidebar {
+  background: #222;
+  padding: 15px;
+  width: 250px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: -250px;
+  z-index: 1050;
   overflow-y: auto;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
+  transition: left 0.3s ease;
+  padding-top: 70px;
+  border-bottom: 2px solid #444;
 }
-#sidebar h3 {
-  margin-top: 0;
-  font-size: 1.2rem;
+#sidebar.open { left: 0; }
+
+/* ─────────── Sidebar Buttons ─────────── */
+#music-toggle, #phone-button {
+  background: #444;
+  color: #fff;
+  font-size: 16px;
+  padding: 8px 12px;
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
+#music-toggle:hover, #phone-button:hover { background: #666; }
+
+/* ────────────── Characters ────────────── */
 #charListPresent {
   list-style: none;
   padding: 0;
@@ -50,48 +70,26 @@ button { font-family: inherit; }
 #charListPresent li {
   display: inline-block;
   margin: 6px;
-}
-#music-toggle,
-#phone-button {
-  width: 100%;
-  display: block;
-  background: #444;
-  color: #fff;
-  font-size: 16px;
-  padding: 8px 12px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-#music-toggle:hover,
-#phone-button:hover {
-  background: #666;
+  vertical-align: middle;
 }
 
-/*───────── Player Card ─────────*/
-#player-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #444;
-}
-#player-section h3 {
-  margin-bottom: 10px;
-}
+/* Sidebar & NPC wrappers: bordo+ring */
 .char-wrapper {
   position: relative;
-  width: 50px;
+  z-index: 1;               /* l’icona sta sopra al ring */
+  width: 50px;              /* <-- dimensione fissa per sidebar */
   height: 50px;
-  z-index: 1;
 }
+
+/* Ring “pending” semitrasparente sotto l’icona */
 .char-wrapper.pending::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: -4px;
-  left: -4px;
+  top: -4px; left: -4px;
   width: calc(100% + 8px);
   height: calc(100% + 8px);
   border-radius: 50%;
+  /* ring fino a --prog, poi completamente trasparente */
   background: conic-gradient(
     var(--ring-color, #00bfff) var(--prog),
     transparent 0
@@ -100,144 +98,199 @@ button { font-family: inherit; }
   z-index: 0;
 }
 .char-wrapper.pending img {
-  opacity: 0.5;
+  opacity: 0.5; /* icona attenuata */
 }
+
+/* Icona dentro il wrapper */
 .char-icon {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   border: 2px solid transparent;
-  transition: border-color 0.2s;
+  transition: 0.2s;
 }
+
 .char-icon.selected {
   border-color: currentColor;
   box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
   animation: glowPulse 2s infinite ease-in-out;
 }
+
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
-  50%     { box-shadow: 0 0 20px currentColor, 0 0 35px currentColor; }
+  0%,100% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; }
+  50%    { box-shadow: 0 0 20px currentColor, 0 0 35px currentColor; }
 }
 
+.dismiss-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 14px;
+  color: #f66;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.char-wrapper:hover .dismiss-btn { opacity: 1; }
+
+/* ─────────── Character colour classes ─────────── */
+.character-color-Dean    { color: #FFD700; font-weight: bold; }
+.character-color-Sam     { color: #00BFFF; font-weight: bold; }
+.character-color-Castiel { color: #7FFFD4; font-weight: bold; }
+.character-color-Crowley { color: #FF4500; font-weight: bold; }
+.character-color-Bobby   { color: #90EE90; font-weight: bold; }
+.character-color-Ruby    { color: #FF69B4; font-weight: bold; }
+.character-color-Jo      { color: #FF8C00; font-weight: bold; }
+.character-color-Ellen   { color: #8A2BE2; font-weight: bold; }
+.character-color-Narrator{ color: #ddd; }
+.character-color-User    { color: #3399ff; font-weight: bold; }
+
+/* ─────────────── Player Card ─────────────── */
+#player-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #444;
+}
+#player-details { margin-top: 10px; font-size: 14px; }
 .player-line {
+  margin: 6px 0;
   display: flex;
   align-items: center;
   gap: 6px;
-  margin: 6px 0;
-  font-size: 14px;
 }
 .health-bar-container {
-  width: 100%;
-  height: 16px;
-  background: #222;
-  border: 1px solid #888;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 6px;
+  width: 100%; height: 16px;
+  background: #222; border: 1px solid #888;
+  border-radius: 5px; margin-top: 6px; overflow: hidden;
 }
-.health-bar {
-  height: 100%;
-  width: 100%;
-  transition: width 0.4s ease;
+.health-bar { height: 100%; width: 100%; background: linear-gradient(to right, red, orange); transition: width 0.4s ease; }
+.player-health-label {
+  font-weight: normal;
+  color: #ddd;
 }
 #player-health-bar  { background: linear-gradient(to right, #ff6666, #cc0000); }
-#player-hunger-bar { background: linear-gradient(to right, orange, darkred); }
-#player-thirst-bar { background: linear-gradient(to right, #00bfff, #004488); }
+#player-hunger-bar  { background: linear-gradient(to right, orange, darkred); }
+#player-thirst-bar  { background: linear-gradient(to right, #00bfff, #004488); }
 
-/*───────── Main Content ─────────*/
-.main-content {
+/* ────────────── Phone Overlay & Rubrica ───────────── */
+#phone-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1200;
+}
+#phone-overlay.hidden { display: none !important; }
+.phone-screen {
+  position: relative;
+  width: 90vw;
+  max-width: 360px;
+  height: 90vh;
+  background: rgba(34,34,34,0.95);
+  border-radius: 16px;
+  box-shadow: 0 0 18px rgba(0,0,0,0.8), 0 0 30px rgba(0,150,255,0.25);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-top: 50px; /* spazio per il pulsante */
+}
+#open-messages { margin-top: auto; align-self: flex-start; }
+#phone-contact-list {
+  list-style: none; margin: 0; padding: 0;
+  background: rgba(0,0,0,0.4); border: 1px solid #444;
+  border-radius: 4px; max-height: 200px; overflow-y: auto;
+}
+#phone-contact-list li {
+  padding: 8px; border-bottom: 1px solid #444;
+  cursor: pointer; color: #fff;
+}
+#phone-contact-list li:last-child { border-bottom: none; }
+#phone-contact-list li:hover, #phone-contact-list li.selected {
+  background: #555; color: #fff; font-weight: bold;
+}
+
+/* ─────────────── App Icon ─────────────── */
+.app-icon {
+  width: 48px; height: 48px;
+  border: none; border-radius: 12px;
+  font-size: 26px; line-height: 48px; text-align: center;
+  background: rgba(0,0,0,0.35); color: #fff;
+  cursor: pointer; transition: background 0.2s;
+}
+.app-icon:hover { background: rgba(0,0,0,0.5); }
+
+/* ─────────────── Conversation ─────────────── */
+#phone-conversation {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 0 16px;
+}#messages {
+  flex: 1; background: #111; padding: 8px;
+  border: 1px solid #444; border-radius: 4px;
+  overflow-y: auto; margin-bottom: 8px;
 }
-#episode-status {
-  font-size: .9rem;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #444;
+.msg-you { text-align: right; margin: 4px 0; color: #9cf; }
+.msg-them{ text-align: left; margin: 4px 0; color: #fc9; }
+
+#phone-input {
+  flex: 0;
+  width: calc(100% - 70px); padding: 6px;
+  border: 1px solid #444; border-radius: 4px;
+  background: #111; color: #eee; margin-right: 4px;
 }
-#user-character-select h1 {
-  margin: 0 0 10px;
-  font-size: 2em;
-}
-#customPlayerFields {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 10px 0;
-}
-#customPlayerFields label { white-space: nowrap; }
-#customPlayerFields input {
-  padding: 6px;
-  border-radius: 5px;
-  border: 1px solid #555;
-  background: #222;
-  color: #eee;
-}
-#start-btn {
-  background: #555;
+#phone-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: #444;
   color: #fff;
-  padding: 8px 14px;
   border: none;
-  border-radius: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
   cursor: pointer;
 }
-#start-btn:hover { background: #777; }
+#phone-send:hover, #phone-close:hover { background: #555; }
 
-/*───────── Story Panel ─────────*/
+/* ───────────────── Creation Inputs & Story ───────────────── */
+#user-character-select { margin-top: 20px; }
+#customPlayerFields label { margin-right: 6px; }
+#customPlayerFields input {
+  padding: 6px; margin-right: 10px; margin-bottom: 10px;
+  border-radius: 5px; border: 1px solid #555;
+  background: #222; color: #eee;
+}
+#input-area { margin-top: 20px; display: flex; flex-direction: column; gap:10px; }
+#narrationInput, #dialogueInput { width:100%; padding:10px; font-size:18px; border:none; border-radius:5px; outline:none; }
+#narrationInput { background:#222; color:#bbb; font-style:italic; }
+#dialogueInput  { background:#333; color:#eee; }
+
 #story {
   padding: 20px;
+  padding-right: 200px; /* per lasciare spazio alla mappa */
+  min-height: 100px;
   background: #111;
-  border-radius: 8px;
-  min-height: 150px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-}
-
-/*───────── Input Area ─────────*/
-#input-area {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  border-radius: 4px;
   margin-top: 20px;
+  transition: margin-top 0.4s ease;
 }
-#narrationInput,
-#dialogueInput {
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  outline: none;
-  font-size: 16px;
-}
-#narrationInput { background: #222; color: #bbb; font-style: italic; }
-#dialogueInput  { background: #333; color: #eee; }
 
-/*───────── Map & MiniMap ─────────*/
-#map {
-  position: relative;
-  width: 100%;
-  height: 150px;
-  margin: 10px 0;
-  border: 1px solid #555;
-  background: #111;
-  border-radius: 10px;
-  overflow: hidden;
+#story.with-expanded-map {
+  margin-top: 180px;
 }
-.map-dot {
-  position: absolute;
-  background-color: yellow;
-  border-radius: 50%;
-  font-size: 10px;
-  padding: 3px 6px;
-  transform: translate(-50%, -50%);
-  color: black;
-  border: 1px solid black;
-}
-.map-dot.current { border: 2px solid red; }
 
+/* ─────────────── Responsive ─────────────── */
+@media (min-width: 768px) {
+  #menu-toggle { display: none; }
+  .container { margin-left:250px; padding:20px; }
+  #sidebar { left:0; width:230px; padding-top:15px; }
+  #input-area { flex-direction: row; flex-wrap: wrap; gap:10px; }
+  #narrationInput, #dialogueInput { width:45%; }
+}
+
+/* ─────────── Mini‑map Widget ─────────── */
 #mini-map-widget {
   position: fixed;
   top: 16px;
@@ -247,33 +300,61 @@ button { font-family: inherit; }
   border-radius: 50%;
   background: rgba(20,20,20,0.8);
   box-shadow: 0 0 8px rgba(0,0,0,0.6);
-  z-index: 2000;
-  overflow: hidden;
   cursor: pointer;
+  overflow: hidden;
+  transition: width 0.3s, height 0.3s;
+  z-index: 2000;
+  float: right;
+  shape-outside: circle();
 }
-#mini-map-canvas { width: 100%; height: 100%; display: block; }
+#mini-map-widget.expanded {
+  width: 300px;
+  height: 300px;
+}
+
+/* canvas fills the widget */
+#mini-map-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* north pointer: small red triangle */
+#north-pointer {
+  position: absolute;
+  top: 8px;               /* un po’ più in alto */
+  left: calc(50% - 6px);  /* centrato orizzontalmente */
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 12px solid red;
+  transform-origin: bottom center;
+  animation: wobble 2s ease-in-out infinite;
+}
+
+/* close button (visible only when expanded) */
 #mini-map-close {
   position: absolute;
   top: 8px;
   right: 8px;
+  display: none;
   background: rgba(0,0,0,0.6);
   border: none;
   color: #fff;
+  font-size: 18px;
   border-radius: 50%;
   width: 28px;
   height: 28px;
-  font-size: 18px;
   cursor: pointer;
-  display: none;
-  z-index: 2001;
 }
-#mini-map-widget.expanded { width: 300px; height: 300px; }
-#mini-map-widget.expanded #mini-map-close { display: block; }
+#mini-map-widget.expanded #mini-map-close {
+  display: block;
+}
 
-/*───────── Location Info Box ─────────*/
 #location-info-box {
   position: absolute;
-  top: 180px;
+  top: 160px;
   right: 16px;
   width: 220px;
   background: #1c1c1c;
@@ -281,141 +362,61 @@ button { font-family: inherit; }
   border: 1px solid #444;
   border-radius: 8px;
   padding: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.6);
   z-index: 2100;
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
 }
-#location-info-box.hidden { display: none; }
+
+#location-info-box.hidden {
+  display: none;
+}
+
 #go-to-location-btn {
-  display: block;
-  width: 100%;
   margin-top: 10px;
   background: #333;
   color: #fff;
   border: none;
-  padding: 6px;
+  padding: 6px 10px;
   border-radius: 4px;
   cursor: pointer;
 }
-#go-to-location-btn:hover { background: #555; }
-
-/*───────── Overlays ─────────*/
-#exorcism-overlay,
-#phone-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-#exorcism-overlay.hidden,
-#phone-overlay.hidden { display: none; }
-
-/*───────── Exorcism ─────────*/
-#exorcism-overlay #pentagram,
-#exorcism-overlay #ghost,
-#exorcism-overlay #chant {
-  color: #fff;
-  font-size: 2em;
-  margin: 0 10px;
-}
-
-/*───────── Phone UI ─────────*/
-.phone-screen {
-  background: rgba(34,34,34,0.95);
-  border-radius: 16px;
-  width: 90vw;
-  max-width: 360px;
-  height: 90vh;
-  display: flex;
-  flex-direction: column;
-  padding-top: 50px;
-  position: relative;
-  overflow: hidden;
-}
-#open-messages {
-  margin-top: auto;
-  align-self: flex-start;
-}
-#phone-contact-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background: rgba(0,0,0,0.4);
-  border: 1px solid #444;
-  border-radius: 4px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-#phone-contact-list li {
-  padding: 8px;
-  border-bottom: 1px solid #444;
-  cursor: pointer;
-  color: #fff;
-}
-#phone-contact-list li:last-child { border-bottom: none; }
-#phone-contact-list li:hover,
-#phone-contact-list li.selected {
+#go-to-location-btn:hover {
   background: #555;
-  font-weight: bold;
-}
-.app-icon {
-  width: 48px;
-  height: 48px;
-  background: rgba(0,0,0,0.35);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 26px;
-  cursor: pointer;
-}
-.app-icon:hover { background: rgba(0,0,0,0.5); }
-#phone-conversation {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 0 16px;
-}
-#messages {
-  flex: 1;
-  background: #111;
-  padding: 8px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  overflow-y: auto;
-  margin-bottom: 8px;
-}
-.msg-you { text-align: right; color: #9cf; margin: 4px 0; }
-.msg-them{ text-align: left; color: #fc9; margin: 4px 0; }
-#phone-input {
-  width: calc(100% - 70px);
-  padding: 6px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  background: #111;
-  color: #eee;
-  margin-right: 4px;
-}
-#phone-send,
-#phone-close {
-  background: #444;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-#phone-send:hover,
-#phone-close:hover { background: #555; }
-
-/*───────── Glow Animation ─────────*/
-.glow-talk {
-  animation: characterTextGlow 1.2s ease-in-out;
-}
-@keyframes characterTextGlow {
-  0%,100% { text-shadow: 0 0 6px currentColor, 0 0 10px currentColor; }
-  50%     { text-shadow: 0 0 14px currentColor, 0 0 24px currentColor; }
 }
 
+#map {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin-top: 10px;
+  border: 1px solid #555;
+  background: #111;
+  border-radius: 10px;
+}
+
+.map-dot {
+  position: absolute;
+  background-color: yellow;
+  border-radius: 50%;
+  font-size: 10px;
+  padding: 3px 6px;
+  cursor: default;
+  border: 1px solid black;
+  transform: translate(-50%, -50%);
+  color: black;
+}
+
+.map-dot.current {
+  border: 2px solid red;
+}
+
+/* wobble animation for the north pointer */
+@keyframes wobble {
+  0%   { transform: rotate(-5deg) translate(-50%, -100%); }
+  50%  { transform: rotate(5deg) translate(-50%, -100%); }
+  100% { transform: rotate(-5deg) translate(-50%, -100%); }
+}
+
+/* ─────────────── Utility ─────────────── */
+.hidden { display: none !important; }
+.glow-talk { animation: characterTextGlow 1.2s ease-in-out; }
+@keyframes characterTextGlow { 0%,100% { text-shadow: 0 0 6px currentColor, 0 0 10px currentColor; } 50% { text-shadow: 0 0 14px currentColor, 0 0 24px currentColor; } }

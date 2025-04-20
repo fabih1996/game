@@ -7,75 +7,114 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- ─────────── Sidebar ─────────── -->
+<div id="episode-status">
+  <strong>Episode Stage:</strong> <span id="episode-stage-display">intro</span>
+</div>
+  <!-- Sidebar -->
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
-    <button id="music-toggle">🎵 Music On/Off</button>
-    <button id="phone-button">📱 Phone</button>
 
-    <div id="player-section" class="player-card hidden">
-      <h3>Player</h3>
-      <div class="char-wrapper" style="--ring-color:#3399ff">
-        <img class="char-icon" src="images/user.png" alt="User" />
-      </div>
-      <div id="player-details">
-        <div id="player-name-display" class="player-line"></div>
-        <div id="player-age-display" class="player-line"></div>
-        <div id="player-desc-display" class="player-line"></div>
-        <div class="player-line">
-          <span id="player-health-label">❤️ Health: 100</span>
-        </div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="player-health-bar"></div>
-        </div>
-        <div class="player-line">
-          <span id="player-hunger-label">🍽️ Hunger: 100</span>
-        </div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="player-hunger-bar"></div>
-        </div>
-        <div class="player-line">
-          <span id="player-thirst-label">💧 Thirst: 100</span>
-        </div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="player-thirst-bar"></div>
-        </div>
-      </div>
+    <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
+    <button id="phone-button" class="game-button">📱 Phone</button>
+
+<!-- Player Info (hidden until creation) -->
+<div id="player-section" class="player-card hidden">
+  <h3>Player</h3>
+  <div class="char-wrapper" style="--ring-color: #3399ff;">
+    <img class="char-icon" src="images/user.png" alt="User" />
+  </div>
+  
+  <div id="player-details">
+    <div id="player-name-display" class="player-line"></div>
+    <div id="player-age-display" class="player-line"></div>
+    <div id="player-desc-display" class="player-line"></div>
+
+    <!-- Health -->
+    <div class="player-line">
+      <span class="player-health-label" id="player-health-label">❤️ Health: 100</span>
+    </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-health-bar"></div>
+    </div>
+
+    <!-- Hunger -->
+    <div class="player-line">
+       <span id="player-hunger-label">🍽️ Hunger: 100</span>
+    </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-hunger-bar"></div>
+    </div>
+
+    <!-- Thirst -->
+    <div class="player-line">
+       <span id="player-thirst-label">💧 Thirst: 100</span>
+    </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-thirst-bar"></div>
     </div>
   </div>
+</div>
+  </div> <!-- Fine Sidebar -->
 
-  <!-- ─────────── Main Content ─────────── -->
-  <div class="main-content">
-    <div id="episode-status">
-      <strong>Episode Stage:</strong> <span id="episode-stage-display">intro</span>
-    </div>
 
+  <!-- Main container FUORI dalla sidebar -->
+  <div class="container">
+    <h1>Supernatural: Role-Playing Adventure</h1>
+
+    <!-- Character Creation -->
     <div id="user-character-select">
-      <h1>Supernatural: Role‑Playing Adventure</h1>
       <h3>Create Your Character</h3>
       <div id="customPlayerFields">
-        <label>Name:</label>
-        <input id="playerName" type="text" placeholder="Your name" />
-        <label>Age:</label>
-        <input id="playerAge" type="number" placeholder="Your age" />
-        <label>Description:</label>
-        <input id="playerDesc" type="text" placeholder="Short description" />
+        <label for="playerName">Name:</label>
+        <input type="text" id="playerName" placeholder="Your name" />
+
+        <label for="playerAge">Age:</label>
+        <input type="number" id="playerAge" placeholder="Your age" />
+
+        <label for="playerDesc">Description:</label>
+        <input type="text" id="playerDesc" placeholder="Short description" />
       </div>
       <button id="start-btn">Start Game</button>
     </div>
 
-    <div id="game-interface" class="hidden">
-      <div id="story"></div>
-      <div id="input-area">
-        <input id="narrationInput" placeholder="Narrate your action…" />
-        <input id="dialogueInput" placeholder="Say something to a character…" />
+    <!-- Game interface -->
+    <div id="game-interface" style="display: none;">
+      <!-- Mini‑map widget -->
+      <div id="mini-map-widget" class="collapsed">
+        <canvas id="mini-map-canvas" width="150" height="150"></canvas>
+        <div id="north-pointer"></div>
+        <button id="mini-map-close">✕</button>
       </div>
-      <!-- qui vanno mini‑map, map container, location‑info, audio ecc. -->
+      <!-- Mappa dei luoghi -->
+    <div id="map" class="map-container"></div>
+      <!-- Location-info-box -->
+    <div id="location-info-box" class="hidden">
+      <button id="close-location-info" style="float:right;">&#10005;</button>
+      <strong id="location-name">Location Name</strong>
+      <p id="location-description">Short description goes here.</p>
+      <button id="go-to-location-btn">Go here</button>
+    </div>
+      <div id="story"></div>
+
+      <div id="input-area">
+        <input type="text" id="narrationInput" placeholder="Narrate your action..." />
+        <input type="text" id="dialogueInput" placeholder="Say something to a character..." />
+      </div>
+
+      <!-- Audio -->
+      <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
+      <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
+      <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
+      <audio id="sound-demon" src="sounds/demon_growl.mp3" preload="auto"></audio>
+      <audio id="sound-whisper" src="sounds/whisper.mp3" preload="auto"></audio>
+      <audio id="sound-impala" src="sounds/impala_engine.mp3" preload="auto"></audio>
+      <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
+      <audio id="sound-arrival" src="sounds/arrival.mp3" preload="auto"></audio>
     </div>
   </div>
 
-  <!-- ─────────── Overlays come figli di body ─────────── -->
+  <!-- Overlays -->
   <div id="exorcism-overlay" class="hidden">
     <div id="pentagram">⛧</div>
     <div id="ghost">👻</div>
@@ -87,14 +126,17 @@
       <button id="open-messages" class="app-icon">✉</button>
       <ul id="phone-contact-list" class="hidden"></ul>
       <div id="phone-conversation" class="hidden">
-        <div id="messages"></div>
-        <input id="phone-input" placeholder="Type a message…" />
+        <div id="messages" style="height: 200px; overflow: auto; margin-bottom: 8px;"></div>
+        <input type="text" id="phone-input" placeholder="Type a message…" />
         <button id="phone-send">Send</button>
       </div>
       <button id="phone-close">Close</button>
     </div>
   </div>
 
+  <!-- Main JS -->
   <script type="module" src="js/main.js"></script>
+
 </body>
 </html>
+
