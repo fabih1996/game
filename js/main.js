@@ -354,7 +354,7 @@ drawMiniMap();
   infoBox.classList.remove("hidden");
 }
 
- mmCanvas.addEventListener('click', e => {
+mmCanvas.addEventListener('click', e => {
   const rect = mmCanvas.getBoundingClientRect();
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
@@ -366,6 +366,7 @@ drawMiniMap();
     const dx = clickX - px;
     const dy = clickY - py;
     if (dx * dx + dy * dy < 10 * 10) {
+      e.stopPropagation(); // 🔥 impedisce che il click arrivi al mmWidget
       showLocationInfo(loc.label, loc.description);
       break;
     }
