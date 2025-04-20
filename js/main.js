@@ -356,10 +356,13 @@ drawMiniMap();
 }
 
 mmCanvas.addEventListener('click', e => {
-  if (!mmWidget.classList.contains("expanded")) return; // ❌ Ignora se mappa non espansa
+  if (!mmWidget.classList.contains("expanded")) return;
+
   const rect = mmCanvas.getBoundingClientRect();
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
+
+  let clickedOnLocation = false;
 
   for (let locName in mapLocations) {
     const loc = mapLocations[locName];
@@ -368,10 +371,14 @@ mmCanvas.addEventListener('click', e => {
     const dx = clickX - px;
     const dy = clickY - py;
     if (dx * dx + dy * dy < 10 * 10) {
-      e.stopPropagation(); // 🔥 impedisce che il click arrivi al mmWidget
       showLocationInfo(loc.label, loc.description);
+      clickedOnLocation = true;
       break;
     }
+  }
+
+  if (clickedOnLocation) {
+    e.stopPropagation(); // 👈 blocca il click dal chiudere la mappa
   }
 });
 
