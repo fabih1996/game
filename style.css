@@ -241,6 +241,10 @@ body {
 
 #story { min-height:100px; padding:10px; margin-top:20px; background:#111; border-radius:4px; padding-top: 160px;}
 
+#story.with-expanded-map {
+  margin-top: 180px;
+}
+
 /* ─────────────── Responsive ─────────────── */
 @media (min-width: 768px) {
   #menu-toggle { display: none; }
