@@ -423,7 +423,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const reply = data.choices[0].message.content.trim();
 
   // 👁️ Rileva personaggi presenti anche se non taggati
-  availableCharacters.forEach(name => {
+  allavailableCharacters.forEach(name => {
     const lowerName = name.toLowerCase();
     const alreadyListed = characters.some(c => c.name === name);
     const speaks = new RegExp(`^${name}:`, "m").test(reply); // parla chiaramente
