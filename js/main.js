@@ -330,6 +330,48 @@ mmCloseBtn.addEventListener('click', e => {
 
 // Initial draw
 drawMiniMap();
+
+//mapLocations
+ const mapLocations = {
+  "Diner": {
+    x: -0.3,
+    y: 0.7,
+    label: "Diner",
+    description: "A greasy spoon with strong coffee."
+  },
+  "Shop": {
+    x: 0.6,
+    y: -0.4,
+    label: "Shop",
+    description: "A dusty place filled with hunting gear."
+  }
+};
+
+ function showLocationInfo(label, description) {
+  const infoBox = document.getElementById("location-info-box");
+  document.getElementById("location-name").textContent = label;
+  document.getElementById("location-description").textContent = description;
+  infoBox.classList.remove("hidden");
+}
+
+ mmCanvas.addEventListener('click', e => {
+  const rect = mmCanvas.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+
+  for (let locName in mapLocations) {
+    const loc = mapLocations[locName];
+    const px = mmCanvas.width / 2 + loc.x * (mmCanvas.width / 2 - 20);
+    const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
+    const dx = clickX - px;
+    const dy = clickY - py;
+    if (dx * dx + dy * dy < 10 * 10) {
+      showLocationInfo(loc.label, loc.description);
+      break;
+    }
+  }
+});
+ 
 // ─────────────────────────────────────────
 
 });
