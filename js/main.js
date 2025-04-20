@@ -392,6 +392,7 @@ document.getElementById("go-to-location-btn").addEventListener("click", () => {
   const story = document.getElementById("story");
   story.innerHTML += `<p><strong>You travel to the ${location}.</strong></p>`;
   document.getElementById("location-info-box").classList.add("hidden");
+  import('./gameFunctions.js').then(mod => mod.setLocation(location));
 
   // (opzionale) potresti chiamare qui una funzione per reagire al cambio luogo
 });
