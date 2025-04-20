@@ -503,7 +503,7 @@ lines.forEach(line => {
           selectedCharacters.push(name); // ora può rispondere
         }
         // Se è una battuta del player, la saltiamo (vedi punto 2)
-        if (name === "Narrator" || name === player.name) return;  // salta Narratore e Player
+        if (name.trim().toLowerCase() === "narrator" || name.trim().toLowerCase() === player.name.trim().toLowerCase()) return;
       
         const rawText   = rest.join(":").trim();
         const cleanText = rawText.replace(/^"+|"+$/g, "");  // rimuove eventuali virgolette esterne
