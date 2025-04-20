@@ -74,9 +74,9 @@ const characterImages = {};
 // Gestione luogo
 // ---------------------------
 
-export let currentLocation = "Unknown";
+export let currentLocation = "Nowhere";
 
-export function setLocation(name) {
+export function setCurrentLocation(name) {
   currentLocation = name;
 }
 
