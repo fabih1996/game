@@ -403,8 +403,8 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   
       `NOW: Continue the conversation naturally. Do not repeat previous replies.`,
       `The characters (${speakerNames.join(", ")}) should respond in-character.`,
-      `Only generate replies for the characters (${speakerNames.join(", ")}). Do NOT generate lines for ${player.name}.`
-      `Allow very short narration only if needed to give context.`,
+      `Only generate replies for the characters (${speakerNames.join(", ")}). Do NOT generate lines for ${player.name}.` +
+      `\nAllow very short narration only if needed to give context.`,
       `Format each line as CharacterName: "Text", or plain narration.`
     ].join("\n\n");
   } else {
