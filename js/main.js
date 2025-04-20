@@ -371,6 +371,15 @@ drawMiniMap();
     }
   }
 });
+
+ // Handle "Go here" button in location-info box
+document.getElementById("go-to-location-btn").addEventListener("click", () => {
+  const location = document.getElementById("location-name").textContent;
+  document.getElementById("story").innerHTML += `<p><strong>You travel to the ${location}.</strong></p>`;
+  document.getElementById("location-info-box").classList.add("hidden");
+
+  // OPTIONAL: add logic to update player position, call GPT, or trigger sounds
+});
  
 // ─────────────────────────────────────────
 
