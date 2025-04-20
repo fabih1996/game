@@ -422,6 +422,21 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
 
+  // 👁️ Rileva personaggi presenti anche se non taggati
+  const lowerReply = reply.toLowerCase();
+  availableCharacters.forEach(name => {
+    const lowerName = name.toLowerCase();
+    const alreadyListed = characters.some(c => c.name === name);
+    const speaks = new RegExp(`^${name}:`, "m").test(reply); // parla chiaramente
+    const mentionedNarratively = lowerReply.includes(`${lowerName} `) || lowerReply.includes(`${lowerName}'`);
+    if ((speaks || mentionedNarratively) && !alreadyListed) {
+      characters.push({ name, status: "present" });
+      selectedCharacters.push(name);
+      console.log(`✨ ${name} added as present from narrative or speech`);
+    }
+  });
+  refreshSidebar();
+
   // Trigger story phase detection (async, but we don't block)
   detectStoryPhase(contextLines, reply).catch(err =>
   console.warn("⚠️ GPT phase detection failed:", err)
