@@ -661,3 +661,32 @@ export function updatePlayerUI(player) {
   if (healthBar) healthBar.style.width = player.health + "%";
   if (healthLabel) healthLabel.textContent = `❤️ Health: ${player.health}`;
 }
+
+// ───────────── Episodic Story Structure ─────────────
+export const episodeState = {
+  episodeStage: "intro",          // intro → investigation → discovery → prep → showdown → epilogue
+  cluesFound: 0,
+  enemyIdentified: false,
+  ritualFound: false,
+  possessedVictim: null,
+  finalBoss: null,
+  victory: null
+};
+
+export function updateEpisodeState(key, value) {
+  if (episodeState.hasOwnProperty(key)) {
+    episodeState[key] = value;
+    console.log(`🧩 Episode state updated: ${key} = ${value}`);
+  }
+}
+
+export function advanceStage() {
+  const sequence = ["intro", "investigation", "discovery", "prep", "showdown", "epilogue"];
+  const currentIndex = sequence.indexOf(episodeState.episodeStage);
+  if (currentIndex < sequence.length - 1) {
+    episodeState.episodeStage = sequence[currentIndex + 1];
+    console.log(`⏩ Episode stage advanced to: ${episodeState.episodeStage}`);
+  }
+}
+
+
