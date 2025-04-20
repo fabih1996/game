@@ -387,16 +387,14 @@ mmCanvas.addEventListener('click', e => {
 
  // Handle "Go here" button in location-info box
 document.getElementById("go-to-location-btn").addEventListener("click", () => {
-  const location = document.getElementById("location-name").textContent;
-  currentLocation = location;
+  const selectedLocation = document.getElementById("location-name").textContent;
+  currentLocation = selectedLocation;
 
   const story = document.getElementById("story");
-  story.innerHTML += `<p><strong>You travel to the ${location}.</strong></p>`;
+  story.innerHTML += `<p><strong>You travel to the ${selectedLocation}.</strong></p>`;
   document.getElementById("location-info-box").classList.add("hidden");
 
-  setCurrentLocation(location);  // 🔥 aggiorna la posizione
-
-  // (opzionale) potresti chiamare qui una funzione per reagire al cambio luogo
+  setCurrentLocation(selectedLocation);  // 🔥 aggiorna la posizione
 });
 
 document.getElementById("close-location-info").addEventListener("click", e => {
