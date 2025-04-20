@@ -299,11 +299,18 @@ function drawMiniMap() {
   mmCtx.arc(w/2, h/2, w/2 - 2, 0, 2 * Math.PI);
   mmCtx.stroke();
 
-  const dynamicPoints = getDiscoveredPoints();
+const dynamicPoints = getDiscoveredPoints();
 
-  dynamicPoints.concat([{ x:0, y:0, label: 'You' }]).forEach(p => {
-    const px = w/2 + p.x * (w/2 - 20);
-    const py = h/2 + p.y * (h/2 - 20);
+// Centro della mappa = posizione attuale
+const center = places[currentLocation] || { x: 0, y: 0 };
+
+const allPoints = dynamicPoints.concat([{ x: center.x, y: center.y, label: 'You' }]);
+
+allPoints.forEach(p => {
+  const dx = p.x - center.x;
+  const dy = p.y - center.y;
+  const px = w / 2 + dx * (w / 2 - 20);
+  const py = h / 2 + dy * (h / 2 - 20);
     mmCtx.fillStyle = p.label === 'You' ? '#3399ff' : 'gold';
     mmCtx.beginPath();
     mmCtx.arc(px, py, 6, 0, 2 * Math.PI);
@@ -311,7 +318,8 @@ function drawMiniMap() {
     if (p.label !== 'You') {
       mmCtx.fillStyle = '#fff';
       mmCtx.font = '10px sans-serif';
-      mmCtx.fillText(p.label, px + 8, py - 8);
+      const textWidth = mmCtx.measureText(p.label).width;
+      mmCtx.fillText(p.label, px - textWidth / 2, py + 15);
     }
   });
 }
