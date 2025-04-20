@@ -226,9 +226,9 @@ body {
     padding-top: 15px;
   }
 
-  .container {
+  /* Sposta tutto il contenuto tranne la sidebar */
+  body > *:not(#sidebar) {
     margin-left: 250px;
-    padding: 20px;
   }
 
   #input-area {
