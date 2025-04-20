@@ -25,28 +25,31 @@
         <div id="player-name-display" class="player-line"></div>
         <div id="player-age-display" class="player-line"></div>
         <div id="player-desc-display" class="player-line"></div>
-
         <div class="player-line">
           <span class="player-health-label" id="player-health-label">❤️ Health: 100</span>
         </div>
-        <div class="health-bar-container"><div class="health-bar" id="player-health-bar"></div></div>
-
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-health-bar"></div>
+        </div>
         <div class="player-line">
           <span id="player-hunger-label">🍽️ Hunger: 100</span>
         </div>
-        <div class="health-bar-container"><div class="health-bar" id="player-hunger-bar"></div></div>
-
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-hunger-bar"></div>
+        </div>
         <div class="player-line">
           <span id="player-thirst-label">💧 Thirst: 100</span>
         </div>
-        <div class="health-bar-container"><div class="health-bar" id="player-thirst-bar"></div></div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="player-thirst-bar"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Main Content Area -->
   <div class="main-content">
-    <!-- Episode Status moved here -->
+    <!-- Episode Status -->
     <div id="episode-status">
       <strong>Episode Stage:</strong> <span id="episode-stage-display">intro</span>
     </div>
@@ -107,30 +110,30 @@
         <audio id="background-music" src="sounds/background_music.mp3" preload="auto" loop></audio>
         <audio id="sound-arrival" src="sounds/arrival.mp3" preload="auto"></audio>
       </div>
-
-      <!-- Overlays -->
-      <div id="exorcism-overlay" class="hidden">
-        <div id="pentagram">⛧</div>
-        <div id="ghost">👻</div>
-        <div id="chant"></div>
-      </div>
-
-      <div id="phone-overlay" class="hidden">
-        <div class="phone-screen" id="phone-screen">
-          <button id="open-messages" class="app-icon">✉</button>
-          <ul id="phone-contact-list" class="hidden"></ul>
-          <div id="phone-conversation" class="hidden">
-            <div id="messages" style="height: 200px; overflow: auto; margin-bottom: 8px;"></div>
-            <input type="text" id="phone-input" placeholder="Type a message…" />
-            <button id="phone-send">Send</button>
-          </div>
-          <button id="phone-close">Close</button>
-        </div>
-      </div>
-
-      <!-- Main JS -->
-      <script type="module" src="js/main.js"></script>
     </div> <!-- end .container -->
   </div> <!-- end .main-content -->
+
+  <!-- Overlays (outside main containers) -->
+  <div id="exorcism-overlay" class="hidden">
+    <div id="pentagram">⛧</div>
+    <div id="ghost">👻</div>
+    <div id="chant"></div>
+  </div>
+
+  <div id="phone-overlay" class="hidden">
+    <div class="phone-screen" id="phone-screen">
+      <button id="open-messages" class="app-icon">✉</button>
+      <ul id="phone-contact-list" class="hidden"></ul>
+      <div id="phone-conversation" class="hidden">
+        <div id="messages" style="height: 200px; overflow: auto; margin-bottom: 8px;"></div>
+        <input type="text" id="phone-input" placeholder="Type a message..." />
+        <button id="phone-send">Send</button>
+      </div>
+      <button id="phone-close">Close</button>
+    </div>
+  </div>
+
+  <!-- Main JS -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
