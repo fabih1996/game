@@ -152,15 +152,23 @@ body {
   border-top: 1px solid #444;
 }
 #player-details { margin-top: 10px; font-size: 14px; }
-.player-line { margin: 6px 0; display: flex; align-items: center; gap: 6px; }
+.player-line {
+  margin: 6px 0;
+  display: flex;
+  justify-content: space-between; /* 🔥 */
+  align-items: center;
+  gap: 6px;
+}
 .health-bar-container {
   width: 100%; height: 16px;
   background: #222; border: 1px solid #888;
-  border-radius: 5px; margin-top: 10px; overflow: hidden;
+  border-radius: 5px; margin-top: 6px; overflow: hidden;
 }
 .health-bar { height: 100%; width: 100%; background: linear-gradient(to right, red, orange); transition: width 0.4s ease; }
-.player-health-label { margin-top: 4px; font-weight: bold; }
-
+.player-health-label {
+  font-weight: normal;
+  color: #ddd;
+}
 #player-health-bar  { background: linear-gradient(to right, #ff6666, #cc0000); }
 #player-hunger-bar  { background: linear-gradient(to right, orange, darkred); }
 #player-thirst-bar  { background: linear-gradient(to right, #00bfff, #004488); }
