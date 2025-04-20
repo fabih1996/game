@@ -355,6 +355,7 @@ drawMiniMap();
 }
 
 mmCanvas.addEventListener('click', e => {
+  if (!mmWidget.classList.contains("expanded")) return; // ❌ Ignora se mappa non espansa
   const rect = mmCanvas.getBoundingClientRect();
   const clickX = e.clientX - rect.left;
   const clickY = e.clientY - rect.top;
@@ -380,6 +381,10 @@ document.getElementById("go-to-location-btn").addEventListener("click", () => {
   document.getElementById("location-info-box").classList.add("hidden");
 
   // OPTIONAL: add logic to update player position, call GPT, or trigger sounds
+});
+
+ document.getElementById("close-location-info").addEventListener("click", () => {
+  document.getElementById("location-info-box").classList.add("hidden");
 });
  
 // ─────────────────────────────────────────
