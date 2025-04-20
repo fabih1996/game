@@ -480,6 +480,33 @@ h1 {
   cursor: pointer;
 }
 
+/* ─────────────── Story Container ─────────────── */
+#story {
+  padding: 20px;
+  background: #111;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  min-height: 150px;        /* o quanto ti serve quando è vuoto */
+  max-height: 400px;        /* opzionale, per limitare l’altezza */
+  overflow-y: auto;         /* scroll se è troppo pieno */
+}
+
+/* ─────────────── Ensure overlays stanno sopra tutto ─────────────── */
+#exorcism-overlay,
+#phone-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#exorcism-overlay.hidden,
+#phone-overlay.hidden {
+  display: none !important;
+}
+
 #phone-send:hover,
 #phone-close:hover {
   background: #555;
