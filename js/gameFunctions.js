@@ -16,7 +16,62 @@ export function setPlayer(p) {
 }
 
 // ---------------------------
-// Azioni rapide e NPC disponibili
+// Gestione mappa e luoghi
+// ---------------------------
+export let currentLocation = "Nowhere";
+
+export let places = {
+  Bunker:  { x: 0,  y: 0, discovered: true },
+  Diner:   { x: 1,  y: 0, discovered: false },
+  Library: { x: 0,  y: 1, discovered: false },
+  Church:  { x: -1, y: 1, discovered: false },
+  Motel:   { x: 2,  y: 1, discovered: false }
+};
+
+export function setCurrentLocation(locName) {
+  currentLocation = locName;
+  console.log(`📍 Current location set to: ${locName}`);
+
+  if (places[locName]) places[locName].discovered = true;
+
+  renderMap();
+
+  if (storyPhase === "intro") {
+    setStoryPhase("investigation");
+  }
+}
+
+export function renderMap() {
+  const mapEl = document.getElementById("map");
+  if (!mapEl) return;
+  mapEl.innerHTML = "";
+
+  const playerX = places[currentLocation]?.x || 0;
+  const playerY = places[currentLocation]?.y || 0;
+
+  for (const [name, data] of Object.entries(places)) {
+    if (!data.discovered) continue;
+
+    const dx = data.x - playerX;
+    const dy = data.y - playerY;
+
+    const dot = document.createElement("div");
+    dot.className = "map-dot";
+    dot.textContent = name;
+    dot.style.left = `${50 + dx * 30}%`;
+    dot.style.top = `${50 + dy * 30}%`;
+    dot.style.transform = "translate(-50%, -50%)";
+    if (name === currentLocation) {
+      dot.style.border = "2px solid red";
+    }
+
+    mapEl.appendChild(dot);
+  }
+}
+
+
+// ---------------------------
+// NPC disponibili
 // ---------------------------
 export const allAvailableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Bobby", "Ruby", "Jo", "Ellen", "Other..."
