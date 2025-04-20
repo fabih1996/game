@@ -376,9 +376,11 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   // Appendi input del giocatore solo se non è un dialogo (GPT lo genera)
   if (type === "dialogue") {
     const playerMsg = document.createElement("p");
-    playerMsg.className = "narration";
+    playerMsg.className = `character-color-${player.name.replace(/\s+/g, "")}`;
+    playerMsg.classList.add("glow-talk");
     playerMsg.textContent = `${player.name}: "${input}"`;
     storyDiv.appendChild(playerMsg);
+    setTimeout(() => playerMsg.classList.remove("glow-talk"), 2000);
   }
 
   // 4) Costruisci prompt
@@ -727,8 +729,10 @@ export function startGame() {
     isCustom: true,
     color: "#3399ff",
     health: 100
-  };
+  };  
   setPlayer(player);
+  characterColors[player.name] = player.color;
+
 
   updatePlayerUI(player);
 
