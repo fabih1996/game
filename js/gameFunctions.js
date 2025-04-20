@@ -134,21 +134,6 @@ const characterColors = {
 const characterImages = {};
 
 // ---------------------------
-// Gestione luogo
-// ---------------------------
-
-export let currentLocation = "Nowhere";
-
-export function setCurrentLocation(locName) {
-  currentLocation = locName;
-  console.log(`📍 Current location set to: ${locName}`);
-
-  if (storyPhase === "intro") {
-    setStoryPhase("investigation");
-  }
-}
-
-// ---------------------------
 // Caricamento iniziale
 // ---------------------------
 export async function loadCharacterLore() {
