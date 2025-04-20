@@ -21,7 +21,8 @@ import {
 } from './gameFunctions.js';
 
 // Variabile globale per il giocatore
-let player
+let player;
+let currentLocation = "Nowhere";  // default iniziale
 
 const availableCharacters = [
   "Dean", "Sam", "Castiel", "Crowley", "Jo", "Ellen", "Bobby", "Ruby"
@@ -386,10 +387,13 @@ mmCanvas.addEventListener('click', e => {
  // Handle "Go here" button in location-info box
 document.getElementById("go-to-location-btn").addEventListener("click", () => {
   const location = document.getElementById("location-name").textContent;
-  document.getElementById("story").innerHTML += `<p><strong>You travel to the ${location}.</strong></p>`;
+  currentLocation = location;
+
+  const story = document.getElementById("story");
+  story.innerHTML += `<p><strong>You travel to the ${location}.</strong></p>`;
   document.getElementById("location-info-box").classList.add("hidden");
 
-  // OPTIONAL: add logic to update player position, call GPT, or trigger sounds
+  // (opzionale) potresti chiamare qui una funzione per reagire al cambio luogo
 });
 
 document.getElementById("close-location-info").addEventListener("click", e => {
