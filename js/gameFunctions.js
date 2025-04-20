@@ -421,7 +421,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
-
+  const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
   allAvailableCharacters.forEach(name => {
     const lowerName = name.toLowerCase();
@@ -454,7 +454,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   // ------------------------------
 // Filtro: rifiuto implicito → ignora #PRESENT
 // ------------------------------
-const lowerReply = reply.toLowerCase();
 const rejectedTags = new Set();
 lines.forEach(line => {
   if (line.startsWith("#PRESENT:")) {
