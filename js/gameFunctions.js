@@ -42,6 +42,14 @@ const arrivalMessages = {
   Castiel: "A flutter of wings ripples through the air—Castiel is about to manifest…",
   Crowley: "You smell sulfur—Crowley is about to appear…"
 };
+
+export let storyPhase = "intro";
+
+export function setStoryPhase(newPhase) {
+  console.log(`📖 Story phase changed to: ${newPhase}`);
+  storyPhase = newPhase;
+}
+
 const arrivalETA = {};
 const arrivalDuration = {};
 
@@ -76,8 +84,13 @@ const characterImages = {};
 
 export let currentLocation = "Nowhere";
 
-export function setCurrentLocation(name) {
-  currentLocation = name;
+export function setCurrentLocation(locName) {
+  currentLocation = locName;
+  console.log(`📍 Current location set to: ${locName}`);
+
+  if (storyPhase === "intro") {
+    setStoryPhase("investigation");
+  }
 }
 
 // ---------------------------
@@ -100,6 +113,7 @@ export async function loadIntro() {
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
       .replace("{{STORY_CONTEXT}}", "")
       .replace("{{INPUT}}", "")
+      .replace("{{LOCATION}}", currentLocation)
       .replace("{{CHARACTERS}}", "");
 
     // 2) Chiamata al server AI
