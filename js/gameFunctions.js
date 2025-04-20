@@ -313,6 +313,54 @@ function removeCharacter(name) {
 }
 
 // ---------------------------
+// GPT4 in detecting story
+// ---------------------------
+
+export async function detectStoryPhase(context, latestReply) {
+  const prompt = `
+Given the following recent story context and GPT reply, decide what phase the story should be in.
+
+PHASES:
+- intro: the player is just starting and getting oriented
+- investigation: the player explores, gathers clues or talks to locals
+- discovery: the enemy or major supernatural force is uncovered
+- preparation: the player prepares for confrontation
+- battle: a major confrontation occurs
+- epilogue: aftermath and closure
+
+CONTEXT:
+${context}
+
+REPLY:
+${latestReply}
+
+Only reply with the phase keyword: intro, investigation, discovery, preparation, battle, or epilogue. Do not add any other text.
+`.trim();
+
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: prompt }
+      ]
+    })
+  });
+
+  const data = await res.json();
+  const raw = data.choices[0]?.message?.content?.trim().toLowerCase();
+
+  if (["intro", "investigation", "discovery", "preparation", "battle", "epilogue"].includes(raw)) {
+    setStoryPhase(raw);
+    console.log("📘 Phase set via GPT:", raw);
+  } else {
+    console.warn("⚠️ Unrecognized story phase reply:", raw);
+  }
+}
+
+
+// ---------------------------
 // sendToGPT: costruzione prompt, telefonate, arrivi
 // ---------------------------
 export async function sendToGPT(message, type = "dialogue", isRandom = false) {
@@ -372,6 +420,11 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
+
+  // Trigger story phase detection (async, but we don't block)
+  detectStoryPhase(contextLines, reply).catch(err =>
+  console.warn("⚠️ GPT phase detection failed:", err)
+  );
 
 
   // 6) Processa #PRESENT, #LEAVE, dialoghi, narrazione
@@ -443,26 +496,6 @@ lines.forEach(line => {
         storyDiv.appendChild(p);
       }
     });
-
-    // --- Trigger di fase: scoperta del nemico
-  if (storyPhase === "investigation") {
-    const discoveryKeywords = [
-      "you find a clue",
-      "you discover",
-      "you uncover",
-      "hidden",
-      "secret",
-      "mysterious symbol",
-      "diary",
-      "ritual",
-      "possession"
-    ];
-
-    const fullReply = lines.join(" ").toLowerCase();
-    if (discoveryKeywords.some(k => fullReply.includes(k))) {
-      setStoryPhase("discovery");
-    }
-  }
   
   if (newCharacters.size) refreshSidebar();
 }
