@@ -24,6 +24,8 @@ body {
   height: 100vh;
   overflow-y: auto;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
 }
 
 #sidebar h3 {
@@ -41,7 +43,8 @@ body {
   margin: 6px;
 }
 
-#music-toggle, #phone-button {
+#music-toggle,
+#phone-button {
   display: block;
   width: 100%;
   background: #444;
@@ -54,8 +57,14 @@ body {
   cursor: pointer;
 }
 
-#music-toggle:hover, #phone-button:hover {
+#music-toggle:hover,
+#phone-button:hover {
   background: #666;
+}
+
+/* ─────────────── Menu Toggle (Mobile) ─────────────── */
+#menu-toggle {
+  display: none;
 }
 
 /* ─────────────── Main Content ─────────────── */
@@ -76,6 +85,15 @@ body {
 h1 {
   font-size: 2em;
   margin-top: 0;
+}
+
+/* ─────────────── Episode Status ─────────────── */
+#episode-status {
+  width: 100%;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+  font-size: 0.9rem;
 }
 
 /* ─────────────── Player Card ─────────────── */
@@ -183,7 +201,8 @@ h1 {
   gap: 10px;
 }
 
-#narrationInput, #dialogueInput {
+#narrationInput,
+#dialogueInput {
   width: 100%;
   padding: 10px;
   font-size: 18px;
@@ -203,31 +222,35 @@ h1 {
   color: #eee;
 }
 
-/* ─────────────── Utility ─────────────── */
-.hidden { display: none !important; }
-
-.glow-talk {
-  animation: characterTextGlow 1.2s ease-in-out;
+/* ─────────────── Map & Mini-map ─────────────── */
+#map {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  margin-top: 10px;
+  border: 1px solid #555;
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-@keyframes characterTextGlow {
-  0%,100% { text-shadow: 0 0 6px currentColor, 0 0 10px currentColor; }
-  50%     { text-shadow: 0 0 14px currentColor, 0 0 24px currentColor; }
+.map-container .map-dot,
+.map-dot {
+  position: absolute;
+  background-color: yellow;
+  border-radius: 50%;
+  font-size: 10px;
+  padding: 3px 6px;
+  cursor: default;
+  border: 1px solid black;
+  transform: translate(-50%, -50%);
+  color: black;
 }
 
-/* ─────────────── Character Colors ─────────────── */
-.character-color-Dean    { color: #FFD700; font-weight: bold; }
-.character-color-Sam     { color: #00BFFF; font-weight: bold; }
-.character-color-Castiel { color: #7FFFD4; font-weight: bold; }
-.character-color-Crowley { color: #FF4500; font-weight: bold; }
-.character-color-Bobby   { color: #90EE90; font-weight: bold; }
-.character-color-Ruby    { color: #FF69B4; font-weight: bold; }
-.character-color-Jo      { color: #FF8C00; font-weight: bold; }
-.character-color-Ellen   { color: #8A2BE2; font-weight: bold; }
-.character-color-Narrator{ color: #ddd; }
-.character-color-User    { color: #3399ff; font-weight: bold; }
+.map-dot.current {
+  border: 2px solid red;
+}
 
-/* ─────────────── Mini‑map & Map Dots (se servono) ─────────────── */
 #mini-map-widget {
   position: fixed;
   top: 16px;
@@ -238,6 +261,8 @@ h1 {
   background: rgba(20,20,20,0.8);
   box-shadow: 0 0 8px rgba(0,0,0,0.6);
   z-index: 2000;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 #mini-map-canvas {
@@ -246,11 +271,216 @@ h1 {
   display: block;
 }
 
-/* ────────────── Episode Status ────────────── */
-#episode-status {
-  width: 100%;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+#mini-map-widget.expanded {
+  width: 300px;
+  height: 300px;
+}
+
+#mini-map-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: none;
+  z-index: 2001;
+}
+
+#mini-map-widget.expanded #mini-map-close {
+  display: block;
+}
+
+/* ─────────────── Location Info Box ─────────────── */
+#location-info-box {
+  position: absolute;
+  top: 180px;
+  right: 16px;
+  width: 220px;
+  background: #1c1c1c;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 2100;
+  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+}
+
+#location-info-box.hidden {
+  display: none;
+}
+
+#go-to-location-btn {
+  margin-top: 10px;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#go-to-location-btn:hover {
+  background: #555;
+}
+
+/* ─────────────── Exorcism Overlay ─────────────── */
+#exorcism-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+#exorcism-overlay.hidden {
+  display: none;
+}
+
+#exorcism-overlay #pentagram,
+#exorcism-overlay #ghost,
+#exorcism-overlay #chant {
+  color: #fff;
+  font-size: 2em;
+  margin: 0 10px;
+}
+
+/* ─────────────── Phone Overlay & UI ─────────────── */
+#phone-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+#phone-overlay.hidden {
+  display: none !important;
+}
+
+.phone-screen {
+  position: relative;
+  width: 90vw;
+  max-width: 360px;
+  height: 90vh;
+  background: rgba(34,34,34,0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-top: 50px;
+}
+
+#open-messages {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+#phone-contact-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #444;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#phone-contact-list li {
+  padding: 8px;
   border-bottom: 1px solid #444;
-  font-size: 0.9rem;
+  cursor: pointer;
+  color: #fff;
+}
+
+#phone-contact-list li:last-child {
+  border-bottom: none;
+}
+
+#phone-contact-list li:hover,
+#phone-contact-list li.selected {
+  background: #555;
+  font-weight: bold;
+}
+
+.app-icon {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  font-size: 26px;
+  line-height: 48px;
+  text-align: center;
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  cursor: pointer;
+}
+
+.app-icon:hover {
+  background: rgba(0,0,0,0.5);
+}
+
+#phone-conversation {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+#messages {
+  flex: 1;
+  background: #111;
+  padding: 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+
+.msg-you {
+  text-align: right;
+  margin: 4px 0;
+  color: #9cf;
+}
+
+.msg-them {
+  text-align: left;
+  margin: 4px 0;
+  color: #fc9;
+}
+
+#phone-input {
+  flex: 0;
+  width: calc(100% - 70px);
+  padding: 6px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #111;
+  color: #eee;
+  margin-right: 4px;
+}
+
+#phone-send,
+#phone-close {
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#phone-send:hover,
+#phone-close:hover {
+  background: #555;
 }
