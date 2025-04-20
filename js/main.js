@@ -19,6 +19,8 @@ import {
   window.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("start-btn").addEventListener("click", startGame);
     console.log("✨ Supernatural RPG started");
+    // 🔧 Mostra la sidebar
+    document.getElementById("sidebar").classList.add("open");
     
     // Setup UI
     setupPhoneUI();
