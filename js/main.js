@@ -20,7 +20,9 @@ import {
   setCurrentLocation,
   episodeState,
   updateEpisodeState,
-  advanceStage
+  advanceStage,
+  places,
+  currentLocation
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
@@ -277,12 +279,16 @@ const mmCanvas   = document.getElementById('mini-map-canvas');
 const mmCtx      = mmCanvas.getContext('2d');
 const mmCloseBtn = document.getElementById('mini-map-close');
 
-let mmPoints = [
-  { x:  0.6, y: -0.4, label: 'Shop' },
-  { x: -0.3, y:  0.7, label: 'Diner' }
-];
+function getDiscoveredPoints() {
+  const points = [];
+  for (const [name, data] of Object.entries(places)) {
+    if (data.discovered && name !== currentLocation) {
+      points.push({ x: data.x, y: data.y, label: name });
+    }
+  }
+  return points;
+}
 
-// Draw the circular mini‑map
 function drawMiniMap() {
   const w = mmCanvas.width, h = mmCanvas.height;
   mmCtx.clearRect(0, 0, w, h);
@@ -294,8 +300,9 @@ function drawMiniMap() {
   mmCtx.arc(w/2, h/2, w/2 - 2, 0, 2 * Math.PI);
   mmCtx.stroke();
 
-  // Points (gold) + You at center (blue)
-  mmPoints.concat([{ x:0, y:0, label: 'You' }]).forEach(p => {
+  const dynamicPoints = getDiscoveredPoints();
+
+  dynamicPoints.concat([{ x:0, y:0, label: 'You' }]).forEach(p => {
     const px = w/2 + p.x * (w/2 - 20);
     const py = h/2 + p.y * (h/2 - 20);
     mmCtx.fillStyle = p.label === 'You' ? '#3399ff' : 'gold';
