@@ -732,6 +732,12 @@ export function startGame() {
   };  
   setPlayer(player);
   characterColors[player.name] = player.color;
+  const style = document.createElement("style");
+  style.textContent = `
+  .character-color-${player.name.replace(/\s+/g, "")} {
+    color: ${player.color};
+  }`;
+document.head.appendChild(style);
 
 
   updatePlayerUI(player);
