@@ -239,7 +239,15 @@ body {
 #narrationInput { background:#222; color:#bbb; font-style:italic; }
 #dialogueInput  { background:#333; color:#eee; }
 
-#story { min-height:100px; padding:10px; margin-top:20px; background:#111; border-radius:4px;}
+#story {
+  padding: 20px;
+  padding-right: 200px; /* per lasciare spazio alla mappa */
+  min-height: 100px;
+  background: #111;
+  border-radius: 4px;
+  margin-top: 20px;
+  transition: margin-top 0.4s ease;
+}
 
 #story.with-expanded-map {
   margin-top: 180px;
@@ -268,6 +276,8 @@ body {
   overflow: hidden;
   transition: width 0.3s, height 0.3s;
   z-index: 2000;
+  float: right;
+  shape-outside: circle();
 }
 #mini-map-widget.expanded {
   width: 300px;
