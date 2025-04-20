@@ -161,6 +161,7 @@ body {
 .health-bar { height: 100%; width: 100%; background: linear-gradient(to right, red, orange); transition: width 0.4s ease; }
 .player-health-label { margin-top: 4px; font-weight: bold; }
 
+#player-health-bar  { background: linear-gradient(to right, #ff6666, #cc0000); }
 #player-hunger-bar  { background: linear-gradient(to right, orange, darkred); }
 #player-thirst-bar  { background: linear-gradient(to right, #00bfff, #004488); }
 
