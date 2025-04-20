@@ -16,42 +16,43 @@
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
     <button id="phone-button" class="game-button">📱 Phone</button>
 
-    <!-- Player Info (hidden until creation) -->
-    <div id="player-section" class="player-card hidden">
-      <h3>Player</h3>
-      <div class="char-wrapper" style="--ring-color: #3399ff;">
-        <img class="char-icon" src="images/user.png" alt="User" />
-      </div>
-      <div id="player-details">
-        <div id="player-name-display" class="player-line"></div>
-        <div id="player-age-display" class="player-line"></div>
-        <div id="player-desc-display" class="player-line"></div>
+<!-- Player Info (hidden until creation) -->
+<div id="player-section" class="player-card hidden">
+  <h3>Player</h3>
+  <div class="char-wrapper" style="--ring-color: #3399ff;">
+    <img class="char-icon" src="images/user.png" alt="User" />
+  </div>
+  
+  <div id="player-details">
+    <div id="player-name-display" class="player-line"></div>
+    <div id="player-age-display" class="player-line"></div>
+    <div id="player-desc-display" class="player-line"></div>
 
-        <!-- Health -->
-        <div class="player-line">❤️ Health:
-          <span class="player-health-label" id="player-health-label">100</span>
-        </div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="player-health-bar"></div>
-        </div>
-
-        <!-- Hunger -->
-        <div class="player-line">🍽️ Hunger:
-          <span class="player-health-label" id="player-hunger-label">100</span>
-        </div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="player-hunger-bar"></div>
-        </div>
-
-        <!-- Thirst -->
-        <div class="player-line">💧 Thirst:
-          <span class="player-health-label" id="player-thirst-label">100</span>
-        </div>
-        <div class="health-bar-container">
-          <div class="health-bar" id="player-thirst-bar"></div>
-        </div>
-      </div>
+    <!-- Health -->
+    <div class="player-line">
+      ❤️ Health: <span id="player-health-label">100</span>
     </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-health-bar"></div>
+    </div>
+
+    <!-- Hunger -->
+    <div class="player-line">
+      🍽️ Hunger: <span id="player-hunger-label">100</span>
+    </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-hunger-bar"></div>
+    </div>
+
+    <!-- Thirst -->
+    <div class="player-line">
+      💧 Thirst: <span id="player-thirst-label">100</span>
+    </div>
+    <div class="health-bar-container">
+      <div class="health-bar" id="player-thirst-bar"></div>
+    </div>
+  </div>
+</div>
   </div> <!-- Fine Sidebar -->
 
 
