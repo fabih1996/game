@@ -10,11 +10,14 @@ import {
   import { appendNarration, appendDialogue, clearStory } from "./ui/storyRenderer.js";
   import { refreshSidebar } from "./ui/sidebar.js";
   import { setupPhoneUI } from "./ui/phoneUI.js";
+  import { startGame } from "./logic/gameStart.js";
+
   
   // Dummy player (può essere esteso con un form)
   const playerName = "User";
   
   window.addEventListener("DOMContentLoaded", async () => {
+    document.getElementById("start-btn").addEventListener("click", startGame);
     console.log("✨ Supernatural RPG started");
     
     // Setup UI
