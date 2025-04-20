@@ -16,7 +16,10 @@ import {
   scheduleArrival,
   travelTimes,
   updatePlayerUI,
-  setCurrentLocation
+  setCurrentLocation,
+  episodeState,
+  updateEpisodeState,
+  advanceStage
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
