@@ -1,251 +1,215 @@
 /* ──────────────────────────
    GLOBAL RESET & BASE STYLES
 ────────────────────────── */
-:root {
-  --bg-main: #111;
-  --bg-panel: #222;
-  --bg-panel-light: #333;
-  --text-main: #eee;
-  --accent: #3399ff;
-  --radius: 8px;
-  --spacing: 12px;
-  --font: 'Segoe UI', sans-serif;
-}
-
 body {
-  background: var(--bg-main);
-  color: var(--text-main);
-  font-family: var(--font);
+  background: #111;
+  color: #eee;
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
   line-height: 1.6;
 }
 
 .container {
-  padding: var(--spacing);
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-/* ─────────────── Headings ─────────────── */
-h1, h2, h3 {
-  font-weight: 600;
-  margin-top: 0;
-}
-
-h1 {
-  font-size: 1.8rem;
-  margin-bottom: 0.5em;
-}
-
-/* ─────────────── Input Area ─────────────── */
-#input-area {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-}
-
-#narrationInput,
-#dialogueInput {
-  flex: 1;
-  min-width: 45%;
   padding: 10px;
-  font-size: 18px;
-  border: none;
-  border-radius: var(--radius);
-  outline: none;
 }
 
-#narrationInput {
-  background: var(--bg-panel);
-  color: #bbb;
-  font-style: italic;
-}
-
-#dialogueInput {
-  background: var(--bg-panel-light);
-  color: var(--text-main);
-}
-
-/* ─────────────── Story Block ─────────────── */
-#story {
-  padding: 24px;
-  background: var(--bg-main);
-  border-radius: var(--radius);
-  box-shadow: 0 0 6px rgba(0,0,0,0.4);
-  margin-top: 30px;
-  transition: all 0.3s ease-in-out;
-  max-width: 100%;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-}
-
-#story.with-expanded-map {
-  margin-top: 180px;
-}
-
-#story p {
-  margin: 0 0 1em 0;
-}
-
-/* ─────────────── Improvements for Inputs and Flow ─────────────── */
-input::placeholder {
-  color: #888;
-}
-
-button:focus,
-input:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* Fix: Default hide map on smaller screen */
-@media (max-width: 768px) {
-  #mini-map-widget {
-    display: none;
-  }
-  .container {
-    padding: 10px;
-  }
-  #input-area {
-    flex-direction: column;
-  }
-  #narrationInput,
-  #dialogueInput {
-    width: 100%;
-  }
-}
-
-/* ─────────── Mini‑map Widget ─────────── */
-#mini-map-widget {
+/* ────────────── Menu Toggle ☰ ────────────── */
+#menu-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #222;
+  color: #fff;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
   position: fixed;
-  top: 16px;
-  right: 16px;
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: rgba(20,20,20,0.8);
-  box-shadow: 0 0 8px rgba(0,0,0,0.6);
+  top: 10px;
+  left: 10px;
+  z-index: 1100;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  overflow: hidden;
-  transition: width 0.3s, height 0.3s;
-  z-index: 2000;
-  float: right;
-  shape-outside: circle();
-}
-#mini-map-widget.expanded {
-  width: 300px;
-  height: 300px;
 }
 
-/* canvas fills the widget */
-#mini-map-canvas {
+/* ───────────────── Sidebar ───────────────── */
+#sidebar {
+  background: #222;
+  padding: 15px;
+  width: 250px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: -250px;
+  z-index: 1050;
+  overflow-y: auto;
+  transition: left 0.3s ease;
+  padding-top: 70px;
+  border-bottom: 2px solid #444;
+}
+
+#sidebar.open {
+  left: 0;
+}
+
+#music-toggle, #phone-button {
+  background: #444;
+  color: #fff;
+  font-size: 16px;
+  padding: 8px 12px;
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#music-toggle:hover, #phone-button:hover {
+  background: #666;
+}
+
+#charListPresent {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+#charListPresent li {
+  display: inline-block;
+  margin: 6px;
+  vertical-align: middle;
+}
+
+.char-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
+}
+
+.char-wrapper.pending::before {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--ring-color, #00bfff) var(--prog),
+    transparent 0
+  );
+  transition: background 0.2s linear;
+  z-index: 0;
+}
+
+.char-wrapper.pending img {
+  opacity: 0.5;
+}
+
+.char-icon {
   width: 100%;
   height: 100%;
-  display: block;
-}
-
-/* north pointer: small red triangle */
-#north-pointer {
-  position: absolute;
-  top: 8px;               /* un po’ più in alto */
-  left: calc(50% - 6px);  /* centrato orizzontalmente */
-  width: 0;
-  height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 12px solid red;
-  transform-origin: bottom center;
-  animation: wobble 2s ease-in-out infinite;
-}
-
-/* close button (visible only when expanded) */
-#mini-map-close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: none;
-  background: rgba(0,0,0,0.6);
-  border: none;
-  color: #fff;
-  font-size: 18px;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-}
-#mini-map-widget.expanded #mini-map-close {
-  display: block;
+  border: 2px solid transparent;
+  transition: 0.2s;
 }
 
-#location-info-box {
+.char-icon.selected {
+  border-color: currentColor;
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  animation: glowPulse 2s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+  50% {
+    box-shadow: 0 0 20px currentColor, 0 0 35px currentColor;
+  }
+}
+
+.dismiss-btn {
   position: absolute;
-  top: 160px;
-  right: 16px;
-  width: 220px;
-  background: #1c1c1c;
-  color: #eee;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 10px;
-  z-index: 2100;
-  box-shadow: 0 0 8px rgba(0,0,0,0.6);
-}
-
-#location-info-box.hidden {
-  display: none;
-}
-
-#go-to-location-btn {
-  margin-top: 10px;
-  background: #333;
-  color: #fff;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
+  bottom: 2px;
+  right: 2px;
+  font-size: 14px;
+  color: #f66;
   cursor: pointer;
-}
-#go-to-location-btn:hover {
-  background: #555;
+  opacity: 0;
+  transition: opacity 0.2s;
 }
 
-#map {
-  position: relative;
-  width: 150px;
-  height: 150px;
+.char-wrapper:hover .dismiss-btn {
+  opacity: 1;
+}
+
+/* ─────────── Character colour classes ─────────── */
+.character-color-Dean    { color: #FFD700; font-weight: bold; }
+.character-color-Sam     { color: #00BFFF; font-weight: bold; }
+.character-color-Castiel { color: #7FFFD4; font-weight: bold; }
+.character-color-Crowley { color: #FF4500; font-weight: bold; }
+.character-color-Bobby   { color: #90EE90; font-weight: bold; }
+.character-color-Ruby    { color: #FF69B4; font-weight: bold; }
+.character-color-Jo      { color: #FF8C00; font-weight: bold; }
+.character-color-Ellen   { color: #8A2BE2; font-weight: bold; }
+.character-color-Narrator{ color: #ddd; }
+.character-color-User    { color: #3399ff; font-weight: bold; }
+
+/* ─────────────── Player Card ─────────────── */
+#player-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #444;
+}
+
+#player-details {
   margin-top: 10px;
-  border: 1px solid #555;
-  background: #111;
-  border-radius: 10px;
+  font-size: 14px;
 }
 
-.map-dot {
-  position: absolute;
-  background-color: yellow;
-  border-radius: 50%;
-  font-size: 10px;
-  padding: 3px 6px;
-  cursor: default;
-  border: 1px solid black;
-  transform: translate(-50%, -50%);
-  color: black;
+.player-line {
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.map-dot.current {
-  border: 2px solid red;
+.health-bar-container {
+  width: 100%;
+  height: 16px;
+  background: #222;
+  border: 1px solid #888;
+  border-radius: 5px;
+  margin-top: 6px;
+  overflow: hidden;
 }
 
-/* wobble animation for the north pointer */
-@keyframes wobble {
-  0%   { transform: rotate(-5deg) translate(-50%, -100%); }
-  50%  { transform: rotate(5deg) translate(-50%, -100%); }
-  100% { transform: rotate(-5deg) translate(-50%, -100%); }
+.health-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, red, orange);
+  transition: width 0.4s ease;
 }
+
+.player-health-label {
+  font-weight: normal;
+  color: #ddd;
+}
+
+#player-health-bar  { background: linear-gradient(to right, #ff6666, #cc0000); }
+#player-hunger-bar  { background: linear-gradient(to right, orange, darkred); }
+#player-thirst-bar  { background: linear-gradient(to right, #00bfff, #004488); }
 
 /* ─────────────── Utility ─────────────── */
 .hidden { display: none !important; }
-.glow-talk { animation: characterTextGlow 1.2s ease-in-out; }
-@keyframes characterTextGlow { 0%,100% { text-shadow: 0 0 6px currentColor, 0 0 10px currentColor; } 50% { text-shadow: 0 0 14px currentColor, 0 0 24px currentColor; } }
+.glow-talk {
+  animation: characterTextGlow 1.2s ease-in-out;
+}
+
+@keyframes characterTextGlow {
+  0%, 100% { text-shadow: 0 0 6px currentColor, 0 0 10px currentColor; }
+  50%     { text-shadow: 0 0 14px currentColor, 0 0 24px currentColor; }
+}
