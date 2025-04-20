@@ -114,6 +114,7 @@ export async function loadIntro() {
       .replace("{{STORY_CONTEXT}}", "")
       .replace("{{INPUT}}", "")
       .replace("{{LOCATION}}", currentLocation)
+      .replace("{{STORY_PHASE}}", storyPhase)
       .replace("{{CHARACTERS}}", "");
 
     // 2) Chiamata al server AI
