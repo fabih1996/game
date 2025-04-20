@@ -139,7 +139,7 @@ openMsgBtn.onclick = () => {
   const activeNames = characters
   .filter(c => ["present", "remote", "pending"].includes(c.status))
   .map(c => c.name);
-  const contacts = availableCharacters.filter(
+  const contacts = allAvailableCharacters.filter(
     name => name !== "Narrator" && !activeNames.includes(name)
   );
 
