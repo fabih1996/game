@@ -396,12 +396,16 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   let prompt;
   if (type === "dialogue") {
     prompt = [
-      `Scene context (last 20 rows):\n${contextLines}`,
+      `Scene context (last 20 messages):\n${contextLines}`,
       `Current location: ${currentLocation}`,
+      `Story phase: ${storyPhase}`,
       `Player (${player.name}) says: "${input}"`,
-      `NOW: Reply ONLY with lines spoken by the characters present (${speakerNames.join(", ")}), ` +
-        `formatted exactly as CharacterName: "Text". ` +
-        `NEVER speak for the player (${player.name}). NEVER repeat player lines. NEVER narrate.`
+  
+      `NOW: Continue the conversation naturally. Do not repeat previous replies.`,
+      `The characters (${speakerNames.join(", ")}) should respond in-character.`,
+      `Responses must move the story forward.`,
+      `Allow very short narration only if needed to give context.`,
+      `Format each line as CharacterName: "Text", or plain narration.`
     ].join("\n\n");
   } else {
     // per narrazione e RandomEvent puoi usare ancora il template originale
