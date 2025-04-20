@@ -370,6 +370,7 @@ mmCanvas.addEventListener('click', e => {
     const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
     const dx = clickX - px;
     const dy = clickY - py;
+    console.log(`Clicked: (${clickX.toFixed(1)}, ${clickY.toFixed(1)}), ${loc.label} at (${px.toFixed(1)}, ${py.toFixed(1)}), dx=${dx.toFixed(1)} dy=${dy.toFixed(1)}`);
     if (dx * dx + dy * dy < 10 * 10) {
       showLocationInfo(loc.label, loc.description);
       clickedOnLocation = true;
