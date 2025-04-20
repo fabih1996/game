@@ -444,6 +444,26 @@ lines.forEach(line => {
       }
     });
 
+    // --- Trigger di fase: scoperta del nemico
+  if (storyPhase === "investigation") {
+    const discoveryKeywords = [
+      "you find a clue",
+      "you discover",
+      "you uncover",
+      "hidden",
+      "secret",
+      "mysterious symbol",
+      "diary",
+      "ritual",
+      "possession"
+    ];
+
+    const fullReply = lines.join(" ").toLowerCase();
+    if (discoveryKeywords.some(k => fullReply.includes(k))) {
+      setStoryPhase("discovery");
+    }
+  }
+  
   if (newCharacters.size) refreshSidebar();
 }
 
