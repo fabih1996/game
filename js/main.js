@@ -292,7 +292,7 @@ function drawMiniMap() {
   const w = mmCanvas.width, h = mmCanvas.height;
   mmCtx.clearRect(0, 0, w, h);
 
-  // Outer circle
+  // Cerchio esterno
   mmCtx.strokeStyle = '#888';
   mmCtx.lineWidth   = 2;
   mmCtx.beginPath();
@@ -311,13 +311,13 @@ function drawMiniMap() {
 
     const isCurrent = locName === currentLocation;
     mmCtx.fillStyle = isCurrent ? '#3399ff' : 'gold';
+
     mmCtx.beginPath();
     mmCtx.arc(px, py, 6, 0, 2 * Math.PI);
     mmCtx.fill();
 
     mmCtx.fillStyle = '#fff';
     mmCtx.font = '10px sans-serif';
-
     const label = isCurrent ? locName : loc.label || locName;
     const textWidth = mmCtx.measureText(label).width;
     mmCtx.fillText(label, px - textWidth / 2, py + 15);
