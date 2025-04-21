@@ -27,8 +27,7 @@ export let places = {
   Church:  { x: -1, y: 1, label: "Church", discovered: false, description: "An abandoned church, echoing with whispers." },
   Motel:   { x: 2,  y: 1, label: "Motel",  discovered: false, description: "A dimly lit roadside stop." },
   Shop:    { x: 1,  y: 1, label: "Shop",   discovered: true,  description: "A dusty store full of gear and mystery." },
-  Unknown: {x: 0, y: 0, label: "Unknown", discovered: true, description: "A mysterious place, undefined in time and space."}
-};
+  Unknown: {x: 0.3, y: -0.3, label: "Unknown", discovered: true, description: "A mysterious place, undefined in time and space."};
 
 
 
