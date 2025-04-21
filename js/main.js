@@ -363,26 +363,28 @@ mmCanvas.addEventListener('click', e => {
   const clickX = (e.clientX - rect.left) * (mmCanvas.width / rect.width);
   const clickY = (e.clientY - rect.top) * (mmCanvas.height / rect.height);
 
+  const center = places[currentLocation] || { x: 0, y: 0 };
   let clickedOnLocation = false;
 
-for (let locName in places) {
-  const loc = places[locName];
-  if (!loc.discovered) continue;
+  for (let locName in places) {
+    const loc = places[locName];
+    if (!loc.discovered || locName === currentLocation) continue;
 
-  const px = mmCanvas.width / 2 + loc.x * (mmCanvas.width / 2 - 20);
-  const py = mmCanvas.height / 2 + loc.y * (mmCanvas.height / 2 - 20);
-  const dx = clickX - px;
-  const dy = clickY - py;
+    const dx = loc.x - center.x;
+    const dy = loc.y - center.y;
+    const px = mmCanvas.width / 2 + dx * (mmCanvas.width / 2 - 20);
+    const py = mmCanvas.height / 2 + dy * (mmCanvas.height / 2 - 20);
+    const distSquared = (clickX - px) ** 2 + (clickY - py) ** 2;
 
-  if (dx * dx + dy * dy < 10 * 10) {
-    showLocationInfo(locName, loc.description || "No description available.");
-    clickedOnLocation = true;
-    break;
+    if (distSquared < 10 * 10) {
+      showLocationInfo(loc.label || locName, loc.description || "No description available.");
+      clickedOnLocation = true;
+      break;
+    }
   }
-}
 
   if (clickedOnLocation) {
-    e.stopPropagation(); // 👈 blocca il click dal chiudere la mappa
+    e.stopPropagation(); // Evita chiusura della mappa
   }
 });
 
