@@ -65,15 +65,22 @@ export function renderMap() {
     if (name === currentLocation) {
       dot.style.border = "2px solid red";
     }
-    dot.onclick = () => {
-    if (name !== currentLocation) {
+dot.onclick = () => {
+  console.log("🗺️ Clicked location:", name);
+  console.log("📍 places entry:", places[name]);
+
+  if (name !== currentLocation) {
+    if (places[name]) {
       setCurrentLocation(name);
       const storyDiv = document.getElementById("story");
       const p = document.createElement("p");
       p.classList.add("narration");
       p.textContent = `You head to the ${name}.`;
       storyDiv.appendChild(p);
+    } else {
+      console.warn(`⚠️ Tried to navigate to unknown place: ${name}`);
     }
+  }
 };
 
     mapEl.appendChild(dot);
