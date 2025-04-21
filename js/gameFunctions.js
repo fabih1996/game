@@ -21,12 +21,12 @@ export function setPlayer(p) {
 export let currentLocation = "Nowhere";
 
 export let places = {
-  Bunker:  { x: 0,  y: 0, label: "Bunker", discovered: true, description: "Your hidden base of operations." },
-  Diner:   { x: 1,  y: 0, label: "Diner", discovered: false, description: "A greasy spoon with strong coffee." },
-  Library: { x: 0,  y: 1, label: "Library", discovered: false, description: "Ancient tomes and dusty secrets." },
+  Bunker:  { x: 0,  y: 0, label: "Bunker", discovered: true,  description: "Your hidden base of operations." },
+  Diner:   { x: 1,  y: 0, label: "Diner",  discovered: true,  description: "A greasy spoon with strong coffee." },
+  Library: { x: 0,  y: 1, label: "Library",discovered: false, description: "Ancient tomes and dusty secrets." },
   Church:  { x: -1, y: 1, label: "Church", discovered: false, description: "An abandoned church, echoing with whispers." },
-  Motel:   { x: 2,  y: 1, label: "Motel", discovered: false, description: "A dimly lit roadside stop." },
-  Shop:    { x: 1,  y: 1, label: "Shop", discovered: false, description: "A dusty store full of gear and mystery." }
+  Motel:   { x: 2,  y: 1, label: "Motel",  discovered: false, description: "A dimly lit roadside stop." },
+  Shop:    { x: 1,  y: 1, label: "Shop",   discovered: true,  description: "A dusty store full of gear and mystery." }
 };
 
 export function setCurrentLocation(locName) {
