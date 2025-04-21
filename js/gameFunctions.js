@@ -18,7 +18,7 @@ export function setPlayer(p) {
 // ---------------------------
 // Gestione mappa e luoghi
 // ---------------------------
-export let currentLocation = "Bunker";
+export let currentLocation = "Nowhere";
 
 export let places = {
   Bunker:  { x: 0,  y: 0, discovered: true,  label: "Bunker",  description: "Your base of operations." },
