@@ -21,11 +21,12 @@ export function setPlayer(p) {
 export let currentLocation = "Nowhere";
 
 export let places = {
-  Bunker:  { x: 0,  y: 0, discovered: true,  label: "Bunker",  description: "Your base of operations." },
-  Shop:    { x: 1,  y: 1, discovered: true,  label: "Shop",    description: "Filled with mysterious artifacts." },
-  Diner:   { x: 2,  y: 0, discovered: true,  label: "Diner",   description: "The coffee's hot, the vibe's weird." },
-  Church:  { x: -1, y: 1, discovered: false, label: "Church",  description: "Abandoned, but echoing with whispers." },
-  Motel:   { x: 2,  y: 1, discovered: false, label: "Motel",   description: "One flickering light. One key." }
+  Bunker:  { x: 0,  y: 0, label: "Bunker", discovered: true, description: "Your hidden base of operations." },
+  Diner:   { x: 1,  y: 0, label: "Diner", discovered: false, description: "A greasy spoon with strong coffee." },
+  Library: { x: 0,  y: 1, label: "Library", discovered: false, description: "Ancient tomes and dusty secrets." },
+  Church:  { x: -1, y: 1, label: "Church", discovered: false, description: "An abandoned church, echoing with whispers." },
+  Motel:   { x: 2,  y: 1, label: "Motel", discovered: false, description: "A dimly lit roadside stop." },
+  Shop:    { x: 1,  y: 1, label: "Shop", discovered: false, description: "A dusty store full of gear and mystery." }
 };
 
 export function setCurrentLocation(locName) {
@@ -66,6 +67,37 @@ export function renderMap() {
     }
 
     mapEl.appendChild(dot);
+  }
+}
+
+export async function detectLocationWithGPT(narrative) {
+  const prompt = `
+Given the following narrative, extract the **exact name of the location** where the player is currently located.
+Return ONLY the location name if it matches one of the known places. If you are not sure, reply "Unknown".
+
+Known places: ${Object.keys(places).join(", ")}
+
+NARRATIVE:
+${narrative}
+`.trim();
+
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+
+  const data = await res.json();
+  const reply = data.choices[0]?.message?.content?.trim();
+
+  if (reply && reply !== "Unknown" && places[reply]) {
+    setCurrentLocation(reply);
+    console.log("📍 GPT detected location:", reply);
+  } else {
+    console.log("❓ GPT could not confidently detect a location.");
   }
 }
 
@@ -165,6 +197,7 @@ export async function loadIntro() {
     });
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
+    await detectLocationWithGPT(reply);
 
     // 3) Parsing di #PRESENT: per tag manuali
     Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
@@ -475,6 +508,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
+  await detectLocationWithGPT(reply);
   const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
   allAvailableCharacters.forEach(name => {
