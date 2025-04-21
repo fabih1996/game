@@ -299,28 +299,29 @@ function drawMiniMap() {
   mmCtx.arc(w/2, h/2, w/2 - 2, 0, 2 * Math.PI);
   mmCtx.stroke();
 
-const dynamicPoints = getDiscoveredPoints();
+  const center = places[currentLocation] || { x: 0, y: 0 };
 
-// Centro della mappa = posizione attuale
-const center = places[currentLocation] || { x: 0, y: 0 };
+  for (const [locName, loc] of Object.entries(places)) {
+    if (!loc.discovered) continue;
 
-const allPoints = dynamicPoints.concat([{ x: center.x, y: center.y, label: currentLocation }]);
-allPoints.forEach(p => {
-  const dx = p.x - center.x;
-  const dy = p.y - center.y;
-  const px = w / 2 + dx * (w / 2 - 20);
-  const py = h / 2 + dy * (h / 2 - 20);
-    mmCtx.fillStyle = p.label === 'You' ? '#3399ff' : 'gold';
+    const dx = loc.x - center.x;
+    const dy = loc.y - center.y;
+    const px = w / 2 + dx * (w / 2 - 20);
+    const py = h / 2 + dy * (h / 2 - 20);
+
+    const isCurrent = locName === currentLocation;
+    mmCtx.fillStyle = isCurrent ? '#3399ff' : 'gold';
     mmCtx.beginPath();
     mmCtx.arc(px, py, 6, 0, 2 * Math.PI);
     mmCtx.fill();
-    if (p.label !== 'You') {
-      mmCtx.fillStyle = '#fff';
-      mmCtx.font = '10px sans-serif';
-      const textWidth = mmCtx.measureText(p.label).width;
-      mmCtx.fillText(p.label, px - textWidth / 2, py + 15);
-    }
-  });
+
+    mmCtx.fillStyle = '#fff';
+    mmCtx.font = '10px sans-serif';
+
+    const label = isCurrent ? locName : loc.label || locName;
+    const textWidth = mmCtx.measureText(label).width;
+    mmCtx.fillText(label, px - textWidth / 2, py + 15);
+  }
 }
 
 // Toggle expand/collapse on widget click
