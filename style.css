@@ -385,6 +385,8 @@ body {
 
 #map {
   position: relative;
+  z-index: 2101;
+  pointer-events: auto;
   width: 150px;
   height: 150px;
   margin-top: 10px;
@@ -395,14 +397,28 @@ body {
 
 .map-dot {
   position: absolute;
+  width: 12px;
+  height: 12px;
   background-color: yellow;
   border-radius: 50%;
-  font-size: 10px;
-  padding: 3px 6px;
-  cursor: default;
   border: 1px solid black;
   transform: translate(-50%, -50%);
-  color: black;
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* Etichetta sotto il pallino */
+.map-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  white-space: nowrap;
+  color: white;
+  text-shadow: 1px 1px 3px black;
+  z-index: 2;
 }
 
 .map-dot.current {
