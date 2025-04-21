@@ -65,6 +65,16 @@ export function renderMap() {
     if (name === currentLocation) {
       dot.style.border = "2px solid red";
     }
+    dot.onclick = () => {
+    if (name !== currentLocation) {
+      setCurrentLocation(name);
+      const storyDiv = document.getElementById("story");
+      const p = document.createElement("p");
+      p.classList.add("narration");
+      p.textContent = `You head to the ${name}.`;
+      storyDiv.appendChild(p);
+    }
+};
 
     mapEl.appendChild(dot);
   }
