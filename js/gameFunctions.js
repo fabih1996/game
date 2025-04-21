@@ -26,8 +26,11 @@ export let places = {
   Library: { x: 0,  y: 1, label: "Library",discovered: false, description: "Ancient tomes and dusty secrets." },
   Church:  { x: -1, y: 1, label: "Church", discovered: false, description: "An abandoned church, echoing with whispers." },
   Motel:   { x: 2,  y: 1, label: "Motel",  discovered: false, description: "A dimly lit roadside stop." },
-  Shop:    { x: 1,  y: 1, label: "Shop",   discovered: true,  description: "A dusty store full of gear and mystery." }
+  Shop:    { x: 1,  y: 1, label: "Shop",   discovered: true,  description: "A dusty store full of gear and mystery." },
+  Unknown: {x: 0, y: 0, label: "Unknown", discovered: true, description: "A mysterious place, undefined in time and space."}
 };
+
+
 
 export function setCurrentLocation(locName) {
   currentLocation = locName;
@@ -62,26 +65,32 @@ export function renderMap() {
     dot.style.left = `${50 + dx * 30}%`;
     dot.style.top = `${50 + dy * 30}%`;
     dot.style.transform = "translate(-50%, -50%)";
+
     if (name === currentLocation) {
       dot.style.border = "2px solid red";
     }
-dot.onclick = () => {
-  console.log("🗺️ Clicked location:", name);
-  console.log("📍 places entry:", places[name]);
 
-  if (name !== currentLocation) {
-    if (places[name]) {
-      setCurrentLocation(name);
-      const storyDiv = document.getElementById("story");
-      const p = document.createElement("p");
-      p.classList.add("narration");
-      p.textContent = `You head to the ${name}.`;
-      storyDiv.appendChild(p);
-    } else {
-      console.warn(`⚠️ Tried to navigate to unknown place: ${name}`);
-    }
-  }
-};
+    dot.onclick = () => {
+      console.log("🗺️ Clicked location:", name);
+      console.log("📍 places entry:", places[name]);
+
+      if (places[name]) {
+        setCurrentLocation(name);  // anche se è già la location corrente
+        const storyDiv = document.getElementById("story");
+
+        // Solo se si è cliccato su una location diversa, aggiungiamo narrazione
+        if (name !== currentLocation) {
+          const p = document.createElement("p");
+          p.classList.add("narration");
+          p.textContent = `You head to the ${name}.`;
+          storyDiv.appendChild(p);
+        }
+
+        renderMap(); // forza l’aggiornamento grafico in ogni caso
+      } else {
+        console.warn(`⚠️ Tried to navigate to unknown place: ${name}`);
+      }
+    };
 
     mapEl.appendChild(dot);
   }
@@ -114,7 +123,8 @@ ${narrative}
     setCurrentLocation(reply);
     console.log("📍 GPT detected location:", reply);
   } else {
-    console.log("❓ GPT could not confidently detect a location.");
+    setCurrentLocation("Unknown");
+    console.warn("❓ GPT could not confidently detect a location. Fallback to Unknown.");
   }
 }
 
