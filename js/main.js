@@ -289,14 +289,15 @@ function getDiscoveredPoints() {
 }
 
 function drawMiniMap() {
-  const w = mmCanvas.width, h = mmCanvas.height;
+  const w = mmCanvas.width;
+  const h = mmCanvas.height;
   mmCtx.clearRect(0, 0, w, h);
 
   // Cerchio esterno
   mmCtx.strokeStyle = '#888';
-  mmCtx.lineWidth   = 2;
+  mmCtx.lineWidth = 2;
   mmCtx.beginPath();
-  mmCtx.arc(w/2, h/2, w/2 - 2, 0, 2 * Math.PI);
+  mmCtx.arc(w / 2, h / 2, w / 2 - 2, 0, 2 * Math.PI);
   mmCtx.stroke();
 
   const center = places[currentLocation] || { x: 0, y: 0 };
@@ -306,19 +307,19 @@ function drawMiniMap() {
 
     const dx = loc.x - center.x;
     const dy = loc.y - center.y;
-    const px = w / 2 + dx * (w / 2 - 20);
-    const py = h / 2 + dy * (h / 2 - 20);
+    const px = w / 2 + dx * (w / 2 - 30); // ← ridotto per sicurezza
+    const py = h / 2 + dy * (h / 2 - 30);
 
-    const isCurrent = locName === currentLocation;
-    mmCtx.fillStyle = isCurrent ? '#3399ff' : 'gold';
-
+    // Colore del punto
+    mmCtx.fillStyle = locName === currentLocation ? '#3399ff' : 'gold';
     mmCtx.beginPath();
     mmCtx.arc(px, py, 6, 0, 2 * Math.PI);
     mmCtx.fill();
 
+    // Etichetta centrata sotto al punto
+    const label = loc.label || locName;
     mmCtx.fillStyle = '#fff';
     mmCtx.font = '10px sans-serif';
-    const label = isCurrent ? locName : loc.label || locName;
     const textWidth = mmCtx.measureText(label).width;
     mmCtx.fillText(label, px - textWidth / 2, py + 15);
   }
