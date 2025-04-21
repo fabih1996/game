@@ -60,7 +60,7 @@ export function renderMap() {
 
     const dot = document.createElement("div");
     dot.className = "map-dot";
-    dot.textContent = name;
+    dot.setAttribute("data-label", name);
     dot.style.left = `${50 + dx * 30}%`;
     dot.style.top = `${50 + dy * 30}%`;
     dot.style.transform = "translate(-50%, -50%)";
