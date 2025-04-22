@@ -820,6 +820,7 @@ export function triggerExorcismEvent() {
 
 export function startGame() {
   console.log("✅ startGame called");
+
   const name = document.getElementById("playerName").value.trim();
   const age = document.getElementById("playerAge").value.trim();
   const desc = document.getElementById("playerDesc").value.trim();
@@ -860,7 +861,9 @@ document.head.appendChild(style);
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
 
-  loadIntro();
+   loadIntro().then(() => {
+    updateMiniMap(); // ✅ chiamata solo dopo che la location è stata rilevata
+  });
 }
 
 export function updatePlayerUI(player) {
