@@ -45,63 +45,49 @@ export function setCurrentLocation(locName) {
   }
 }
 
-export function renderMap() {
-  const mapEl = document.getElementById("map");
-  if (!mapEl) return;
-  mapEl.innerHTML = "";
+function renderMap(locations, currentLocation) {
+  const map = document.getElementById("map");
+  map.innerHTML = "";
 
-  // 1. Calcola i limiti della mappa
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  for (const [name, data] of Object.entries(places)) {
-    if (!data.discovered) continue;
-    minX = Math.min(minX, data.x);
-    maxX = Math.max(maxX, data.x);
-    minY = Math.min(minY, data.y);
-    maxY = Math.max(maxY, data.y);
-  }
+  if (locations.length === 0) return;
 
-  // 2. Calcola il centro e lo "zoom" dinamico
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-  const rangeX = maxX - minX || 1;
+  // 1. Calcolo bounding box
+  const xs = locations.map(loc => loc.x);
+  const ys = locations.map(loc => loc.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+  const rangeX = maxX - minX || 1; // evita divisione per zero
   const rangeY = maxY - minY || 1;
-  const scale = 100 / Math.max(rangeX, rangeY);  // più espansivo
-  
-  // 3. Disegna i punti
-  for (const [name, data] of Object.entries(places)) {
-    if (!data.discovered) continue;
 
-    const dx = data.x - centerX;
-    const dy = data.y - centerY;
+  const mapWidth = map.clientWidth;
+  const mapHeight = map.clientHeight;
+  const padding = 20;
 
+  const scale = Math.min(
+    (mapWidth - padding * 2) / rangeX,
+    (mapHeight - padding * 2) / rangeY
+  );
+
+  locations.forEach(loc => {
     const dot = document.createElement("div");
     dot.className = "map-dot";
-    dot.setAttribute("data-label", name);
-    dot.style.backgroundColor = name === currentLocation ? "dodgerblue" : "yellow";
-    
-    dot.style.left = `${50 + dx * scale}%`;
-    dot.style.top = `${50 + dy * scale}%`;
-    dot.style.transform = "translate(-50%, -50%)";
+    dot.setAttribute("data-label", loc.name);
 
-    if (name === currentLocation) {
-      dot.style.border = "2px solid red";
-      dot.style.backgroundColor = "dodgerblue"; // colore del giocatore
+    const x = (loc.x - minX) * scale + padding;
+    const y = (loc.y - minY) * scale + padding;
+
+    dot.style.left = `${x}px`;
+    dot.style.top = `${y}px`;
+
+    dot.style.backgroundColor = (loc.name === currentLocation) ? "dodgerblue" : "yellow";
+
+    if (loc.name === currentLocation) {
+      dot.classList.add("current");
     }
 
-    dot.onclick = () => {
-      console.log("🗺️ Clicked location:", name);
-      if (name !== currentLocation) {
-        setCurrentLocation(name);
-        const storyDiv = document.getElementById("story");
-        const p = document.createElement("p");
-        p.classList.add("narration");
-        p.textContent = `You head to the ${name}.`;
-        storyDiv.appendChild(p);
-      }
-    };
-
-    mapEl.appendChild(dot);
-  }
+    map.appendChild(dot);
+  });
 }
 
 export async function detectLocationWithGPT(narrative) {
