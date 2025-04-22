@@ -65,8 +65,8 @@ export function renderMap() {
   const centerY = (minY + maxY) / 2;
   const rangeX = maxX - minX || 1;
   const rangeY = maxY - minY || 1;
-  const scale = 40 / Math.max(rangeX, rangeY);  // puoi aumentare o ridurre il 40
-
+  const scale = 100 / Math.max(rangeX, rangeY);  // più espansivo
+  
   // 3. Disegna i punti
   for (const [name, data] of Object.entries(places)) {
     if (!data.discovered) continue;
@@ -77,8 +77,8 @@ export function renderMap() {
     const dot = document.createElement("div");
     dot.className = "map-dot";
     dot.setAttribute("data-label", name);
-    dot.textContent = name;
-
+    dot.style.backgroundColor = name === currentLocation ? "dodgerblue" : "yellow";
+    
     dot.style.left = `${50 + dx * scale}%`;
     dot.style.top = `${50 + dy * scale}%`;
     dot.style.transform = "translate(-50%, -50%)";
