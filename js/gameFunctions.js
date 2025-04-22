@@ -50,45 +50,53 @@ export function renderMap() {
   if (!mapEl) return;
   mapEl.innerHTML = "";
 
-  const playerX = places[currentLocation]?.x || 0;
-  const playerY = places[currentLocation]?.y || 0;
+  // 1. Calcola i limiti della mappa
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const [name, data] of Object.entries(places)) {
+    if (!data.discovered) continue;
+    minX = Math.min(minX, data.x);
+    maxX = Math.max(maxX, data.x);
+    minY = Math.min(minY, data.y);
+    maxY = Math.max(maxY, data.y);
+  }
 
+  // 2. Calcola il centro e lo "zoom" dinamico
+  const centerX = (minX + maxX) / 2;
+  const centerY = (minY + maxY) / 2;
+  const rangeX = maxX - minX || 1;
+  const rangeY = maxY - minY || 1;
+  const scale = 40 / Math.max(rangeX, rangeY);  // puoi aumentare o ridurre il 40
+
+  // 3. Disegna i punti
   for (const [name, data] of Object.entries(places)) {
     if (!data.discovered) continue;
 
-    const dx = data.x - playerX;
-    const dy = data.y - playerY;
+    const dx = data.x - centerX;
+    const dy = data.y - centerY;
 
     const dot = document.createElement("div");
     dot.className = "map-dot";
     dot.setAttribute("data-label", name);
-    dot.style.left = `${50 + dx * 30}%`;
-    dot.style.top = `${50 + dy * 30}%`;
+    dot.textContent = name;
+
+    dot.style.left = `${50 + dx * scale}%`;
+    dot.style.top = `${50 + dy * scale}%`;
     dot.style.transform = "translate(-50%, -50%)";
 
     if (name === currentLocation) {
       dot.style.border = "2px solid red";
+      dot.style.backgroundColor = "dodgerblue"; // colore del giocatore
     }
 
     dot.onclick = () => {
       console.log("🗺️ Clicked location:", name);
-      console.log("📍 places entry:", places[name]);
-
-      if (places[name]) {
-        setCurrentLocation(name);  // anche se è già la location corrente
+      if (name !== currentLocation) {
+        setCurrentLocation(name);
         const storyDiv = document.getElementById("story");
-
-        // Solo se si è cliccato su una location diversa, aggiungiamo narrazione
-        if (name !== currentLocation) {
-          const p = document.createElement("p");
-          p.classList.add("narration");
-          p.textContent = `You head to the ${name}.`;
-          storyDiv.appendChild(p);
-        }
-
-        renderMap(); // forza l’aggiornamento grafico in ogni caso
-      } else {
-        console.warn(`⚠️ Tried to navigate to unknown place: ${name}`);
+        const p = document.createElement("p");
+        p.classList.add("narration");
+        p.textContent = `You head to the ${name}.`;
+        storyDiv.appendChild(p);
       }
     };
 
