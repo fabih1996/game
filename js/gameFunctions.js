@@ -122,6 +122,13 @@ ${narrative}
   }
 }
 
+export function updateMiniMap() {
+  if (typeof renderMap === "function") {
+    renderMap(gameState.locations, gameState.currentLocation);
+  } else {
+    console.warn("renderMap non è definita!");
+  }
+}
 
 // ---------------------------
 // NPC disponibili
