@@ -209,6 +209,7 @@ export async function loadIntro() {
   try {
     // 1) Carica il template del prompt
     let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
+    console.log("📜 Prompt caricato:", prompt.slice(0, 200));
     prompt = prompt
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
       .replace("{{STORY_CONTEXT}}", "")
@@ -219,10 +220,15 @@ export async function loadIntro() {
 
     // 2) Chiamata al server AI
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+      console.log("🌐 Response status:", res.status);
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model: "gpt-4", messages: [{ role: "user", content: prompt }] })
     });
+    console.log("🌐 Response status:", res.status);
+  if (!res.ok) {
+    throw new Error("⚠️ GPT response non OK: " + res.status);
+  }
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
     await detectLocationWithGPT(reply);
@@ -303,7 +309,7 @@ export async function loadIntro() {
     refreshSidebar();
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ Errore in loadIntro:", err);
     // Fallback narrativo in caso di errore
     document.getElementById("story").innerHTML =
       `<p class="narration">The bunker is quiet… maybe too quiet.</p>`;
