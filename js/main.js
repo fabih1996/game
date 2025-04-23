@@ -22,7 +22,8 @@ import {
   updateEpisodeState,
   advanceStage,
   places,
-  detectLocationWithGPT
+  detectLocationWithGPT,
+  updateMiniMap
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
@@ -347,7 +348,7 @@ mmCloseBtn.addEventListener('click', e => {
 });
 
 // Initial draw
-drawMiniMap();
+updateMiniMap();
 
 
  function showLocationInfo(label, description) {
