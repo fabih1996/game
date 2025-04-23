@@ -48,6 +48,10 @@ export function setCurrentLocation(locName) {
 
 export function renderMap(locations, currentLocation) {
   const map = document.getElementById("map");
+  if (!map) {
+    console.warn("❌ Errore: elemento con id='map' non trovato nel DOM.");
+    return;
+  }
   map.innerHTML = "";
 
   if (locations.length === 0) return;
