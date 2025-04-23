@@ -121,15 +121,17 @@ ${narrative}
     console.warn("❓ GPT could not confidently detect a location. Fallback to Unknown.");
   }
 }
-
 export function updateMiniMap() {
   if (typeof renderMap === "function") {
-    renderMap(gameState.locations, gameState.currentLocation);
+    const locations = Object.entries(places)
+      .filter(([name, data]) => data.discovered)
+      .map(([name, data]) => ({ ...data, name }));
+
+    renderMap(locations, currentLocation);
   } else {
     console.warn("renderMap non è definita!");
   }
 }
-
 // ---------------------------
 // NPC disponibili
 // ---------------------------
