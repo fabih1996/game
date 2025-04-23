@@ -220,7 +220,6 @@ export async function loadIntro() {
 
     // 2) Chiamata al server AI
     const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
-      console.log("🌐 Response status:", res.status);
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model: "gpt-4", messages: [{ role: "user", content: prompt }] })
