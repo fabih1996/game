@@ -861,10 +861,8 @@ document.head.appendChild(style);
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
 
-loadIntro().then(async () => {
-  await detectLocationWithGPT(gameIntroText); // setta già gameState.currentLocation
-  updateMiniMap(); // solo dopo che la location è stata impostata!
-});
+  await loadIntro();
+  updateMiniMap();
   
 }
 
