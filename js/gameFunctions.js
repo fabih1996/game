@@ -818,7 +818,7 @@ export function triggerExorcismEvent() {
   setTimeout(()=>{ o.classList.add('hidden'); }, 5500);
 }
 
-export function startGame() {
+export async function startGame() {
   console.log("✅ startGame called");
 
   const name = document.getElementById("playerName").value.trim();
