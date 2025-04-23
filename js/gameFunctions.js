@@ -37,6 +37,7 @@ export function setCurrentLocation(locName) {
   console.log(`📍 Current location set to: ${locName}`);
 
   if (places[locName]) places[locName].discovered = true;
+  updateMiniMap();
 
   renderMap();
 
@@ -45,7 +46,7 @@ export function setCurrentLocation(locName) {
   }
 }
 
-function renderMap(locations, currentLocation) {
+export function renderMap(locations, currentLocation) {
   const map = document.getElementById("map");
   map.innerHTML = "";
 
@@ -122,15 +123,11 @@ ${narrative}
   }
 }
 export function updateMiniMap() {
-  if (typeof renderMap === "function") {
-    const locations = Object.entries(places)
-      .filter(([name, data]) => data.discovered)
-      .map(([name, data]) => ({ ...data, name }));
+  const locations = Object.entries(places)
+    .filter(([name, data]) => data.discovered)
+    .map(([name, data]) => ({ ...data, name }));
 
-    renderMap(locations, currentLocation);
-  } else {
-    console.warn("renderMap non è definita!");
-  }
+  renderMap(locations, currentLocation);
 }
 // ---------------------------
 // NPC disponibili
@@ -211,7 +208,7 @@ export async function loadIntro() {
   try {
     // 1) Carica il template del prompt
     let prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
-    console.log("📜 Prompt caricato:", prompt.slice(0, 200));
+    console.log("✅ Prompt template loaded");
     prompt = prompt
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
       .replace("{{STORY_CONTEXT}}", "")
@@ -226,7 +223,7 @@ export async function loadIntro() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model: "gpt-4", messages: [{ role: "user", content: prompt }] })
     });
-    console.log("🌐 Response status:", res.status);
+    console.log("✅ Response from GPT:", res.status);
   if (!res.ok) {
     throw new Error("⚠️ GPT response non OK: " + res.status);
   }
