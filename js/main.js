@@ -23,7 +23,8 @@ import {
   advanceStage,
   places,
   detectLocationWithGPT,
-  updateMiniMap
+  updateMiniMap,
+  renderMap
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
