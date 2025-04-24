@@ -921,6 +921,21 @@ document.head.appendChild(style);
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
+  // Assicurati che la mappa sia pronta dopo il rendering del DOM
+  setTimeout(() => {
+    const miniMap = document.getElementById("mini-map-widget");
+    if (miniMap) {
+      miniMap.addEventListener("click", () => {
+        miniMap.classList.toggle("expanded");
+        renderMap(
+          Object.entries(places)
+            .filter(([name, data]) => data.discovered)
+            .map(([name, data]) => ({ ...data, name })),
+          currentLocation
+        );
+      });
+    }
+  }, 100); // leggero delay per garantire che il DOM sia pronto
   const miniMap = document.getElementById("mini-map-widget");
   miniMap.addEventListener("click", () => {
     miniMap.classList.toggle("expanded");
