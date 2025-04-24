@@ -281,6 +281,12 @@ const mmCanvas   = document.getElementById('mini-map-canvas');
 const mmCtx      = mmCanvas.getContext('2d');
 const mmCloseBtn = document.getElementById('mini-map-close');
 
+const miniMap = document.getElementById("mini-map-widget");
+
+miniMap.addEventListener("click", () => {
+  miniMap.classList.toggle("expanded");
+});
+
 function getDiscoveredPoints() {
   const points = [];
   for (const [name, data] of Object.entries(places)) {
