@@ -105,7 +105,7 @@ export function renderMiniMapDots(locations, currentLocation) {
   if (!dotContainer) return;
   dotContainer.innerHTML = "";
 
-  const size = 150; // stesso del canvas
+  const size = 150;
   const padding = 15;
 
   const xs = locations.map(loc => loc.x);
@@ -134,6 +134,15 @@ export function renderMiniMapDots(locations, currentLocation) {
 
     dot.style.left = `${x}px`;
     dot.style.top = `${y}px`;
+    dot.setAttribute("title", loc.name); // tooltip
+
+    // 🟡 Aggiungi il click per selezionare il luogo
+    dot.onclick = () => {
+      if (loc.name !== currentLocation) {
+        setCurrentLocation(loc.name);  // aggiorna posizione
+        sendToGPT(`I travel to the ${loc.name}.`, "narration");  // GPT lo saprà
+      }
+    };
 
     dotContainer.appendChild(dot);
   });
