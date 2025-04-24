@@ -21,7 +21,7 @@ import {
   episodeState,
   updateEpisodeState,
   advanceStage,
-  locations,
+  places,
   detectLocationWithGPT,
   updateMiniMap,
   renderMiniMapDots
