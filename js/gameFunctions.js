@@ -44,62 +44,6 @@ export function setCurrentLocation(locName) {
   }
 }
 
-export function renderMap(locations, currentLocation) {
-  const map = document.getElementById("map");
-  if (!map) {
-    console.warn("❌ Errore: elemento con id='map' non trovato nel DOM.");
-    return;
-  }
-  map.innerHTML = "";
-
-  if (locations.length === 0) return;
-
-  // 1. Calcolo bounding box
-  const xs = locations.map(loc => loc.x);
-  const ys = locations.map(loc => loc.y);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-
-  const rangeX = maxX - minX || 1; // evita divisione per zero
-  const rangeY = maxY - minY || 1;
-
-  const mapWidth = map.clientWidth;
-  const mapHeight = map.clientHeight;
-  const padding = 20;
-
-  const scale = Math.min(
-    (mapWidth - padding * 2) / rangeX,
-    (mapHeight - padding * 2) / rangeY
-  );
-
-  // Calcolo centratura
-  const centerX = mapWidth / 2;
-  const centerY = mapHeight / 2;
-  const offsetX = (maxX + minX) / 2;
-  const offsetY = (maxY + minY) / 2;
-
-  locations.forEach(loc => {
-    const dot = document.createElement("div");
-    dot.className = "map-dot";
-    dot.setAttribute("data-label", loc.name);
-
-    // Posizione corretta centrata
-    const x = (loc.x - offsetX) * scale + centerX;
-    const y = (loc.y - offsetY) * scale + centerY;
-
-    dot.style.left = `${x}px`;
-    dot.style.top = `${y}px`;
-
-    dot.style.backgroundColor = (loc.name === currentLocation) ? "dodgerblue" : "yellow";
-
-    if (loc.name === currentLocation) {
-      dot.classList.add("current");
-    }
-
-    map.appendChild(dot);
-  });
-}
-
 export function renderMiniMapDots(locations, currentLocation) {
   const dotContainer = document.getElementById("mini-map-dots");
   if (!dotContainer) return;
@@ -927,21 +871,25 @@ document.head.appendChild(style);
     if (miniMap) {
       miniMap.addEventListener("click", () => {
         miniMap.classList.toggle("expanded");
-        renderMap(
-          Object.entries(places)
-            .filter(([name, data]) => data.discovered)
-            .map(([name, data]) => ({ ...data, name })),
-          currentLocation
-        );
+         // ridisegna il bordo del cerchio
+        drawMiniMap();
+        // riposiziona i puntini in base a places.discovered + currentLocation
+        updateMiniMap();
       });
     }
   }, 100); // leggero delay per garantire che il DOM sia pronto
-  const miniMap = document.getElementById("mini-map-widget");
-  miniMap.addEventListener("click", () => {
-    miniMap.classList.toggle("expanded");
-  });
+const miniMap = document.getElementById("mini-map-widget");
+miniMap.addEventListener("click", () => {
+  miniMap.classList.toggle("expanded");
+  // quando è aperta, ridisegno
+  if (miniMap.classList.contains("expanded")) {
+    drawMiniMap();
+    updateMiniMap();
+  }
+});
 
   await loadIntro();
+  drawMiniMap();
   updateMiniMap();
   
 }
