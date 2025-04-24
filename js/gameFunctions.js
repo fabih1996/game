@@ -921,6 +921,10 @@ document.head.appendChild(style);
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
+  const miniMap = document.getElementById("mini-map-widget");
+  miniMap.addEventListener("click", () => {
+    miniMap.classList.toggle("expanded");
+  });
 
   await loadIntro();
   updateMiniMap();
