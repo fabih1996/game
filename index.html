@@ -5,39 +5,6 @@
   <title>Supernatural RPG</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
-  <style>
-    #mini-map-widget {
-      position: relative;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 1px solid #555;
-      background: #111;
-    }
-
-    #mini-map-dots {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .mini-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      position: absolute;
-      background: yellow;
-    }
-
-    .mini-dot.current {
-      background: red;
-      border: 1px solid white;
-    }
-  </style>
 </head>
 <body>
   <div id="episode-status">
@@ -47,10 +14,8 @@
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
-
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
     <button id="phone-button" class="game-button">📱 Phone</button>
-
     <div id="player-section" class="player-card hidden">
       <h3>Player</h3>
       <div class="char-wrapper" style="--ring-color: #3399ff;">
@@ -87,10 +52,8 @@
     </div>
 
     <div id="game-interface" style="display: none;">
-      <!-- RIMOSSA la mappa grande rettangolare -->
-
-      <!-- Mini‑map con dots sovrapposti -->
-      <div id="mini-map-widget">
+      <!-- MINI-MAPPA -->
+      <div id="mini-map-widget" class="collapsed">
         <canvas id="mini-map-canvas" width="150" height="150"></canvas>
         <div id="mini-map-dots"></div>
         <div id="north-pointer"></div>
@@ -98,7 +61,7 @@
       </div>
 
       <div id="location-info-box" class="hidden">
-        <button id="close-location-info" style="float:right;">&#10005;</button>
+        <button id="close-location-info" style="float:right;">✕</button>
         <strong id="location-name">Location Name</strong>
         <p id="location-description">Short description goes here.</p>
         <button id="go-to-location-btn">Go here</button>
@@ -111,7 +74,7 @@
         <input type="text" id="dialogueInput" placeholder="Say something to a character..." />
       </div>
 
-      <!-- Audio -->
+      <!-- Audio sources -->
       <audio id="sound-door" src="sounds/door_knock.mp3" preload="auto"></audio>
       <audio id="sound-gunshot" src="sounds/gunshot.mp3" preload="auto"></audio>
       <audio id="sound-scream" src="sounds/scream.mp3" preload="auto"></audio>
@@ -134,7 +97,7 @@
       <button id="open-messages" class="app-icon">✉</button>
       <ul id="phone-contact-list" class="hidden"></ul>
       <div id="phone-conversation" class="hidden">
-        <div id="messages" style="height: 200px; overflow: auto; margin-bottom: 8px;"></div>
+        <div id="messages" style="height:200px;overflow:auto;margin-bottom:8px;"></div>
         <input type="text" id="phone-input" placeholder="Type a message…" />
         <button id="phone-send">Send</button>
       </div>
