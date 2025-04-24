@@ -336,7 +336,7 @@ mmWidget.addEventListener('click', e => {
   ) return;
 
   mmWidget.classList.toggle('expanded');
-  drawMiniMap();
+  //drawMiniMap();
 
   const storyBox = document.getElementById("story");
   storyBox.classList.toggle("with-expanded-map", mmWidget.classList.contains("expanded"));
