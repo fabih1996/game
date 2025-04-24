@@ -39,8 +39,6 @@ export function setCurrentLocation(locName) {
   if (places[locName]) places[locName].discovered = true;
   updateMiniMap();
 
-  renderMap();
-
   if (storyPhase === "intro") {
     setStoryPhase("investigation");
   }
