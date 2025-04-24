@@ -100,6 +100,45 @@ export function renderMap(locations, currentLocation) {
   });
 }
 
+export function renderMiniMapDots(locations, currentLocation) {
+  const dotContainer = document.getElementById("mini-map-dots");
+  if (!dotContainer) return;
+  dotContainer.innerHTML = "";
+
+  const size = 150; // stesso del canvas
+  const padding = 15;
+
+  const xs = locations.map(loc => loc.x);
+  const ys = locations.map(loc => loc.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+  const rangeX = maxX - minX || 1;
+  const rangeY = maxY - minY || 1;
+
+  const scale = (size - 2 * padding) / Math.max(rangeX, rangeY);
+  const centerX = size / 2;
+  const centerY = size / 2;
+  const offsetX = (minX + maxX) / 2;
+  const offsetY = (minY + maxY) / 2;
+
+  locations.forEach(loc => {
+    const dot = document.createElement("div");
+    dot.className = "mini-dot";
+    if (loc.name === currentLocation) {
+      dot.classList.add("current");
+    }
+
+    const x = (loc.x - offsetX) * scale + centerX;
+    const y = (loc.y - offsetY) * scale + centerY;
+
+    dot.style.left = `${x}px`;
+    dot.style.top = `${y}px`;
+
+    dotContainer.appendChild(dot);
+  });
+}
+
 export async function detectLocationWithGPT(narrative) {
   const prompt = `
 Given the following narrative, extract the **exact name of the location** where the player is currently located.
@@ -136,7 +175,7 @@ export function updateMiniMap() {
     .filter(([name, data]) => data.discovered)
     .map(([name, data]) => ({ ...data, name }));
 
-  renderMap(locations, currentLocation);
+  renderMiniMapDots(locations, currentLocation);
 }
 // ---------------------------
 // NPC disponibili
