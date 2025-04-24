@@ -130,6 +130,23 @@ export function updateMiniMap() {
 
   renderMiniMapDots(locations, currentLocation);
 }
+
+// ---------------------------
+// Rileva automaticamente nuovi luoghi nominati da GPT
+// ---------------------------
+function maybeDiscoverLocations(text){
+  const lower = text.toLowerCase();
+
+  Object.entries(places).forEach(([name,obj])=>{
+    if (!obj.discovered && lower.includes(name.toLowerCase())) {
+      obj.discovered = true;               // il luogo ora è noto
+      console.log(`🗺️ New place discovered: ${name}`);
+    }
+  });
+
+  updateMiniMap();                         // ridisegna i puntini
+}
+
 // ---------------------------
 // NPC disponibili
 // ---------------------------
@@ -230,6 +247,7 @@ export async function loadIntro() {
   }
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
+    maybeDiscoverLocations(reply);          // <— NEW
     await detectLocationWithGPT(reply);
 
     // 3) Parsing di #PRESENT: per tag manuali
@@ -541,6 +559,7 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
+  maybeDiscoverLocations(reply);          // <— NEW
   await detectLocationWithGPT(reply);
   const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
