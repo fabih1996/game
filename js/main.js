@@ -24,7 +24,7 @@ import {
   places,
   detectLocationWithGPT,
   updateMiniMap,
-  renderMap
+  renderMiniMapDots
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
