@@ -311,8 +311,8 @@ export async function loadIntro() {
     refreshSidebar();
 
   } catch (err) {
-    console.error("❌ Errore in loadIntro:", err);
-    // Fallback narrativo in caso di errore
+    console.error("❌ Errore in loadIntro:", err.message, err.stack);
+    alert("Errore in loadIntro: " + err.message);
     document.getElementById("story").innerHTML =
       `<p class="narration">The bunker is quiet… maybe too quiet.</p>`;
     refreshSidebar();
