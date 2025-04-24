@@ -387,9 +387,11 @@ body {
   position: relative;
   z-index: 2101;
   pointer-events: auto;
-  width: 150px;
-  height: 150px;
-  margin-top: 10px;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin: 20px auto;
   border: 1px solid #555;
   background: #111;
   border-radius: 10px;
