@@ -328,20 +328,11 @@ function drawMiniMap() {
   }
 }
 
-// Toggle expand/collapse on widget click
-mmWidget.addEventListener('click', e => {
-  // Do not toggle if click came from the close button or info box
-  if (
-    e.target === mmCloseBtn || 
-    e.target.closest("#location-info-box")
-  ) return;
-
+// espande/riduce il widget e ridisegna SUBITO i puntini
+mmWidget.addEventListener('click', e =>{
+  if(e.target===mmCloseBtn || e.target.closest("#location-info-box")) return;
   mmWidget.classList.toggle('expanded');
-  drawMiniMap();        // ridisegna il canvas
-  updateMiniMap();     // aggiorna i puntini cliccabili
-
-  const storyBox = document.getElementById("story");
-  storyBox.classList.toggle("with-expanded-map", mmWidget.classList.contains("expanded"));
+  updateMiniMap();               // <-- ridisegna subito i dots
 });
 
 // Close button hides expanded view
