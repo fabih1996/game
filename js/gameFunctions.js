@@ -72,13 +72,20 @@ export function renderMap(locations, currentLocation) {
     (mapHeight - padding * 2) / rangeY
   );
 
+  // Calcolo centratura
+  const centerX = mapWidth / 2;
+  const centerY = mapHeight / 2;
+  const offsetX = (maxX + minX) / 2;
+  const offsetY = (maxY + minY) / 2;
+
   locations.forEach(loc => {
     const dot = document.createElement("div");
     dot.className = "map-dot";
     dot.setAttribute("data-label", loc.name);
 
-    const x = (loc.x - minX) * scale + padding;
-    const y = (loc.y - minY) * scale + padding;
+    // Posizione corretta centrata
+    const x = (loc.x - offsetX) * scale + centerX;
+    const y = (loc.y - offsetY) * scale + centerY;
 
     dot.style.left = `${x}px`;
     dot.style.top = `${y}px`;
