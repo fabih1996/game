@@ -20,7 +20,7 @@ export function setPlayer(p) {
 // ---------------------------
 export let currentLocation = "Nowhere";
 
-export let places = {
+export let locations = {
   Bunker:  { x: 0,  y: 0, label: "Bunker", discovered: true,  description: "Your hidden base of operations." },
   Diner:   { x: 1,  y: 0, label: "Diner",  discovered: true,  description: "A greasy spoon with strong coffee." },
   Library: { x: 0,  y: 1, label: "Library",discovered: false, description: "Ancient tomes and dusty secrets." },
