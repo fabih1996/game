@@ -337,7 +337,8 @@ mmWidget.addEventListener('click', e => {
   ) return;
 
   mmWidget.classList.toggle('expanded');
-  //drawMiniMap();
+  drawMiniMap();        // ridisegna il canvas
+  updateMiniMap();     // aggiorna i puntini cliccabili
 
   const storyBox = document.getElementById("story");
   storyBox.classList.toggle("with-expanded-map", mmWidget.classList.contains("expanded"));
