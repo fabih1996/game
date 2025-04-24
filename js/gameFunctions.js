@@ -865,29 +865,6 @@ document.head.appendChild(style);
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
-  // Assicurati che la mappa sia pronta dopo il rendering del DOM
-  setTimeout(() => {
-    const miniMap = document.getElementById("mini-map-widget");
-    if (miniMap) {
-      miniMap.addEventListener("click", () => {
-        miniMap.classList.toggle("expanded");
-         // ridisegna il bordo del cerchio
-        drawMiniMap();
-        // riposiziona i puntini in base a places.discovered + currentLocation
-        updateMiniMap();
-      });
-    }
-  }, 100); // leggero delay per garantire che il DOM sia pronto
-const miniMap = document.getElementById("mini-map-widget");
-miniMap.addEventListener("click", () => {
-  miniMap.classList.toggle("expanded");
-  // quando è aperta, ridisegno
-  if (miniMap.classList.contains("expanded")) {
-    drawMiniMap();
-    updateMiniMap();
-  }
-});
-
   await loadIntro();
   drawMiniMap();
   updateMiniMap();
