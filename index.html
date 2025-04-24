@@ -6,9 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
-  <!-- Test Map Area -->
-<div id="map" style="width: 200px; height: 200px; position: relative; margin: 10px auto;"></div>
-<body>
 <div id="episode-status">
   <strong>Episode Stage:</strong> <span id="episode-stage-display">intro</span>
 </div>
@@ -80,14 +77,18 @@
       <button id="start-btn">Start Game</button>
     </div>
 
-    <!-- Game interface -->
-    <div id="game-interface" style="display: none;">
-      <!-- Mini‑map widget -->
-      <div id="mini-map-widget" class="collapsed">
-        <canvas id="mini-map-canvas" width="150" height="150"></canvas>
-        <div id="north-pointer"></div>
-        <button id="mini-map-close">✕</button>
-      </div>
+      <!-- Game interface -->
+      <div id="game-interface" style="display: none;">
+        
+        <!-- Mappa grande renderizzata da JavaScript -->
+        <div id="map" class="main-map"></div>
+      
+        <!-- Mini‑map widget -->
+        <div id="mini-map-widget" class="collapsed">
+          <canvas id="mini-map-canvas" width="150" height="150"></canvas>
+          <div id="north-pointer"></div>
+          <button id="mini-map-close">✕</button>
+        </div>
 
       <!-- Location-info-box -->
     <div id="location-info-box" class="hidden">
