@@ -870,6 +870,7 @@ document.head.appendChild(style);
   document.getElementById("game-interface").style.display = "block";
 
   await loadIntro();
+  drawMiniMap(); // ✅ adesso ha senso disegnarla
   updateMiniMap();
   
 }
