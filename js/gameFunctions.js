@@ -87,26 +87,34 @@ export function renderMiniMapDots(locations, currentLocation) {
   });
 }
 
-export function drawMiniMap() {
-  const w = mmCanvas.width;
-  const h = mmCanvas.height;
-  mmCtx.clearRect(0, 0, w, h);
+// ---------- drawMiniMap (autonomo, niente variabili esterne) ----------
+function drawMiniMap () {
+  // recupera il canvas a ogni chiamata
+  const canvas = document.getElementById("mini-map-canvas");
+  if (!canvas) return;                // se il DOM non è ancora pronto esci
 
-  /* corona circolare */
-  mmCtx.strokeStyle = '#888';
-  mmCtx.lineWidth   = 2;
-  mmCtx.beginPath();
-  mmCtx.arc(w / 2, h / 2, w / 2 - 2, 0, 2 * Math.PI);
-  mmCtx.stroke();
+  const ctx = canvas.getContext("2d");
+  const w   = canvas.width;
+  const h   = canvas.height;
+
+  // pulisci
+  ctx.clearRect(0, 0, w, h);
+
+  /* anello esterno */
+  ctx.strokeStyle = "#888";
+  ctx.lineWidth   = 2;
+  ctx.beginPath();
+  ctx.arc(w / 2, h / 2, w / 2 - 2, 0, 2 * Math.PI);
+  ctx.stroke();
 
   /* puntatore Nord */
-  mmCtx.fillStyle = '#ff2d2d';
-  mmCtx.beginPath();
-  mmCtx.moveTo(w / 2, 8);        // punta
-  mmCtx.lineTo(w / 2 - 6, 20);   // sinistra
-  mmCtx.lineTo(w / 2 + 6, 20);   // destra
-  mmCtx.closePath();
-  mmCtx.fill();
+  ctx.fillStyle = "#ff2d2d";
+  ctx.beginPath();
+  ctx.moveTo(w / 2, 8);          // punta alta
+  ctx.lineTo(w / 2 - 6, 20);     // base sx
+  ctx.lineTo(w / 2 + 6, 20);     // base dx
+  ctx.closePath();
+  ctx.fill();
 }
 
 export async function detectLocationWithGPT(narrative) {
