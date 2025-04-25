@@ -92,40 +92,45 @@ export function renderMiniMapDots(locations, currentLocation) {
   });
 }
 
-export function drawMiniMap() {
-  const w = mmCanvas.width;
-  const h = mmCanvas.height;
-  mmCtx.clearRect(0, 0, w, h);
+// Disegna (o ridisegna) il cerchio e i label nel widget
+export function drawMiniMap () {
+  const canvas = document.getElementById('mini-map-canvas');
+  if (!canvas) return;                            // se il DOM non è pronto
 
-  // Cerchio esterno
-  mmCtx.strokeStyle = '#888';
-  mmCtx.lineWidth = 2;
-  mmCtx.beginPath();
-  mmCtx.arc(w / 2, h / 2, w / 2 - 2, 0, 2 * Math.PI);
-  mmCtx.stroke();
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
 
-  const center = places[currentLocation] || { x: 0, y: 0 };
+  ctx.clearRect(0, 0, W, H);
 
-  for (const [locName, loc] of Object.entries(places)) {
-    if (!loc.discovered) continue;
+  // cerchio esterno
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth   = 2;
+  ctx.beginPath();
+  ctx.arc(W/2, H/2, W/2 - 2, 0, 2 * Math.PI);
+  ctx.stroke();
+
+  const center = places[currentLocation] || {x:0, y:0};
+
+  Object.entries(places).forEach(([name, loc]) => {
+    if (!loc.discovered) return;
 
     const dx = loc.x - center.x;
     const dy = loc.y - center.y;
-    const px = w / 2 + dx * (w / 2 - 30);
-    const py = h / 2 + dy * (h / 2 - 30);
+    const px = W/2 + dx * (W/2 - 30);
+    const py = H/2 + dy * (H/2 - 30);
 
-    const isCurrent = locName === currentLocation;
-    mmCtx.fillStyle = isCurrent ? '#3399ff' : 'gold';
-    mmCtx.beginPath();
-    mmCtx.arc(px, py, isCurrent ? 8 : 6, 0, 2 * Math.PI);
-    mmCtx.fill();
+    const isCurrent = name === currentLocation;
+    ctx.fillStyle = isCurrent ? '#3399ff' : 'gold';
+    ctx.beginPath();
+    ctx.arc(px, py, isCurrent ? 8 : 6, 0, 2 * Math.PI);
+    ctx.fill();
 
-    mmCtx.fillStyle = '#fff';
-    mmCtx.font = '10px sans-serif';
-    const label = loc.label || locName;
-    const textWidth = mmCtx.measureText(label).width;
-    mmCtx.fillText(label, px - textWidth / 2, py + 15);
-  }
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px sans-serif';
+    const label = loc.label || name;
+    const tw = ctx.measureText(label).width;
+    ctx.fillText(label, px - tw/2, py + 15);
+  });
 }
 
 export async function detectLocationWithGPT(narrative) {
