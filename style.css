@@ -288,17 +288,12 @@ body {
   pointer-events:none; z-index:2;
 }
 
-.mini-dot {
-  position:absolute;
-  width:8px; height:8px;
-  border-radius:50%;
-  background: yellow;
-  transform: translate(-50%, -50%);
-}
-.mini-dot.current {
-  background: dodgerblue;
-  border: 2px solid white;
-}
+/* puntino “base” */
+.mini-dot        { width: 8px; height: 8px; border-radius: 50%; position: absolute;
+                   background: gold; transform: translate(-50%, -50%); }
+
+/* puntino della posizione attuale (blu) */
+.mini-dot.current{ background: #3399ff; border: 1px solid white; }
 
 #north-pointer {
   position:absolute; top:8px; left:50%;
