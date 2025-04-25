@@ -49,42 +49,52 @@ export function renderMiniMapDots(locations, currentLocation) {
   if (!dotContainer) return;
   dotContainer.innerHTML = "";
 
-  const size = 150;
+  /* ───── centro logico ───── */
+  const discoveredCount = locations.length;
+  const centerName =
+    currentLocation === "Unknown" && discoveredCount > 1
+      ? "Bunker"          // fallback visibile
+      : currentLocation;
+
+  /* ───── bounding-box SENZA Unknown (se non è l’unico) ───── */
+  const bbPoints = locations.filter(
+    loc => loc.name !== "Unknown" || discoveredCount === 1
+  );
+
+  const xs = bbPoints.map(l => l.x);
+  const ys = bbPoints.map(l => l.y);
+  const minX = Math.min(...xs),
+        maxX = Math.max(...xs),
+        minY = Math.min(...ys),
+        maxY = Math.max(...ys);
+
+  const size    = 150;
   const padding = 15;
-
-  const xs = locations.map(loc => loc.x);
-  const ys = locations.map(loc => loc.y);
-  const minX = Math.min(...xs), maxX = Math.max(...xs);
-  const minY = Math.min(...ys), maxY = Math.max(...ys);
-
-  const rangeX = maxX - minX || 1;
-  const rangeY = maxY - minY || 1;
-
-  const scale = (size - 2 * padding) / Math.max(rangeX, rangeY);
+  const rangeX  = maxX - minX || 1;
+  const rangeY  = maxY - minY || 1;
+  const scale   = (size - 2 * padding) / Math.max(rangeX, rangeY);
   const centerX = size / 2;
   const centerY = size / 2;
   const offsetX = (minX + maxX) / 2;
   const offsetY = (minY + maxY) / 2;
 
+  /* ───── disegna i puntini ───── */
   locations.forEach(loc => {
     const dot = document.createElement("div");
     dot.className = "mini-dot";
-    if (loc.name === currentLocation) {
-      dot.classList.add("current");
-    }
+    if (loc.name === currentLocation) dot.classList.add("current");
 
     const x = (loc.x - offsetX) * scale + centerX;
     const y = (loc.y - offsetY) * scale + centerY;
 
     dot.style.left = `${x}px`;
-    dot.style.top = `${y}px`;
-    dot.setAttribute("title", loc.name); // tooltip
+    dot.style.top  = `${y}px`;
+    dot.title      = loc.name;
 
-    // 🟡 Aggiungi il click per selezionare il luogo
     dot.onclick = () => {
       if (loc.name !== currentLocation) {
-        setCurrentLocation(loc.name);  // aggiorna posizione
-        sendToGPT(`I travel to the ${loc.name}.`, "narration");  // GPT lo saprà
+        setCurrentLocation(loc.name);
+        sendToGPT(`I travel to the ${loc.name}.`, "narration");
       }
     };
 
@@ -93,43 +103,62 @@ export function renderMiniMapDots(locations, currentLocation) {
 }
 
 // Disegna (o ridisegna) il cerchio e i label nel widget
-export function drawMiniMap () {
-  const canvas = document.getElementById('mini-map-canvas');
-  if (!canvas) return;                            // se il DOM non è pronto
-
-  const ctx = canvas.getContext('2d');
+export function drawMiniMap() {
+  const canvas = document.getElementById("mini-map-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
   const W = canvas.width, H = canvas.height;
 
   ctx.clearRect(0, 0, W, H);
 
-  // cerchio esterno
-  ctx.strokeStyle = '#888';
+  /* ─── elenco luoghi visualizzabili ─── */
+  const visible = Object.entries(places)
+    .filter(([n, o]) =>
+      o.discovered &&
+      (n !== "Unknown" || Object.values(places).filter(p => p.discovered).length === 1)
+    )
+    .map(([n, o]) => ({ ...o, name: n }));
+
+  if (!visible.length) return;
+
+  /* centro (ignora Unknown se possibile) */
+  const centreName =
+    currentLocation === "Unknown" && visible.length > 1 ? "Bunker" : currentLocation;
+  const centre = places[centreName] || { x: 0, y: 0 };
+
+  /* bounding-box */
+  const xs = visible.map(p => p.x);
+  const ys = visible.map(p => p.y);
+  const minX = Math.min(...xs),
+        maxX = Math.max(...xs),
+        minY = Math.min(...ys),
+        maxY = Math.max(...ys);
+  const range = Math.max(maxX - minX || 1, maxY - minY || 1);
+  const scale = (W / 2 - 20) / range;        // -20 per tenersi dentro al cerchio
+
+  /* cerchio esterno */
+  ctx.strokeStyle = "#888";
   ctx.lineWidth   = 2;
   ctx.beginPath();
-  ctx.arc(W/2, H/2, W/2 - 2, 0, 2 * Math.PI);
+  ctx.arc(W / 2, H / 2, W / 2 - 2, 0, Math.PI * 2);
   ctx.stroke();
 
-  const center = places[currentLocation] || {x:0, y:0};
+  /* puntini + label */
+  visible.forEach(loc => {
+    const dx = loc.x - centre.x;
+    const dy = loc.y - centre.y;
+    const px = W / 2 + dx * scale;
+    const py = H / 2 + dy * scale;
 
-  Object.entries(places).forEach(([name, loc]) => {
-    if (!loc.discovered) return;
-
-    const dx = loc.x - center.x;
-    const dy = loc.y - center.y;
-    const px = W/2 + dx * (W/2 - 30);
-    const py = H/2 + dy * (H/2 - 30);
-
-    const isCurrent = name === currentLocation;
-    ctx.fillStyle = isCurrent ? '#3399ff' : 'gold';
+    ctx.fillStyle = loc.name === currentLocation ? "#3399ff" : "gold";
     ctx.beginPath();
-    ctx.arc(px, py, isCurrent ? 8 : 6, 0, 2 * Math.PI);
+    ctx.arc(px, py, loc.name === currentLocation ? 8 : 6, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '10px sans-serif';
-    const label = loc.label || name;
-    const tw = ctx.measureText(label).width;
-    ctx.fillText(label, px - tw/2, py + 15);
+    ctx.font = "10px sans-serif";
+    ctx.fillStyle = "#fff";
+    const label = loc.label || loc.name;
+    ctx.fillText(label, px - ctx.measureText(label).width / 2, py + 15);
   });
 }
 
