@@ -92,6 +92,42 @@ export function renderMiniMapDots(locations, currentLocation) {
   });
 }
 
+export function drawMiniMap() {
+  const w = mmCanvas.width;
+  const h = mmCanvas.height;
+  mmCtx.clearRect(0, 0, w, h);
+
+  // Cerchio esterno
+  mmCtx.strokeStyle = '#888';
+  mmCtx.lineWidth = 2;
+  mmCtx.beginPath();
+  mmCtx.arc(w / 2, h / 2, w / 2 - 2, 0, 2 * Math.PI);
+  mmCtx.stroke();
+
+  const center = places[currentLocation] || { x: 0, y: 0 };
+
+  for (const [locName, loc] of Object.entries(places)) {
+    if (!loc.discovered) continue;
+
+    const dx = loc.x - center.x;
+    const dy = loc.y - center.y;
+    const px = w / 2 + dx * (w / 2 - 30);
+    const py = h / 2 + dy * (h / 2 - 30);
+
+    const isCurrent = locName === currentLocation;
+    mmCtx.fillStyle = isCurrent ? '#3399ff' : 'gold';
+    mmCtx.beginPath();
+    mmCtx.arc(px, py, isCurrent ? 8 : 6, 0, 2 * Math.PI);
+    mmCtx.fill();
+
+    mmCtx.fillStyle = '#fff';
+    mmCtx.font = '10px sans-serif';
+    const label = loc.label || locName;
+    const textWidth = mmCtx.measureText(label).width;
+    mmCtx.fillText(label, px - textWidth / 2, py + 15);
+  }
+}
+
 export async function detectLocationWithGPT(narrative) {
   const prompt = `
 Given the following narrative, extract the **exact name of the location** where the player is currently located.
@@ -129,6 +165,7 @@ export function updateMiniMap() {
     .map(([name, data]) => ({ ...data, name }));
 
   renderMiniMapDots(locations, currentLocation);
+  drawMiniMap()
 }
 
 // ---------------------------
@@ -886,7 +923,6 @@ document.head.appendChild(style);
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
   await loadIntro();
-  drawMiniMap();
   updateMiniMap();
   
 }
