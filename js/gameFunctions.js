@@ -247,8 +247,9 @@ export async function loadIntro() {
   }
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
-    maybeDiscoverLocations(reply);          // <— NEW
     await detectLocationWithGPT(reply);
+    maybeDiscoverLocations(reply);          // <— NEW
+
 
     // 3) Parsing di #PRESENT: per tag manuali
     Array.from(reply.matchAll(/^#PRESENT:\s*(.+)$/gm))
@@ -559,8 +560,8 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
-  maybeDiscoverLocations(reply);          // <— NEW
   await detectLocationWithGPT(reply);
+  maybeDiscoverLocations(reply);          // <— NEW
   const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
   allAvailableCharacters.forEach(name => {
