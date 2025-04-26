@@ -50,12 +50,12 @@ export function renderMiniMapDots(locations, currentLocation) {
   if (!dotContainer) return;
   dotContainer.innerHTML = "";
 
-  // **Use the real, rendered size** of the widget
+  // Use the real, rendered size in both collapsed (150px) and expanded (300px) modes:
   const SIZE = dotContainer.clientWidth;
-  const PAD  = SIZE * 0.1;             // 10% padding on each side
+  const PAD  = SIZE * 0.1;           // 10% padding
   const cx   = SIZE / 2, cy = SIZE / 2;
 
-  // figure out the real span of your coords
+  // Compute span *only* over these filtered locations
   const xs   = locations.map(l => l.x);
   const ys   = locations.map(l => l.y);
   const minX = Math.min(...xs), maxX = Math.max(...xs);
@@ -68,16 +68,16 @@ export function renderMiniMapDots(locations, currentLocation) {
 
   locations.forEach(loc => {
     const dot = document.createElement("div");
-    dot.className = "mini-dot" + (loc.name === currentLocation ? " current" : "");
+    dot.className = `mini-dot${loc.name === currentLocation ? " current" : ""}`;
 
-    // project your game-coords into pixel positions
+    // center each dot
     const x = (loc.x - offX) * scale + cx;
     const y = (loc.y - offY) * scale + cy;
     dot.style.left = `${x}px`;
     dot.style.top  = `${y}px`;
     dot.title = loc.label || loc.name;
 
-    // now clicks will fire
+    // clicking travels you there
     dot.addEventListener("click", e => {
       e.stopPropagation();
       if (loc.name !== currentLocation) {
@@ -151,24 +151,20 @@ ${narrative}
     console.warn("❓ GPT could not confidently detect a location. Fallback to Unknown.");
   }
 }
+
 export function updateMiniMap() {
-  const locations = [];
+  // Always show Diner & Shop
+  const always = ["Diner", "Shop"].map(name => ({
+    ...places[name],
+    name
+  }));
 
-  // 1) Always show Diner & Shop
-  ["Diner", "Shop"].forEach(name => {
-    if (places[name]) {
-      locations.push({ ...places[name], name });
-    }
-  });
+  // Only include other places once discovered—and skip “Unknown”
+  const discovered = Object.entries(places)
+    .filter(([nm, data]) => data.discovered && nm !== "Diner" && nm !== "Shop" && nm !== "Unknown")
+    .map(([name, data]) => ({ ...data, name }));
 
-  // 2) Then add any other discovered places
-  Object.entries(places).forEach(([name, data]) => {
-    if (data.discovered && name !== "Diner" && name !== "Shop") {
-      locations.push({ ...data, name });
-    }
-  });
-
-  renderMiniMapDots(locations, currentLocation);
+  renderMiniMapDots([...always, ...discovered], currentLocation);
   drawMiniMap();
 }
 
