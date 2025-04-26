@@ -50,46 +50,41 @@ export function renderMiniMapDots(locations, currentLocation) {
   if (!dotContainer) return;
   dotContainer.innerHTML = "";
 
-  // Use the real, rendered size in both collapsed (150px) and expanded (300px) modes:
+  //  Use actual size (collapsed or expanded)
   const SIZE = dotContainer.clientWidth;
-  const PAD  = SIZE * 0.1;           // 10% padding
-  const cx   = SIZE / 2, cy = SIZE / 2;
+  const PAD  = SIZE * 0.1;
+  const cx   = SIZE/2, cy = SIZE/2;
 
-  // Compute span *only* over these filtered locations
-  const xs   = locations.map(l => l.x);
-  const ys   = locations.map(l => l.y);
+  // Compute span over filtered locations
+  const xs = locations.map(l=>l.x), ys = locations.map(l=>l.y);
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
-  const span = Math.max(maxX - minX || 1, maxY - minY || 1);
-  const scale = (SIZE - 2 * PAD) / span;
-
-  const offX = (minX + maxX) / 2;
-  const offY = (minY + maxY) / 2;
+  const span = Math.max(maxX-minX||1, maxY-minY||1);
+  const scale = (SIZE - 2*PAD)/span;
+  const offX = (minX + maxX)/2, offY = (minY + maxY)/2;
 
   locations.forEach(loc => {
     const dot = document.createElement("div");
-    dot.className = `mini-dot${loc.name === currentLocation ? " current" : ""}`;
+    dot.className = `mini-dot${loc.name===currentLocation?" current":""}`;
 
-    // center each dot
-    const x = (loc.x - offX) * scale + cx;
-    const y = (loc.y - offY) * scale + cy;
+    // position
+    const x = (loc.x-offX)*scale + cx;
+    const y = (loc.y-offY)*scale + cy;
     dot.style.left = `${x}px`;
     dot.style.top  = `${y}px`;
-    dot.title = loc.label || loc.name;
 
-    // clicking travels you there
-    dot.addEventListener("click", e => {
+    dot.title = loc.label||loc.name;
+    dot.addEventListener("click", e=>{
       e.stopPropagation();
       if (loc.name !== currentLocation) {
         setCurrentLocation(loc.name);
-        sendToGPT(`I travel to the ${loc.name}.`, "narration");
+        sendToGPT(`I travel to the ${loc.name}.`,"narration");
       }
     });
 
     dotContainer.appendChild(dot);
   });
 }
-
 // ---------- drawMiniMap (autonomo, niente variabili esterne) ----------
 export function drawMiniMap () {
   // recupera il canvas a ogni chiamata
@@ -153,21 +148,21 @@ ${narrative}
 }
 
 export function updateMiniMap() {
-  // Always show Diner & Shop
-  const always = ["Diner", "Shop"].map(name => ({
-    ...places[name],
-    name
-  }));
-
-  // Only include other places once discovered—and skip “Unknown”
+  // 1) Always show Diner & Shop
+  const always = ["Diner","Shop"].map(name => ({ ...places[name], name }));
+  // 2) Then add discovered, non-Unknown places
   const discovered = Object.entries(places)
-    .filter(([nm, data]) => data.discovered && nm !== "Diner" && nm !== "Shop" && nm !== "Unknown")
-    .map(([name, data]) => ({ ...data, name }));
+    .filter(([nm,data])=>
+      data.discovered &&
+      nm !== "Diner" &&
+      nm !== "Shop" &&
+      nm !== "Unknown"
+    )
+    .map(([name,data])=>({ ...data, name }));
 
   renderMiniMapDots([...always, ...discovered], currentLocation);
   drawMiniMap();
 }
-
 
 // ---------------------------
 // Rileva automaticamente nuovi luoghi nominati da GPT
