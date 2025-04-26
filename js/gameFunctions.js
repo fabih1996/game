@@ -46,37 +46,45 @@ export function setCurrentLocation(locName) {
 
 /* ---------- gameFunctions.js ---------- */
 export function renderMiniMapDots(locations, currentLocation) {
-  const dotContainer = document.getElementById('mini-map-dots');
+  const dotContainer = document.getElementById("mini-map-dots");
   if (!dotContainer) return;
-  dotContainer.innerHTML = '';  // Clear previous dots
+  dotContainer.innerHTML = "";
 
-  const SIZE = 150;
-  const PAD = 15;
-  const xs = locations.map(l => l.x);
-  const ys = locations.map(l => l.y);
+  // **Use the real, rendered size** of the widget
+  const SIZE = dotContainer.clientWidth;
+  const PAD  = SIZE * 0.1;             // 10% padding on each side
+  const cx   = SIZE / 2, cy = SIZE / 2;
+
+  // figure out the real span of your coords
+  const xs   = locations.map(l => l.x);
+  const ys   = locations.map(l => l.y);
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
   const span = Math.max(maxX - minX || 1, maxY - minY || 1);
   const scale = (SIZE - 2 * PAD) / span;
-  const cx = SIZE / 2, cy = SIZE / 2;
+
   const offX = (minX + maxX) / 2;
   const offY = (minY + maxY) / 2;
 
   locations.forEach(loc => {
-    const dot = document.createElement('div');
-    dot.className = 'mini-dot';
+    const dot = document.createElement("div");
+    dot.className = "mini-dot" + (loc.name === currentLocation ? " current" : "");
 
-    if (loc.name === currentLocation) {
-      dot.style.background = 'blue';  // Player position -> blue
-    } else {
-      dot.style.background = 'yellow';  // Others -> yellow
-    }
-
+    // project your game-coords into pixel positions
     const x = (loc.x - offX) * scale + cx;
     const y = (loc.y - offY) * scale + cy;
     dot.style.left = `${x}px`;
-    dot.style.top = `${y}px`;
+    dot.style.top  = `${y}px`;
     dot.title = loc.label || loc.name;
+
+    // now clicks will fire
+    dot.addEventListener("click", e => {
+      e.stopPropagation();
+      if (loc.name !== currentLocation) {
+        setCurrentLocation(loc.name);
+        sendToGPT(`I travel to the ${loc.name}.`, "narration");
+      }
+    });
 
     dotContainer.appendChild(dot);
   });
@@ -146,23 +154,24 @@ ${narrative}
 export function updateMiniMap() {
   const locations = [];
 
-  // Always show Diner and Shop
+  // 1) Always show Diner & Shop
   ["Diner", "Shop"].forEach(name => {
     if (places[name]) {
-      locations.push({ ...places[name], name, alwaysVisible: true });
+      locations.push({ ...places[name], name });
     }
   });
 
-  // Add all discovered places
+  // 2) Then add any other discovered places
   Object.entries(places).forEach(([name, data]) => {
     if (data.discovered && name !== "Diner" && name !== "Shop") {
-      locations.push({ ...data, name, alwaysVisible: false });
+      locations.push({ ...data, name });
     }
   });
 
   renderMiniMapDots(locations, currentLocation);
   drawMiniMap();
 }
+
 
 // ---------------------------
 // Rileva automaticamente nuovi luoghi nominati da GPT
