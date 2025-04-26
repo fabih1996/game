@@ -22,10 +22,7 @@ import {
   updateEpisodeState,
   advanceStage,
   places,
-  detectLocationWithGPT,
-  updateMiniMap,
-  renderMiniMapDots,
-  drawMiniMap
+  detectLocationWithGPT
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
@@ -275,100 +272,9 @@ phoneSendBtn.onclick = async () => {
     currentCallee = null;
     convoHistory = [];
   }
-  // ───────────────────────────────────────
-  // ─────────── Mini‑map Widget ───────────
-const mmWidget   = document.getElementById('mini-map-widget');
-const mmCanvas   = document.getElementById('mini-map-canvas');
-const mmCtx      = mmCanvas.getContext('2d');
-const mmCloseBtn = document.getElementById('mini-map-close');
 
 
-function getDiscoveredPoints() {
-  const points = [];
-  for (const [name, data] of Object.entries(places)) {
-    if (data.discovered && name !== currentLocation) {
-      points.push({ x: data.x, y: data.y, label: name });
-    }
-  }
-  return points;
-}
-
-// espande/riduce il widget e ridisegna SUBITO i puntini
-mmWidget.addEventListener('click', e =>{
-  if(e.target===mmCloseBtn || e.target.closest("#location-info-box")) return;
-  mmWidget.classList.toggle('expanded');
-  updateMiniMap();               // <-- ridisegna subito i dots
-});
-
-// Close button hides expanded view
-mmCloseBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  mmWidget.classList.remove('expanded');
-});
-
-
- function showLocationInfo(label, description) {
-  const infoBox = document.getElementById("location-info-box");
-  document.getElementById("location-name").textContent = label;
-  document.getElementById("location-description").textContent = description;
-  infoBox.classList.remove("hidden");
-}
-
-mmCanvas.addEventListener('click', e => {
-  if (!mmWidget.classList.contains("expanded")) return;
-
-  const rect = mmCanvas.getBoundingClientRect();
-  const clickX = (e.clientX - rect.left) * (mmCanvas.width / rect.width);
-  const clickY = (e.clientY - rect.top) * (mmCanvas.height / rect.height);
-
-  const center = places[currentLocation] || { x: 0, y: 0 };
-  let clickedOnLocation = false;
-
-  for (let locName in places) {
-    const loc = places[locName];
-    if (!loc.discovered || locName === currentLocation) continue;
-
-    const dx = loc.x - center.x;
-    const dy = loc.y - center.y;
-    const px = mmCanvas.width / 2 + dx * (mmCanvas.width / 2 - 20);
-    const py = mmCanvas.height / 2 + dy * (mmCanvas.height / 2 - 20);
-    const distSquared = (clickX - px) ** 2 + (clickY - py) ** 2;
-
-    if (distSquared < 10 * 10) {
-      showLocationInfo(loc.label || locName, loc.description || "No description available.");
-      clickedOnLocation = true;
-      break;
-    }
-  }
-
-  if (clickedOnLocation) {
-    e.stopPropagation(); // Evita chiusura della mappa
-  }
-});
-
- // Handle "Go here" button in location-info box
-document.getElementById("go-to-location-btn").addEventListener("click", () => {
-  const selectedLocation = document.getElementById("location-name").textContent;
- 
-  const story = document.getElementById("story");
-  story.innerHTML += `<p><strong>You travel to the ${selectedLocation}.</strong></p>`;
-  document.getElementById("location-info-box").classList.add("hidden");
-
-  setCurrentLocation(selectedLocation);  // 🔥 aggiorna la posizione
-
-  // 💬 Innesca narrazione automatica con GPT (passa la location come input)
-  const locationInput = `You arrive at the ${selectedLocation}.`;
-  sendToGPT(locationInput, "narration");
-});
-
-document.getElementById("close-location-info").addEventListener("click", e => {
-  e.stopPropagation(); // prevent map toggle
-  document.getElementById("location-info-box").classList.add("hidden");
-});
- 
 // ─────────────────────────────────────────
-
-});
 
 // 🔧 Funzione per aggiornare salute del player
 function updateHealthUI() {
