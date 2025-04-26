@@ -306,9 +306,6 @@ mmCloseBtn.addEventListener('click', e => {
   mmWidget.classList.remove('expanded');
 });
 
-// Initial draw
-updateMiniMap();
-
 
  function showLocationInfo(label, description) {
   const infoBox = document.getElementById("location-info-box");
