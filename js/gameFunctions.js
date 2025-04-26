@@ -928,7 +928,6 @@ document.head.appendChild(style);
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
   await loadIntro();
-  updateMiniMap();
   
 }
 
