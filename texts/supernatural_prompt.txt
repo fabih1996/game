@@ -2,9 +2,6 @@ INSTRUCTION
 • Write vividly and engagingly in second-person (“you…”). Never name the player directly.
 • Output only content required—no headings, numbers, blank lines, separators, or commentary.
 
-CURRENT LOCATION
-• The player is currently at: {{LOCATION}}.
-
 CURRENT STORY PHASE
 • The story is currently in the: {{STORY_PHASE}} phase.
 
@@ -53,6 +50,5 @@ GLOBAL RULES
 TEMPLATE VARIABLES
 {{CHARACTER_LORE}} — Complete biographies.
 {{STORY_CONTEXT}} — Recent story context (20 lines minimum for coherence if they are and all of them if there are less than 20).
-{{LOCATION}} — The player’s current location.
 {{INPUT}} — Player’s most recent action or line.
 {{CHARACTERS}} — Currently present characters.
