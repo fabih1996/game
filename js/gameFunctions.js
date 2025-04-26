@@ -88,7 +88,7 @@ export function renderMiniMapDots(locations, currentLocation) {
 }
 
 // ---------- drawMiniMap (autonomo, niente variabili esterne) ----------
-function drawMiniMap () {
+export function drawMiniMap () {
   // recupera il canvas a ogni chiamata
   const canvas = document.getElementById("mini-map-canvas");
   if (!canvas) return;                // se il DOM non è ancora pronto esci
