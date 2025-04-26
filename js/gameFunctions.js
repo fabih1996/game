@@ -48,40 +48,35 @@ export function setCurrentLocation(locName) {
 export function renderMiniMapDots(locations, currentLocation) {
   const dotContainer = document.getElementById('mini-map-dots');
   if (!dotContainer) return;
-  dotContainer.innerHTML = '';              // rimuovi i puntini precedenti
+  dotContainer.innerHTML = '';  // Clear previous dots
 
-  /* --- scala e centratura --- */
-  const SIZE   = 150;        // diametro widget
-  const PAD    = 15;         // margine interno
-  const xs     = locations.map(l => l.x);
-  const ys     = locations.map(l => l.y);
-  const minX   = Math.min(...xs), maxX = Math.max(...xs);
-  const minY   = Math.min(...ys), maxY = Math.max(...ys);
-  const span   = Math.max(maxX - minX || 1, maxY - minY || 1);
-  const scale  = (SIZE - 2 * PAD) / span;
-  const cx     = SIZE / 2,   cy = SIZE / 2;
-  const offX   = (minX + maxX) / 2;
-  const offY   = (minY + maxY) / 2;
+  const SIZE = 150;
+  const PAD = 15;
+  const xs = locations.map(l => l.x);
+  const ys = locations.map(l => l.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const span = Math.max(maxX - minX || 1, maxY - minY || 1);
+  const scale = (SIZE - 2 * PAD) / span;
+  const cx = SIZE / 2, cy = SIZE / 2;
+  const offX = (minX + maxX) / 2;
+  const offY = (minY + maxY) / 2;
 
-  /* --- crea i puntini --- */
   locations.forEach(loc => {
-    const dot  = document.createElement('div');
+    const dot = document.createElement('div');
     dot.className = 'mini-dot';
-    if (loc.name === currentLocation) dot.classList.add('current');
+
+    if (loc.name === currentLocation) {
+      dot.style.background = 'blue';  // Player position -> blue
+    } else {
+      dot.style.background = 'yellow';  // Others -> yellow
+    }
 
     const x = (loc.x - offX) * scale + cx;
     const y = (loc.y - offY) * scale + cy;
     dot.style.left = `${x}px`;
-    dot.style.top  = `${y}px`;
-    dot.title = loc.label || loc.name;       // tooltip
-
-    // click per spostarsi
-    dot.onclick = () => {
-      if (loc.name !== currentLocation) {
-        setCurrentLocation(loc.name);
-        sendToGPT(`I travel to the ${loc.name}.`, 'narration');
-      }
-    };
+    dot.style.top = `${y}px`;
+    dot.title = loc.label || loc.name;
 
     dotContainer.appendChild(dot);
   });
@@ -149,12 +144,24 @@ ${narrative}
   }
 }
 export function updateMiniMap() {
-  const locations = Object.entries(places)
-    .filter(([name, data]) => data.discovered)
-    .map(([name, data]) => ({ ...data, name }));
+  const locations = [];
+
+  // Always show Diner and Shop
+  ["Diner", "Shop"].forEach(name => {
+    if (places[name]) {
+      locations.push({ ...places[name], name, alwaysVisible: true });
+    }
+  });
+
+  // Add all discovered places
+  Object.entries(places).forEach(([name, data]) => {
+    if (data.discovered && name !== "Diner" && name !== "Shop") {
+      locations.push({ ...data, name, alwaysVisible: false });
+    }
+  });
 
   renderMiniMapDots(locations, currentLocation);
-  drawMiniMap()
+  drawMiniMap();
 }
 
 // ---------------------------
