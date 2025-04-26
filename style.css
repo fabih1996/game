@@ -287,12 +287,15 @@ body {
 }
 
 .mini-dot {
-  pointer-events: auto;
-  cursor: pointer;
-  background: gold;
+  position: absolute;
   width: 12px;
   height: 12px;
+  border-radius: 50%;
+  background: gold;
   border: 2px solid #444;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .mini-dot.current {
