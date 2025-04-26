@@ -15,150 +15,7 @@ export function setPlayer(p) {
   player = p;
 }
 
-// ---------------------------
-// Gestione mappa e luoghi
-// ---------------------------
-export let currentLocation = "Nowhere";
 
-export const places = {
-  Bunker:  { x: 0,  y: 0, label: "Bunker", discovered: true,  description: "Your hidden base of operations." },
-  Diner:   { x: 1,  y: 0, label: "Diner",  discovered: true,  description: "A greasy spoon with strong coffee." },
-  Library: { x: 0,  y: 1, label: "Library",discovered: false, description: "Ancient tomes and dusty secrets." },
-  Church:  { x: -1, y: 1, label: "Church", discovered: false, description: "An abandoned church, echoing with whispers." },
-  Motel:   { x: 2,  y: 1, label: "Motel",  discovered: false, description: "A dimly lit roadside stop." },
-  Shop:    { x: 1,  y: 1, label: "Shop",   discovered: true,  description: "A dusty store full of gear and mystery." },
-  Unknown: {x: 99, y: 99, label: "Unknown", discovered: true, description: "A mysterious place, undefined in time and space."}
-};
-
-
-
-export function setCurrentLocation(locName) {
-  currentLocation = locName;
-  console.log(`📍 Current location set to: ${locName}`);
-
-  if (places[locName]) places[locName].discovered = true;
-  updateMiniMap();
-
-  if (storyPhase === "intro") {
-    setStoryPhase("investigation");
-  }
-}
-
-/* ---------- gameFunctions.js ---------- */
-export function renderMiniMapDots(locations, currentLocation) {
-  const dotContainer = document.getElementById("mini-map-dots");
-  if (!dotContainer) return;
-  dotContainer.innerHTML = "";
-
-  const SIZE  = dotContainer.clientWidth;
-  const PAD   = SIZE * 0.1;
-  const cx    = SIZE / 2, cy = SIZE / 2;
-
-  // compute span just over our filtered dots
-  const xs    = locations.map(l => l.x);
-  const ys    = locations.map(l => l.y);
-  const minX  = Math.min(...xs), maxX = Math.max(...xs);
-  const minY  = Math.min(...ys), maxY = Math.max(...ys);
-  const span  = Math.max(maxX-minX||1, maxY-minY||1);
-  const scale = (SIZE - 2*PAD) / span;
-  const offX  = (minX + maxX) / 2;
-  const offY  = (minY + maxY) / 2;
-
-  locations.forEach(loc => {
-    const dot = document.createElement("div");
-    dot.className = `mini-dot${loc.name===currentLocation?" current":""}`;
-    // position
-    const x = (loc.x - offX)*scale + cx;
-    const y = (loc.y - offY)*scale + cy;
-    dot.style.left = `${x}px`;
-    dot.style.top  = `${y}px`;
-    dot.title      = loc.label || loc.name;
-
-    dot.addEventListener("click", e => {
-      e.stopPropagation();
-      if (loc.name !== currentLocation) {
-        setCurrentLocation(loc.name);
-        sendToGPT(`I travel to the ${loc.name}.`, "narration");
-      }
-    });
-
-    dotContainer.appendChild(dot);
-  });
-}
-
-// ---------- drawMiniMap (autonomo, niente variabili esterne) ----------
-export function drawMiniMap () {
-  // recupera il canvas a ogni chiamata
-  const canvas = document.getElementById("mini-map-canvas");
-  if (!canvas) return;                // se il DOM non è ancora pronto esci
-
-  const ctx = canvas.getContext("2d");
-  const w   = canvas.width;
-  const h   = canvas.height;
-
-  // pulisci
-  ctx.clearRect(0, 0, w, h);
-
-  /* anello esterno */
-  ctx.strokeStyle = "#888";
-  ctx.lineWidth   = 2;
-  ctx.beginPath();
-  ctx.arc(w / 2, h / 2, w / 2 - 2, 0, 2 * Math.PI);
-  ctx.stroke();
-
-  /* puntatore Nord */
-  ctx.fillStyle = "#ff2d2d";
-  ctx.beginPath();
-  ctx.moveTo(w / 2, 8);          // punta alta
-  ctx.lineTo(w / 2 - 6, 20);     // base sx
-  ctx.lineTo(w / 2 + 6, 20);     // base dx
-  ctx.closePath();
-  ctx.fill();
-}
-
-export async function detectLocationWithGPT(narrative) {
-  const prompt = `
-Given the following narrative, extract the **exact name of the location** where the player is currently located.
-Return ONLY the location name if it matches one of the known places. If you are not sure, reply "Unknown".
-
-Known places: ${Object.keys(places).join(", ")}
-
-NARRATIVE:
-${narrative}
-`.trim();
-
-  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }]
-    })
-  });
-
-  const data = await res.json();
-  const reply = data.choices[0]?.message?.content?.trim();
-
-  if (reply && reply !== "Unknown" && places[reply]) {
-    setCurrentLocation(reply);
-    console.log("📍 GPT detected location:", reply);
-  } else {
-    setCurrentLocation("Unknown");
-    console.warn("❓ GPT could not confidently detect a location. Fallback to Unknown.");
-  }
-}
-
-export function updateMiniMap() {
-  // 1) Always show Diner & Shop
-  const always = ["Diner","Shop"].map(name => ({ ...places[name], name }));
-  // 2) Then add discovered, non-Unknown places
-  const discovered = Object.entries(places)
-    .filter(([nm, d]) => d.discovered && nm!=="Diner" && nm!=="Shop" && nm!=="Unknown")
-    .map(([name, d]) => ({ ...d, name }));
-
-  renderMiniMapDots([...always, ...discovered], currentLocation);
-  drawMiniMap();
-}
 
 // ---------------------------
 // Rileva automaticamente nuovi luoghi nominati da GPT
@@ -172,8 +29,6 @@ function maybeDiscoverLocations(text){
       console.log(`🗺️ New place discovered: ${name}`);
     }
   });
-
-  updateMiniMap();                         // ridisegna i puntini
 }
 
 // ---------------------------
@@ -915,7 +770,6 @@ document.head.appendChild(style);
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
   await loadIntro();
-  updateMiniMap();
 }
 
 export function updatePlayerUI(player) {
