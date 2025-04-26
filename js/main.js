@@ -300,3 +300,4 @@ window.startGame = startGame;
   window.toggleMusic          = toggleMusic;
   window.toggleSidebar        = toggleSidebar;
   window.scheduleArrival = scheduleArrival;
+});
