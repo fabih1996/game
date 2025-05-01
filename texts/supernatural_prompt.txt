@@ -22,12 +22,10 @@ RESPONSE MODES
 1 Random Event
 • Describe vividly and unexpectedly a supernatural event from player's PoV.
 • Short impactful narration allowed.
-• End with exactly 2 or 3 intriguing bracketed choices.
 
 2 Narration Input (player narrates action)
 • Continue vividly and consistently the narrative from player's PoV.
 • Short meaningful narration allowed.
-• End with exactly 2 or 3 engaging bracketed choices.
 
 3 Dialogue Input (player speaks)
 • Only allowed NPCs already present respond.
@@ -35,7 +33,6 @@ RESPONSE MODES
 • No embedded descriptions inside the quotes.
 • Absolutely NO Narrator lines allowed in this mode.
 • NEVER repeat the same sentence or dialogue.
-• End with exactly 2 or 3 original bracketed choices.
 
 CHOICE FORMAT
 Each choice on its own line, exactly:
