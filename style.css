@@ -273,6 +273,17 @@ body {
 }
 
 /* ─────────────── Map ─────────────── */
+#mini-map {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 150px;      /* fixed diameter */
+  height: 150px;     /* fixed diameter */
+  background: rgba(0,0,0,0.6);
+  border-radius: 50%;
+  z-index: 999;
+  box-shadow: 0 0 10px #000;
+}
 
 #mini-map svg {
   width: 100%;
