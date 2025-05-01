@@ -17,19 +17,6 @@ export function setPlayer(p) {
 
 
 
-// ---------------------------
-// Rileva automaticamente nuovi luoghi nominati da GPT
-// ---------------------------
-function maybeDiscoverLocations(text){
-  const lower = text.toLowerCase();
-
-  Object.entries(places).forEach(([name,obj])=>{
-    if (!obj.discovered && lower.includes(name.toLowerCase())) {
-      obj.discovered = true;               // il luogo ora è noto
-      console.log(`🗺️ New place discovered: ${name}`);
-    }
-  });
-}
 
 // ---------------------------
 // NPC disponibili
@@ -115,7 +102,6 @@ export async function loadIntro() {
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
       .replace("{{STORY_CONTEXT}}", "")
       .replace("{{INPUT}}", "")
-      .replace("{{LOCATION}}", currentLocation)
       .replace("{{STORY_PHASE}}", storyPhase)
       .replace("{{CHARACTERS}}", "");
 
@@ -131,8 +117,7 @@ export async function loadIntro() {
   }
     const data  = await res.json();
     const reply = data.choices[0].message.content.trim();
-    await detectLocationWithGPT(reply);
-    maybeDiscoverLocations(reply);          // <— NEW
+
 
 
     // 3) Parsing di #PRESENT: per tag manuali
@@ -410,7 +395,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   if (type === "dialogue") {
     prompt = [
       `Scene context (last 20 messages):\n${contextLines}`,
-      `Current location: ${currentLocation}`,
       `Story phase: ${storyPhase}`,
       `Player (${player.name}) says: "${input}". Do NOT speak as the player.`,
   
@@ -428,7 +412,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
       .replace("{{STORY_CONTEXT}}", contextLines)
       .replace("{{INPUT}}", input)
       .replace("{{CHARACTERS}}", speakerNames.join(" and "))
-      .replace("{{LOCATION}}", currentLocation);
     
     if (isRandom) prompt += "\nThe player triggers a sudden supernatural event...";
     else if (type === "narration")
@@ -444,8 +427,6 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
-  await detectLocationWithGPT(reply);
-  maybeDiscoverLocations(reply);          // <— NEW
   const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
   allAvailableCharacters.forEach(name => {
