@@ -10,36 +10,26 @@
   <div id="episode-status">
     <strong>Episode Stage:</strong> <span id="episode-stage-display">intro</span>
   </div>
-<div id="mini-map">
-  <svg viewBox="0 0 220 220">
-    <circle cx="110" cy="110" r="95" stroke="#555" stroke-width="4" fill="none"/>
-<svg viewBox="0 0 220 220">
-  <circle cx="110" cy="110" r="95" stroke="#555" stroke-width="4" fill="none"/>
-  
-  <!-- the needle: -->
-  <polygon id="compass-needle" points="100,15 110,35 90,35" fill="red">
-    <!-- animateTransform rotates this polygon around (110,110) -->
-    <animateTransform 
-      attributeName="transform"
-      attributeType="XML"
-      type="rotate"
-      from="-8 110 110"
-      to=" 8 110 110"
-      dur="2s"
-      repeatCount="indefinite"
-    />
-  </polygon>
 
-  <!-- player dot & fixed places unchanged -->
-  <circle id="player-dot" cx="110" cy="110" r="5" fill="#3399ff"/>
-  <circle class="map-point" data-name="Diner" cx="145" cy="70" r="4" fill="yellow"/>
-  <circle class="map-point" data-name="Shop" cx="75"  cy="170" r="4" fill="yellow"/>
-</svg>
-    <circle id="player-dot" cx="110" cy="110" r="5" fill="#3399ff"/>
-    <circle class="map-point" data-name="Diner" cx="145" cy="70" r="4" fill="yellow"/>
-    <circle class="map-point" data-name="Shop" cx="75" cy="170" r="4" fill="yellow"/>
-  </svg>
-</div>
+  <div id="mini-map">
+    <svg viewBox="0 0 220 220">
+      <circle cx="110" cy="110" r="95" stroke="#555" stroke-width="4" fill="none"/>
+      <polygon id="compass-needle" points="100,15 110,35 90,35" fill="red">
+        <animateTransform 
+          attributeName="transform"
+          attributeType="XML"
+          type="rotate"
+          from="-8 110 110"
+          to="8 110 110"
+          dur="2s"
+          repeatCount="indefinite" />
+      </polygon>
+      <circle id="player-dot" cx="110" cy="110" r="5" fill="#3399ff"/>
+      <circle class="map-point" data-name="Diner" cx="145" cy="70" r="4" fill="yellow"/>
+      <circle class="map-point" data-name="Shop" cx="75" cy="170" r="4" fill="yellow"/>
+    </svg>
+  </div>
+
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
