@@ -10,7 +10,16 @@
   <div id="episode-status">
     <strong>Episode Stage:</strong> <span id="episode-stage-display">intro</span>
   </div>
-
+  <div id="mini-map">
+  <svg viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="95" stroke="#555" stroke-width="4" fill="none"/>
+    <polygon id="compass-needle" points="100,20 90,100 110,100" fill="red"/>
+    <circle id="player-dot" cx="100" cy="100" r="5" fill="#3399ff"/>
+    <!-- Static fixed places -->
+    <circle class="map-point" data-name="Diner" cx="130" cy="60" r="4" fill="yellow"/>
+    <circle class="map-point" data-name="Shop" cx="70" cy="150" r="4" fill="yellow"/>
+  </svg>
+</div>
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
