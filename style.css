@@ -291,7 +291,8 @@ body {
 }
 
 #compass-needle {
-  transform-origin: center;
+  transform-origin: 100px 100px;
+  transform-box: fill-box;
   animation: swing 2s infinite ease-in-out;
 }
 
