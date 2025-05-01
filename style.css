@@ -280,9 +280,10 @@ body {
   right: 10px;
   width: 150px;
   height: 150px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 50%;
-  z-index: 1000;
+  z-index: 999;
+  box-shadow: 0 0 10px #000;
 }
 
 #mini-map svg {
@@ -291,12 +292,13 @@ body {
 }
 
 #compass-needle {
-  transform-origin: 100px 100px;
+  transform-origin: 110px 110px; /* new center! */
   transform-box: fill-box;
   animation: swing 2s infinite ease-in-out;
 }
 
 @keyframes swing {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
+  0%   { transform: rotate(-5deg); }
+  50%  { transform: rotate(5deg); }
+  100% { transform: rotate(-5deg); }
 }
