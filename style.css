@@ -291,14 +291,14 @@ body {
   height: 100%;
 }
 
-#compass-needle {
-  transform-origin: 110px 110px; /* new center! */
+#needle-group {
+  transform-origin: 110px 110px;
   transform-box: fill-box;
-  animation: swing 2s infinite ease-in-out;
+  animation: orbit-swing 2s infinite ease-in-out;
 }
 
-@keyframes swing {
-  0%   { transform: rotate(-5deg); }
-  50%  { transform: rotate(5deg); }
-  100% { transform: rotate(-5deg); }
+@keyframes orbit-swing {
+  0%   { transform: rotate(-10deg); }
+  50%  { transform: rotate(10deg); }
+  100% { transform: rotate(-10deg); }
 }
