@@ -3,7 +3,6 @@ import {
   characters,
   characterKnowledge,
   allAvailableCharacters,
-  currentLocation,
   loadCharacterLore,
   refreshSidebar,
   toggleSidebar,
@@ -17,12 +16,9 @@ import {
   scheduleArrival,
   travelTimes,
   updatePlayerUI,
-  setCurrentLocation,
   episodeState,
   updateEpisodeState,
   advanceStage,
-  places,
-  detectLocationWithGPT
   //,
   //triggerExorcismEvent
   // ... aggiungi qui tutte le altre funzioni da usare in main.js
