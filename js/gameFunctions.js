@@ -16,7 +16,32 @@ export function setPlayer(p) {
 }
 
 
+// Tiene traccia dell’ultima location cliccata
+let currentLocation = null;
 
+// Funzione per gestire lo spostamento
+function handleMapClick(place) {
+  if (currentLocation === place) return;
+  currentLocation = place;
+
+  // 1) Narrazione spostamento
+  const storyDiv = document.getElementById('story');
+  const p = document.createElement('p');
+  p.classList.add('narration');
+  p.textContent = `Ti sposti al ${place}.`;
+  storyDiv.appendChild(p);
+
+  // 2) Comunica al motore AI
+  sendToGPT(`Move to ${place}.`, 'narration');
+}
+
+// Funzione per attaccare gli event listener ai punti della mappa
+function attachMapHandlers() {
+  document.querySelectorAll('.map-point').forEach(pt => {
+    pt.style.cursor = 'pointer';
+    pt.addEventListener('click', () => handleMapClick(pt.dataset.name));
+  });
+}
 
 // ---------------------------
 // NPC disponibili
@@ -689,6 +714,7 @@ document.head.appendChild(style);
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
   await loadIntro();
+  attachMapHandlers();
 }
 
 export function updatePlayerUI(player) {
