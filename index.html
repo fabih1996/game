@@ -26,8 +26,16 @@
           repeatCount="indefinite" />
       </polygon>
       <circle id="player-dot" cx="110" cy="110" r="5" fill="#3399ff"/>
-      <circle class="map-point" data-name="Diner" cx="145" cy="70" r="4" fill="yellow"/>
-      <circle class="map-point" data-name="Shop" cx="75" cy="170" r="4" fill="yellow"/>
+
+      <!-- Map Points with Labels/Emojis -->
+      <g class="map-point" data-name="Diner" style="cursor: pointer;">
+        <circle cx="145" cy="70" r="4" fill="yellow"/>
+        <text x="155" y="75" font-size="12" text-anchor="start" fill="#fff">🍔 Diner</text>
+      </g>
+      <g class="map-point" data-name="Shop" style="cursor: pointer;">
+        <circle cx="75" cy="170" r="4" fill="yellow"/>
+        <text x="85" y="175" font-size="12" text-anchor="start" fill="#fff">🛒 Shop</text>
+      </g>
     </svg>
   </div>
 
