@@ -21,7 +21,10 @@ let currentLocation = null;
 
 // Funzione per gestire lo spostamento
 function handleMapClick(place) {
-  if (currentLocation === place) return;
+  if (currentLocation === place){
+    pt.style.cursor = 'default';
+    return;
+  }
   currentLocation = place;
 
   // 1) Narrazione spostamento
@@ -50,6 +53,9 @@ export function addMapLocation({ name, x, y, emoji, labelOffset = { dx: 10, dy: 
   const svg = document.querySelector("#mini-map svg");
   if (!svg) return;
 
+    // evita di aggiungere di nuovo lo stesso luogo
+  if (svg.querySelector(`.map-point[data-name="${name}"]`)) return;
+  
   // 1) Crea il <g class="map-point">
   const g = document.createElementNS(SVG_NS, "g");
   g.setAttribute("class", "map-point");
