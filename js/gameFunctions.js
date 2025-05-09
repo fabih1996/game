@@ -21,8 +21,8 @@ let currentLocation = null;
 
 // Funzione per gestire lo spostamento
 function handleMapClick(place) {
-  if (currentLocation === place){
-    pt.style.cursor = 'default';
+  if (currentLocation === place) {
+    elem.style.cursor = 'default';
     return;
   }
   currentLocation = place;
@@ -42,7 +42,9 @@ function handleMapClick(place) {
 function attachMapHandlers() {
   document.querySelectorAll('.map-point').forEach(pt => {
     pt.style.cursor = 'pointer';
-    pt.addEventListener('click', () => handleMapClick(pt.dataset.name));
+    pt.addEventListener('click', () => 
+      handleMapClick(pt.dataset.name, pt)
+    );
   });
 }
 
