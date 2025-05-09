@@ -43,6 +43,46 @@ function attachMapHandlers() {
   });
 }
 
+// namespace, fuori da qualsiasi export
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+export function addMapLocation({ name, x, y, emoji, labelOffset = { dx: 10, dy: 5 } }) {
+  const svg = document.querySelector("#mini-map svg");
+  if (!svg) return;
+
+  // 1) Crea il <g class="map-point">
+  const g = document.createElementNS(SVG_NS, "g");
+  g.setAttribute("class", "map-point");
+  g.dataset.name = name;
+  g.style.cursor = "pointer";
+
+  // 2) Crea l’emoji
+  const textEmoji = document.createElementNS(SVG_NS, "text");
+  textEmoji.setAttribute("x", x);
+  textEmoji.setAttribute("y", y);
+  textEmoji.setAttribute("font-size", "16");
+  textEmoji.setAttribute("text-anchor", "middle");
+  textEmoji.setAttribute("dominant-baseline", "middle");
+  textEmoji.textContent = emoji;
+  g.appendChild(textEmoji);
+
+  // 3) Crea il label
+  const textLabel = document.createElementNS(SVG_NS, "text");
+  textLabel.setAttribute("x", x + labelOffset.dx);
+  textLabel.setAttribute("y", y + labelOffset.dy);
+  textLabel.setAttribute("font-size", "12");
+  textLabel.setAttribute("text-anchor", "start");
+  textLabel.setAttribute("fill", "#fff");
+  textLabel.textContent = name;
+  g.appendChild(textLabel);
+
+  // 4) Aggiungi click handler (riusa handleMapClick)
+  g.addEventListener("click", () => handleMapClick(name));
+
+  // 5) Inserisci nel DOM
+  svg.appendChild(g);
+}
+
 // ---------------------------
 // NPC disponibili
 // ---------------------------
