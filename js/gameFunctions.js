@@ -84,6 +84,37 @@ export function addMapLocation({ name, x, y, emoji, labelOffset = { dx: 10, dy: 
 }
 
 // ---------------------------
+// Rilevamento nuove location
+// ---------------------------
+export async function detectNewLocation(context, latestReply) {
+  const prompt = `
+Given the following recent story context and the latest reply, decide if a new place has been discovered or introduced.
+If yes, output exactly one line in this format:
+#DISCOVERED: PlaceName at (X,Y) with emoji <Emoji>
+Coordinates should be integers within 0–220 (SVG viewBox). Emoji should match the place.
+If no new place, output exactly NONE.
+`.trim();
+
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: prompt },
+        { role: "user", content: 
+            `CONTEXT:\n${context}\n\nREPLY:\n${latestReply}` 
+        }
+      ]
+    })
+  });
+  const data = await res.json();
+  const line = data.choices[0].message.content.trim().split("\n")[0];
+  if (line.startsWith("#DISCOVERED:")) return line;
+  return null;
+}
+
+// ---------------------------
 // NPC disponibili
 // ---------------------------
 export const allAvailableCharacters = [
@@ -442,19 +473,26 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
 
-    // ————————————————
-  // Nuova scoperta di un luogo?
-  reply.split("\n").forEach(line => {
-    const m = line.match(
-      /^#DISCOVERED:\s*(.+)\s+at\s+\((\d+),\s*(\d+)\)\s+with\s+emoji\s+(.+)$/
-    );
-    if (m) {
-      const [, placeName, xs, ys, emoji] = m;
-      const x = parseInt(xs, 10), y = parseInt(ys, 10);
-      addMapLocation({ name: placeName, x, y, emoji });
+// ————— Rilevamento automatico di nuove location —————
+detectNewLocation(contextLines, reply)
+  .then(tag => {
+    if (tag) {
+      const m = tag.match(
+        /^#DISCOVERED:\s*(.+)\s+at\s+\((\d+),\s*(\d+)\)\s+with\s+emoji\s+(.+)$/
+      );
+      if (m) {
+        const [, name, xs, ys, emoji] = m;
+        addMapLocation({
+          name: name.trim(),
+          x: parseInt(xs, 10),
+          y: parseInt(ys, 10),
+          emoji: emoji.trim()
+        });
+      }
     }
-  });
-  // ————————————————
+  })
+  .catch(e => console.warn("detectNewLocation failed:", e));
+// ————————————————————————————————————————————————————
   
   const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
