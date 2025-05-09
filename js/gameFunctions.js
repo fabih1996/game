@@ -441,6 +441,21 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
+
+    // ————————————————
+  // Nuova scoperta di un luogo?
+  reply.split("\n").forEach(line => {
+    const m = line.match(
+      /^#DISCOVERED:\s*(.+)\s+at\s+\((\d+),\s*(\d+)\)\s+with\s+emoji\s+(.+)$/
+    );
+    if (m) {
+      const [, placeName, xs, ys, emoji] = m;
+      const x = parseInt(xs, 10), y = parseInt(ys, 10);
+      addMapLocation({ name: placeName, x, y, emoji });
+    }
+  });
+  // ————————————————
+  
   const lowerReply = reply.toLowerCase();
   // 👁️ Rileva personaggi presenti anche se non taggati
   allAvailableCharacters.forEach(name => {
