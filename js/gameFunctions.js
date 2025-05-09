@@ -119,6 +119,7 @@ export async function loadIntro() {
     console.log("✅ Prompt template loaded");
     prompt = prompt
       .replace("{{CHARACTER_LORE}}", characterKnowledge)
+      .replace("{{LOCATION}}", currentLocation || "unknown")
       .replace("{{STORY_CONTEXT}}", "")
       .replace("{{INPUT}}", "")
       .replace("{{CHARACTERS}}", "");
@@ -378,9 +379,10 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     prompt = await (await fetch("texts/supernatural_prompt.txt")).text();
     prompt = prompt
       .replace("{{PLAYER_NAME}}", player.name)
+      .replace("{{LOCATION}}", currentLocation || "unknown")
       .replace("{{STORY_CONTEXT}}", contextLines)
       .replace("{{INPUT}}", input)
-      .replace("{{CHARACTERS}}", speakerNames.join(" and "))
+      .replace("{{CHARACTERS}}", speakerNames.join(" and "));
     
     if (isRandom) prompt += "\nThe player triggers a sudden supernatural event...";
     else if (type === "narration")
