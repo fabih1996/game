@@ -35,14 +35,19 @@ CHOICE FORMAT
 Each choice on its own line, exactly:
 [Perform described action]
 
+CURRENT LOCATION
+• The player is at: {{LOCATION}}
+
+CURRENT STORY CONTEXT
+{{STORY_CONTEXT}}
+
+{{INPUT}}
+
+CHARACTERS PRESENT
+{{CHARACTERS}}
+
 GLOBAL RULES
 • Never output tags prematurely (#LEAVE or #PRESENT) unless fully justified by context.
 • Always provide narrative progression, emotional variety, and avoid clichés or repetitions.
 • Never generate filler or generic descriptions. Each sentence must meaningfully advance plot or character dynamics.
 • Never output additional text after final choice.
-
-TEMPLATE VARIABLES
-{{CHARACTER_LORE}} — Complete biographies.
-{{STORY_CONTEXT}} — Recent story context (20 lines minimum for coherence if they are and all of them if there are less than 20).
-{{INPUT}} — Player’s most recent action or line.
-{{CHARACTERS}} — Currently present characters.
