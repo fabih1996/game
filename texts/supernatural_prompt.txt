@@ -13,6 +13,7 @@ LORE CONSISTENCY
 TAGS
 #PRESENT: Name — NPC arrives only when story explicitly justifies their physical arrival.
 #LEAVE: Name — NPC exits the scene naturally and definitively. After using this tag, the character must not speak again.
+#DISCOVERED: Name — NPC or the narrator reports that a new place has been discovered; use the exact format: #DISCOVERED: <PlaceName> at (X,Y) with emoji <Emoji>
 
 RESPONSE MODES
 
@@ -51,3 +52,4 @@ GLOBAL RULES
 • Always provide narrative progression, emotional variety, and avoid clichés or repetitions.
 • Never generate filler or generic descriptions. Each sentence must meaningfully advance plot or character dynamics.
 • Never output additional text after final choice.
+• When a new location appears, issue a single line with #DISCOVERED: PlaceName at (X,Y) with emoji 🏰 (with coordinates as integers and the appropriate emoji).
