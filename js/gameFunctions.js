@@ -21,7 +21,7 @@ function startNeedsTimer() {
     if (!player) return;
     // 1) decresci fame e sete
     player.hunger = Math.max(0, player.hunger - 5);
-    player.thirst = Math.max(0, player.thirst - 5);
+    .thirst = Math.max(0, .thirst - 5);
     // 2) se uno è zero, scende anche la salute
     if (player.hunger === 0 || player.thirst === 0) {
       player.health = Math.max(0, player.health - 5);
@@ -822,7 +822,8 @@ export async function startGame() {
     color: "#3399ff",
     health: 100,
     hunger: 100,
-    thirst: 100
+    thirst: 100,
+    inverntory: []
   };
   
   setPlayer(player);
@@ -876,31 +877,29 @@ export function updatePlayerUI(player) {
   if (thirstLabel) thirstLabel.textContent = `💧 Thirst: ${player.thirst}`;
 }
 
-// ───────────── Episodic Story Structure ─────────────
-export const episodeState = {
-  episodeStage: "intro",          // intro → investigation → discovery → prep → showdown → epilogue
-  cluesFound: 0,
-  enemyIdentified: false,
-  ritualFound: false,
-  possessedVictim: null,
-  finalBoss: null,
-  victory: null
-};
-
-export function updateEpisodeState(key, value) {
-  if (episodeState.hasOwnProperty(key)) {
-    episodeState[key] = value;
-    console.log(`🧩 Episode state updated: ${key} = ${value}`);
-  }
+export function updateInventoryUI() {
+  const invEl = document.getElementById("inventory-list");
+  invEl.innerHTML = "";
+  player.inventory.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} x${item.qty}`;
+    invEl.appendChild(li);
+  });
 }
 
-export function advanceStage() {
-  const sequence = ["intro", "investigation", "discovery", "prep", "showdown", "epilogue"];
-  const currentIndex = sequence.indexOf(episodeState.episodeStage);
-  if (currentIndex < sequence.length - 1) {
-    episodeState.episodeStage = sequence[currentIndex + 1];
-    console.log(`⏩ Episode stage advanced to: ${episodeState.episodeStage}`);
-  }
+export function addItem(name, qty = 1) {
+  const it = player.inventory.find(i => i.name === name);
+  if (it) it.qty += qty;
+  else player.inventory.push({ name, qty });
+  updateInventoryUI();
+}
+export function removeItem(name, qty = 1) {
+  const it = player.inventory.find(i => i.name === name);
+  if (!it) return;
+  it.qty -= qty;
+  if (it.qty <= 0)
+    player.inventory = player.inventory.filter(i => i.name !== name);
+  updateInventoryUI();
 }
 
 
