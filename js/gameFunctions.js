@@ -426,14 +426,15 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
     storyDiv.appendChild(playerMsg);
     setTimeout(() => playerMsg.classList.remove("glow-talk"), 2000);
   }
-    /*
+  
   else if (type === "narration") {
-  const narr = document.createElement("p");
-  narr.classList.add("narration");
-  narr.textContent = `You: ${input.charAt(0).toLowerCase() + input.slice(1)}`; // es: “You open the door”
-  storyDiv.appendChild(narr);
-}
-  */
+    const narr = document.createElement("p");
+    narr.classList.add("narration");
+    // Mostra semplicemente quello che hai digitato:
+    narr.textContent = input;
+    storyDiv.appendChild(narr);
+  }
+  
 
   // 4) Costruisci prompt
   const speakerNames = characters
