@@ -820,8 +820,11 @@ export async function startGame() {
     desc,
     isCustom: true,
     color: "#3399ff",
-    health: 100
-  };  
+    health: 100,
+    hunger: 100,
+    thirst: 100
+  };
+  
   setPlayer(player);
   characterColors[player.name] = player.color;
   const style = document.createElement("style");
