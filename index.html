@@ -29,20 +29,12 @@
 
       <!-- Map Points with Emojis and Labels -->
       <g class="map-point" data-name="Diner" style="cursor: pointer;">
-        <text x="145" y="70" font-size="16" text-anchor="middle" dominant-baseline="middle">
-          🍔
-        </text>
-        <text x="155" y="75" font-size="12" text-anchor="start" fill="#fff">
-          Diner
-        </text>
+        <text x="145" y="70" font-size="16" text-anchor="middle" dominant-baseline="middle">🍔</text>
+        <text x="155" y="75" font-size="12" text-anchor="start" fill="#fff">Diner</text>
       </g>
       <g class="map-point" data-name="Shop" style="cursor: pointer;">
-        <text x="75" y="170" font-size="16" text-anchor="middle" dominant-baseline="middle">
-          🛒
-        </text>
-        <text x="85" y="175" font-size="12" text-anchor="start" fill="#fff">
-          Shop
-        </text>
+        <text x="75" y="170" font-size="16" text-anchor="middle" dominant-baseline="middle">🛒</text>
+        <text x="85" y="175" font-size="12" text-anchor="start" fill="#fff">Shop</text>
       </g>
     </svg>
   </div>
@@ -50,8 +42,10 @@
   <div id="sidebar">
     <h3>Characters</h3>
     <ul id="charListPresent"></ul>
+    <button id="inventory-button" class="game-button">🎒 Inventory</button>
     <button id="music-toggle" onclick="toggleMusic()">🎵 Music On/Off</button>
     <button id="phone-button" class="game-button">📱 Phone</button>
+
     <div id="player-section" class="player-card hidden">
       <h3>Player</h3>
       <div class="char-wrapper" style="--ring-color: #3399ff;">
@@ -68,6 +62,15 @@
         <div class="player-line"><span id="player-thirst-label">💧 Thirst: 100</span></div>
         <div class="health-bar-container"><div class="health-bar" id="player-thirst-bar"></div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Inventory Overlay -->
+  <div id="inventory-overlay" class="hidden">
+    <div class="inventory-panel">
+      <button id="inventory-close" class="close-button">✖</button>
+      <h3>Your Inventory</h3>
+      <ul id="inventory-list"></ul>
     </div>
   </div>
 
