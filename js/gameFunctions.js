@@ -15,18 +15,39 @@ export function setPlayer(p) {
   player = p;
 }
 
+// —————— Metabolismo: fame, sete e salute ——————
+function startNeedsTimer() {
+  setInterval(() => {
+    if (!player) return;
+    // 1) decresci fame e sete
+    player.hunger = Math.max(0, player.hunger - 1);
+    player.thirst = Math.max(0, player.thirst - 1);
+    // 2) se uno è zero, scende anche la salute
+    if (player.hunger === 0 || player.thirst === 0) {
+      player.health = Math.max(0, player.health - 1);
+    }
+    updatePlayerUI(player);
+  }, 60_000); // ogni 60 secondi
+}
+// ————————————————————————————————————————————
+
 
 // Tiene traccia dell’ultima location cliccata
 let currentLocation = null;
 
 // Funzione per gestire lo spostamento
-function handleMapClick(place) {
+function handleMapClick(place,elem) {
   if (currentLocation === place) {
     elem.style.cursor = 'default';
     return;
   }
   currentLocation = place;
-
+    // se vai al Diner, rigenera fame e sete
+  if (place === "Diner" && player) {
+    player.hunger = 100;
+    player.thirst = 100;
+    updatePlayerUI(player);
+  }
   // 1) Narrazione spostamento
   const storyDiv = document.getElementById('story');
   const p = document.createElement('p');
@@ -820,22 +841,35 @@ document.head.appendChild(style);
   // Nascondi la selezione iniziale e mostra il gioco
   document.getElementById("user-character-select").style.display = "none";
   document.getElementById("game-interface").style.display = "block";
+  // inizializza metabolismo
+  player.hunger = 100;
+  player.thirst = 100;
+  // avvia il timer che decresce fame/sete
+  startNeedsTimer();
   await loadIntro();
   attachMapHandlers();
 }
 
 export function updatePlayerUI(player) {
-  const nameEl  = document.getElementById("player-name-display");
-  const ageEl   = document.getElementById("player-age-display");
-  const descEl  = document.getElementById("player-desc-display");
-  const healthBar = document.getElementById("player-health-bar");
+  const nameEl      = document.getElementById("player-name-display");
+  const ageEl       = document.getElementById("player-age-display");
+  const descEl      = document.getElementById("player-desc-display");
+  const healthBar   = document.getElementById("player-health-bar");
   const healthLabel = document.getElementById("player-health-label");
+  const hungerBar   = document.getElementById("player-hunger-bar");
+  const hungerLabel = document.getElementById("player-hunger-label");
+  const thirstBar   = document.getElementById("player-thirst-bar");
+  const thirstLabel = document.getElementById("player-thirst-label");
 
-  if (nameEl) nameEl.textContent = `🧍 Name: ${player.name}`;
-  if (ageEl) ageEl.textContent = `🎂 Age: ${player.age}`;
-  if (descEl) descEl.textContent = `📝 ${player.desc}`;
-  if (healthBar) healthBar.style.width = player.health + "%";
+  if (nameEl)      nameEl.textContent      = `🧍 Name: ${player.name}`;
+  if (ageEl)       ageEl.textContent       = `🎂 Age: ${player.age}`;
+  if (descEl)      descEl.textContent      = `📝 ${player.desc}`;
+  if (healthBar)   healthBar.style.width   = `${player.health}%`;
   if (healthLabel) healthLabel.textContent = `❤️ Health: ${player.health}`;
+  if (hungerBar)   hungerBar.style.width   = `${player.hunger}%`;
+  if (hungerLabel) hungerLabel.textContent = `🍽️ Hunger: ${player.hunger}`;
+  if (thirstBar)   thirstBar.style.width   = `${player.thirst}%`;
+  if (thirstLabel) thirstLabel.textContent = `💧 Thirst: ${player.thirst}`;
 }
 
 // ───────────── Episodic Story Structure ─────────────
