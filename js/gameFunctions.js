@@ -851,9 +851,14 @@ document.head.appendChild(style);
   // avvia il timer che decresce fame/sete
   startNeedsTimer();
   await loadIntro();
+  await loadIntro();
   attachMapHandlers();
-  updateInventoryUI();
+
+  // 1) Aggancia i listener del pannello inventario
   attachInventoryHandlers();
+
+  // 2) Rendi subito visibile lo stato iniziale (vuoto) dell’inventario
+  updateInventoryUI();
 }
 
 export function updatePlayerUI(player) {
@@ -879,39 +884,77 @@ export function updatePlayerUI(player) {
   if (thirstLabel) thirstLabel.textContent = `💧 Thirst: ${player.thirst}`;
 }
 
+// ───────────── Inventario ─────────────
+
+// Apre/chiude il pannello inventario
 export function attachInventoryHandlers() {
-  document.getElementById('inventory-button')
-    .addEventListener('click', () =>
-      document.getElementById('inventory-panel').classList.remove('hidden')
-    );
-  document.getElementById('inventory-close')
-    .addEventListener('click', () =>
-      document.getElementById('inventory-panel').classList.add('hidden')
-    );
+  const invBtn    = document.getElementById('inventory-button');
+  const invPanel  = document.getElementById('inventory-panel');
+  const closeBtn  = document.getElementById('inventory-close');
+
+  if (!invBtn || !invPanel) return;
+
+  // toggle della visibilità
+  invBtn.addEventListener('click', () => {
+    invPanel.classList.toggle('hidden');
+    updateInventoryUI();
+  });
+
+  // chiusura dal bottone “X”
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      invPanel.classList.add('hidden');
+    });
+  }
 }
 
+// Rendering dell’elenco oggetti
 export function updateInventoryUI() {
-  const invEl = document.getElementById("inventory-list");
-  invEl.innerHTML = "";
+  const invEl = document.getElementById('inventory-list');
+  if (!invEl || !player) return;
+
+  invEl.innerHTML = '';  // svuota
   player.inventory.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} x${item.qty}`;
+    const li = document.createElement('li');
+    // se hai definito anche un campo emoji in item, lo mostriamo:
+    const emoji = item.emoji ? `${item.emoji} ` : '';
+    li.innerHTML = `
+      ${emoji}
+      <span class="item-name">${item.name}</span>
+      <span class="item-qty">×${item.qty}</span>
+    `;
     invEl.appendChild(li);
   });
+
+  // se vuoto, mostriamo un placeholder
+  if (player.inventory.length === 0) {
+    const li = document.createElement('li');
+    li.textContent = '⚪ Empty';
+    li.classList.add('empty');
+    invEl.appendChild(li);
+  }
 }
 
-export function addItem(name, qty = 1) {
+// Aggiunge un oggetto all’inventario
+export function addItem(name, qty = 1, emoji = '') {
+  if (!player) return;
   const it = player.inventory.find(i => i.name === name);
-  if (it) it.qty += qty;
-  else player.inventory.push({ name, qty });
+  if (it) {
+    it.qty += qty;
+  } else {
+    player.inventory.push({ name, qty, emoji });
+  }
   updateInventoryUI();
 }
+
+// Rimuove un oggetto
 export function removeItem(name, qty = 1) {
+  if (!player) return;
   const it = player.inventory.find(i => i.name === name);
   if (!it) return;
   it.qty -= qty;
-  if (it.qty <= 0)
+  if (it.qty <= 0) {
     player.inventory = player.inventory.filter(i => i.name !== name);
+  }
   updateInventoryUI();
 }
-
