@@ -866,6 +866,7 @@ export function updatePlayerUI(player) {
   if (descEl)      descEl.textContent      = `📝 ${player.desc}`;
   if (healthBar)   healthBar.style.width   = `${player.health}%`;
   if (healthLabel) healthLabel.textContent = `❤️ Health: ${player.health}`;
+
   if (hungerBar)   hungerBar.style.width   = `${player.hunger}%`;
   if (hungerLabel) hungerLabel.textContent = `🍽️ Hunger: ${player.hunger}`;
   if (thirstBar)   thirstBar.style.width   = `${player.thirst}%`;
