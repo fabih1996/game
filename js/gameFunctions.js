@@ -945,19 +945,17 @@ export function updatePlayerUI(player) {
 
 // Apre/chiude il pannello inventario
 export function attachInventoryHandlers() {
-  const invBtn    = document.getElementById('inventory-button');
-  const invPanel  = document.getElementById('inventory-overlay');
-  const closeBtn  = document.getElementById('inventory-close');
+  const invBtn   = document.getElementById('inventory-button');
+  const invPanel = document.getElementById('inventory-overlay');  // ← qui
+  const closeBtn = document.getElementById('inventory-close');
 
   if (!invBtn || !invPanel) return;
 
-  // toggle della visibilità
   invBtn.addEventListener('click', () => {
     invPanel.classList.toggle('hidden');
     updateInventoryUI();
   });
 
-  // chiusura dal bottone “X”
   if (closeBtn) {
     closeBtn.addEventListener('click', () => {
       invPanel.classList.add('hidden');
