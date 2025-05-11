@@ -287,7 +287,7 @@ body {
 }
 
 /* ─────────────── Inventory Overlay ─────────────── */
-#inventory-panel {
+#inventory-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
@@ -296,10 +296,15 @@ body {
   justify-content: center;
   z-index: 1150;
 }
-#inventory-panel.hidden { display: none; }
+#inventory-overlay.hidden {
+  display: none !important;
+}
 
+/* pannello interno */
 .inventory-panel {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: #222;
   border-radius: 8px;
   padding: 20px;
@@ -309,16 +314,19 @@ body {
   overflow-y: auto;
   box-shadow: 0 0 20px rgba(0,0,0,0.8);
 }
+
+/* bottone di chiusura */
 .inventory-panel .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 10px; right: 10px;
   background: transparent;
   border: none;
   color: #fff;
   font-size: 20px;
   cursor: pointer;
 }
+
+/* lista inventario */
 #inventory-list {
   list-style: none;
   padding: 0;
@@ -330,4 +338,10 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* placeholder quando vuoto */
+#inventory-list li.empty {
+  color: #888;
+  text-align: center;
 }
