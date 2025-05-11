@@ -20,8 +20,8 @@ function startNeedsTimer() {
   setInterval(() => {
     if (!player) return;
     // 1) decresci fame e sete
-    player.hunger = Math.max(0, player.hunger - 1);
-    player.thirst = Math.max(0, player.thirst - 1);
+    player.hunger = Math.max(0, player.hunger - 5);
+    player.thirst = Math.max(0, player.thirst - 5);
     // 2) se uno è zero, scende anche la salute
     if (player.hunger === 0 || player.thirst === 0) {
       player.health = Math.max(0, player.health - 1);
