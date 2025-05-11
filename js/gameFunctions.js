@@ -143,6 +143,32 @@ If no new place, output exactly NONE.
   return null;
 }
 
+// ————————— Detect Inventory Changes via GPT-4 —————————
+export async function detectInventoryChanges(context, latestReply) {
+  const prompt = `
+Given the recent story context and the latest GPT reply, decide if the player gains or loses any items.
+For each change, output exactly one line in either of these formats:
+#ADD_ITEM: ItemName,Quantity
+#REMOVE_ITEM: ItemName,Quantity
+If no inventory change, output exactly NONE.
+`.trim();
+
+  const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [
+        { role: "system", content: prompt },
+        { role: "user",   content: `CONTEXT:\n${context}\n\nREPLY:\n${latestReply}` }
+      ]
+    })
+  });
+  const data = await res.json();
+  const line = data.choices[0].message.content.trim().split("\n")[0];
+  return line === "NONE" ? null : data.choices[0].message.content.trim().split("\n");
+}
+
 // ---------------------------
 // NPC disponibili
 // ---------------------------
@@ -503,6 +529,22 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
 
+  // ———— ① Chiamo GPT-4 per modifiche inventario ————
+const invTags = await detectInventoryChanges(contextLines, reply);
+if (invTags) {
+  invTags.forEach(line => {
+    const addMatch    = line.match(/^#ADD_ITEM:\s*([^,]+),\s*(\d+)$/);
+    const removeMatch = line.match(/^#REMOVE_ITEM:\s*([^,]+),\s*(\d+)$/);
+    if (addMatch) {
+      // es. addMatch[1] = "Crocifisso", addMatch[2] = "1"
+      addItem(addMatch[1].trim(), Number(addMatch[2]));
+    }
+    if (removeMatch) {
+      removeItem(removeMatch[1].trim(), Number(removeMatch[2]));
+    }
+  });
+}
+
 // ————— Rilevamento automatico di nuove location —————
 detectNewLocation(contextLines, reply)
   .then(tag => {
@@ -730,6 +772,22 @@ Nothing else.
     });
     const data  = await response.json();
     const reply = data.choices[0].message.content.trim();
+
+    // ———— ① Processa i tag d’inventario ————
+    reply.split("\n").forEach(line => {
+      const addMatch    = line.match(/^#ADD_ITEM:\s*([^,]+),\s*(\d+)$/);
+      const removeMatch = line.match(/^#REMOVE_ITEM:\s*([^,]+),\s*(\d+)$/);
+      if (addMatch) {
+        const [, name, qty] = addMatch;
+        addItem(name.trim(), Number(qty));
+      }
+      if (removeMatch) {
+        const [, name, qty] = removeMatch;
+        removeItem(name.trim(), Number(qty));
+      }
+    });
+    // ————————————————————————————————
+    
     const lines = reply.split("\n").filter(l => l.trim() !== "");
 
     lines.forEach(line => {
@@ -851,7 +909,6 @@ document.head.appendChild(style);
   // avvia il timer che decresce fame/sete
   startNeedsTimer();
   await loadIntro();
-  await loadIntro();
   attachMapHandlers();
 
   // 1) Aggancia i listener del pannello inventario
@@ -889,7 +946,7 @@ export function updatePlayerUI(player) {
 // Apre/chiude il pannello inventario
 export function attachInventoryHandlers() {
   const invBtn    = document.getElementById('inventory-button');
-  const invPanel  = document.getElementById('inventory-panel');
+  const invPanel  = document.getElementById('inventory-overlay');
   const closeBtn  = document.getElementById('inventory-close');
 
   if (!invBtn || !invPanel) return;
