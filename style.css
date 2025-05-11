@@ -48,7 +48,9 @@ body {
 #sidebar.open { left: 0; }
 
 /* ─────────── Sidebar Buttons ─────────── */
-#music-toggle, #phone-button {
+#inventory-button,
+#music-toggle,
+#phone-button {
   background: #444;
   color: #fff;
   font-size: 16px;
@@ -59,7 +61,9 @@ body {
   border-radius: 6px;
   cursor: pointer;
 }
-#music-toggle:hover, #phone-button:hover { background: #666; }
+#inventory-button:hover,
+#music-toggle:hover,
+#phone-button:hover { background: #666; }
 
 /* ────────────── Characters ────────────── */
 #charListPresent {
@@ -156,11 +160,11 @@ body {
   background: #222; border: 1px solid #888;
   border-radius: 5px; margin-top: 6px; overflow: hidden;
 }
-.health-bar { height: 100%; width: 100%; background: linear-gradient(to right, red, orange); transition: width 0.4s ease; }
-.player-health-label { font-weight: normal; color: #ddd; }
+.health-bar { height: 100%; width: 100%; transition: width 0.4s ease; }
 #player-health-bar  { background: linear-gradient(to right, #ff6666, #cc0000); }
 #player-hunger-bar  { background: linear-gradient(to right, orange, darkred); }
 #player-thirst-bar  { background: linear-gradient(to right, #00bfff, #004488); }
+.player-health-label { font-weight: normal; color: #ddd; }
 
 /* ────────────── Phone Overlay & Rubrica ───────────── */
 #phone-overlay {
@@ -224,12 +228,6 @@ body {
   padding: 6px; border: 1px solid #444; border-radius: 4px;
   background: #111; color: #eee; margin-right: 4px;
 }
-#phone-close {
-  position: absolute; top: 10px; right: 10px; z-index: 10;
-  background: #444; color: #fff; border: none;
-  padding: 6px 12px; border-radius: 6px; font-size: 14px;
-  cursor: pointer;
-}
 #phone-send:hover, #phone-close:hover { background: #555; }
 
 /* ───────────────── Creation Inputs & Story ───────────────── */
@@ -263,7 +261,6 @@ body {
   #narrationInput, #dialogueInput { width:45%; }
 }
 
-
 /* ─────────────── Utility ─────────────── */
 .hidden { display: none !important; }
 .glow-talk { animation: characterTextGlow 1.2s ease-in-out; }
@@ -284,8 +281,53 @@ body {
   z-index: 999;
   box-shadow: 0 0 10px #000;
 }
-
 #mini-map svg {
   width: 100%;
   height: 100%;
+}
+
+/* ─────────────── Inventory Overlay ─────────────── */
+#inventory-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1150;
+}
+#inventory-panel.hidden { display: none; }
+
+.inventory-panel {
+  position: relative;
+  background: #222;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 400px;
+  max-height: 80%;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+.inventory-panel .close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+#inventory-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+#inventory-list li {
+  padding: 6px 0;
+  border-bottom: 1px solid #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
