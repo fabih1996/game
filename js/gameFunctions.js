@@ -21,7 +21,7 @@ function startNeedsTimer() {
     if (!player) return;
     // 1) decresci fame e sete
     player.hunger = Math.max(0, player.hunger - 5);
-    .thirst = Math.max(0, .thirst - 5);
+    player.thirst = Math.max(0, player.thirst - 5);
     // 2) se uno è zero, scende anche la salute
     if (player.hunger === 0 || player.thirst === 0) {
       player.health = Math.max(0, player.health - 5);
@@ -823,7 +823,7 @@ export async function startGame() {
     health: 100,
     hunger: 100,
     thirst: 100,
-    inverntory: []
+    inventory: []
   };
   
   setPlayer(player);
@@ -852,6 +852,8 @@ document.head.appendChild(style);
   startNeedsTimer();
   await loadIntro();
   attachMapHandlers();
+  updateInventoryUI();
+  attachInventoryHandlers();
 }
 
 export function updatePlayerUI(player) {
@@ -875,6 +877,17 @@ export function updatePlayerUI(player) {
   if (hungerLabel) hungerLabel.textContent = `🍽️ Hunger: ${player.hunger}`;
   if (thirstBar)   thirstBar.style.width   = `${player.thirst}%`;
   if (thirstLabel) thirstLabel.textContent = `💧 Thirst: ${player.thirst}`;
+}
+
+export function attachInventoryHandlers() {
+  document.getElementById('inventory-button')
+    .addEventListener('click', () =>
+      document.getElementById('inventory-panel').classList.remove('hidden')
+    );
+  document.getElementById('inventory-close')
+    .addEventListener('click', () =>
+      document.getElementById('inventory-panel').classList.add('hidden')
+    );
 }
 
 export function updateInventoryUI() {
@@ -901,5 +914,4 @@ export function removeItem(name, qty = 1) {
     player.inventory = player.inventory.filter(i => i.name !== name);
   updateInventoryUI();
 }
-
 
