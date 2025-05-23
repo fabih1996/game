@@ -116,12 +116,14 @@ export function addMapLocation({ name, x, y, emoji, labelOffset = { dx: 10, dy: 
 // Rilevamento nuove location
 // ---------------------------
 export async function detectNewLocation(context, latestReply) {
-  const prompt = `
-Given the following recent story context and the latest reply, decide if a new place has been discovered or introduced.
-If yes, output exactly one line in this format:
-#DISCOVERED: PlaceName at (X,Y) with emoji <Emoji>
-Coordinates should be integers within 0–220 (SVG viewBox). Emoji should match the place.
-If no new place, output exactly NONE.
+const prompt = `
+You are a narrative analyst for a supernatural-themed RPG. Given the recent game story and the latest AI-generated reply, determine if the player or any character has mentioned or implied the existence of a **new physical location** that wasn't known before.
+
+Only output one of the following:
+• If a new location appears: #DISCOVERED: <Name> at (X,Y) with emoji <Emoji>
+• Otherwise: NONE
+
+The name should be short and fitting, the coordinates integers from 0 to 220, and the emoji evocative of the location (e.g., 🏚, 🏨, 🕍, ⛪, 🏞). Do NOT invent lore or comment.
 `.trim();
 
   const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
@@ -145,12 +147,20 @@ If no new place, output exactly NONE.
 
 // ————————— Detect Inventory Changes via GPT-4 —————————
 export async function detectInventoryChanges(context, latestReply) {
-  const prompt = `
-Given the recent story context and the latest GPT reply, decide if the player gains or loses any items.
-For each change, output exactly one line in either of these formats:
-#ADD_ITEM: ItemName,Quantity
-#REMOVE_ITEM: ItemName,Quantity
-If no inventory change, output exactly NONE.
+const prompt = `
+You are tracking the player’s inventory in a supernatural adventure game.
+
+Based on the recent story context and the latest reply, identify if the player has gained or lost any items.
+
+For each change, output one line in one of the following formats:
+• #ADD_ITEM: ItemName,Quantity
+• #REMOVE_ITEM: ItemName,Quantity
+
+The item name must be exactly as referenced in the reply. Be specific and consistent with the story.
+
+If nothing changes, respond with exactly: NONE
+
+Do NOT invent tags. Do NOT add comments or explanations.
 `.trim();
 
   const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
