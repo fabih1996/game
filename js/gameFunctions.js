@@ -142,15 +142,16 @@ You are a narrative analyst for a supernatural-themed RPG. Based on the recent g
 If so, output exactly:
 #DISCOVERED: PlaceName at (X,Y) with emoji <Emoji>
 
-IMPORTANT:
-• PlaceName must be vivid, **evocative**, and **specific**. Avoid vague names like "Unknown Place", "Realm", "Area", or "Dimension".
-• Use descriptive names that sound like real places in the Supernatural universe, e.g., “Abandoned Farmhouse”, “Devil’s Hollow”, “Salt-Ringed Chapel”.
-• The emoji must match the tone or function of the place (e.g., 🏚, ⛪, 🏞, 🕳, 🕍, 🛖).
-• Coordinates must be integers from 0 to 220.
+IMPORTANT RULES:
+• Only output a new place if it is **clearly distinct** and separate from the current location.
+• Do NOT generate new names for places that are just variations, descriptions, or rooms within existing known locations (e.g., do NOT turn "Shop" into "Arcane Curiosity Emporium").
+• PlaceName must be vivid, specific, and appropriate to the Supernatural universe.
+• Avoid vague terms like "Unknown Place", "Realm", or "Area".
+• Use fitting emojis (e.g., 🏚, ⛪, 🏞, 🕳, 🧿, 🛖) and integer coordinates from 0–220.
 
-If there is no new place, output exactly: NONE
+If there is no new location, output exactly: NONE
 
-Do not add commentary or explanations.
+Never explain your answer. Do not add commentary.
 `.trim();
 
   const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
