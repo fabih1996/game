@@ -15,6 +15,13 @@ export function setPlayer(p) {
   player = p;
 }
 
+const placeCoordinates = {
+  "Diner": { x: 145, y: 70 },
+  "Shop": { x: 75, y: 170 },
+  "Unknown Realm": { x: 110, y: 60 }, // se vuoi mantenerlo
+  // aggiungerai man mano gli altri...
+};
+
 // —————— Metabolismo: fame, sete e salute ——————
 function startNeedsTimer() {
   setInterval(() => {
@@ -36,18 +43,31 @@ function startNeedsTimer() {
 let currentLocation = null;
 
 // Funzione per gestire lo spostamento
-function handleMapClick(place,elem) {
+function handleMapClick(place, elem) {
   if (currentLocation === place) {
     elem.style.cursor = 'default';
     return;
   }
   currentLocation = place;
-    // se vai al Diner, rigenera fame e sete
+
+  // aggiorna puntino blu sulla mappa
+  const dot = document.getElementById("player-dot");
+  const coords = placeCoordinates[place];
+
+  if (dot && coords) {
+    dot.setAttribute("cx", coords.x);
+    dot.setAttribute("cy", coords.y);
+  } else {
+    console.warn(`⚠️ Missing coordinates for place: ${place}`);
+  }
+
+  // se vai al Diner, rigenera fame e sete
   if (place === "Diner" && player) {
     player.hunger = 100;
     player.thirst = 100;
     updatePlayerUI(player);
   }
+
   // 1) Narrazione spostamento
   const storyDiv = document.getElementById('story');
   const p = document.createElement('p');
