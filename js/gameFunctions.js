@@ -117,13 +117,20 @@ export function addMapLocation({ name, x, y, emoji, labelOffset = { dx: 10, dy: 
 // ---------------------------
 export async function detectNewLocation(context, latestReply) {
 const prompt = `
-You are a narrative analyst for a supernatural-themed RPG. Given the recent game story and the latest AI-generated reply, determine if the player or any character has mentioned or implied the existence of a **new physical location** that wasn't known before.
+You are a narrative analyst for a supernatural-themed RPG. Based on the recent game story and the latest AI-generated reply, determine if the player or any character has entered or discovered a **new physical location** that wasn't already known.
 
-Only output one of the following:
-• If a new location appears: #DISCOVERED: <Name> at (X,Y) with emoji <Emoji>
-• Otherwise: NONE
+If so, output exactly:
+#DISCOVERED: PlaceName at (X,Y) with emoji <Emoji>
 
-The name should be short and fitting, the coordinates integers from 0 to 220, and the emoji evocative of the location (e.g., 🏚, 🏨, 🕍, ⛪, 🏞). Do NOT invent lore or comment.
+IMPORTANT:
+• PlaceName must be vivid, **evocative**, and **specific**. Avoid vague names like "Unknown Place", "Realm", "Area", or "Dimension".
+• Use descriptive names that sound like real places in the Supernatural universe, e.g., “Abandoned Farmhouse”, “Devil’s Hollow”, “Salt-Ringed Chapel”.
+• The emoji must match the tone or function of the place (e.g., 🏚, ⛪, 🏞, 🕳, 🕍, 🛖).
+• Coordinates must be integers from 0 to 220.
+
+If there is no new place, output exactly: NONE
+
+Do not add commentary or explanations.
 `.trim();
 
   const res = await fetch("https://supernatural-api.vercel.app/api/chat", {
