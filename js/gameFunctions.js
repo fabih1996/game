@@ -566,7 +566,24 @@ export async function sendToGPT(message, type = "dialogue", isRandom = false) {
   });
   const data = await res.json();
   const reply = data.choices[0].message.content.trim();
+  
+// ———— 🧭 Parsing tag #ACTIVE_LOCATION ————
+const activeLocMatch = reply.match(/^#ACTIVE_LOCATION:\s*(.+)$/m);
+if (activeLocMatch) {
+  const activeName = activeLocMatch[1].trim();
+  currentLocation = activeName;
 
+  // aggiorna puntino blu
+  const dot = document.getElementById("player-dot");
+  const coords = placeCoordinates[activeName];
+  if (dot && coords) {
+    dot.setAttribute("cx", coords.x);
+    dot.setAttribute("cy", coords.y);
+  } else {
+    console.warn("⚠️ #ACTIVE_LOCATION refers to unknown place:", activeName);
+  }
+}
+  
   // ———— ① Chiamo GPT-4 per modifiche inventario ————
 const invTags = await detectInventoryChanges(contextLines, reply);
 if (invTags) {
