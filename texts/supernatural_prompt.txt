@@ -18,6 +18,7 @@ FORMAT
   - `#PRESENT: Name` — when a character **arrives**
   - `#LEAVE: Name` — when a character **exits**
   - `#DISCOVERED: PlaceName at (X,Y) with emoji <Emoji>` — when a **new place** is discovered
+  - `#ACTIVE_LOCATION: PlaceName` — to indicate the current main location where the scene is unfolding (must match known places only)
 
 RESPONSE TYPES
 
@@ -31,6 +32,8 @@ RESPONSE TYPES
 • Describe consequences, reactions, and subtle details.
 • If the player enters a **new location**, start with:
   `#DISCOVERED: PlaceName at (X,Y) with emoji <Emoji>`
+• If the story clearly takes place in an already known location, include:
+  `#ACTIVE_LOCATION: PlaceName`
 
 3. 💬 DIALOGUE (player speaks)
 • Only characters marked as present may reply.
@@ -58,3 +61,5 @@ FINAL RULES
 • Never invent characters or monsters not mentioned or justified in the story so far.
 • Never output tags unless the action truly justifies it.
 • Avoid clichés. Surprise the player. Make it feel like *Supernatural*.
+• Do NOT create new locations that are merely rooms or variations within existing ones (e.g., “ritual chamber” inside “abandoned church”).
+• Always include `#ACTIVE_LOCATION: PlaceName` at the top if the location is known and unchanged.
